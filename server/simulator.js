@@ -128,7 +128,8 @@ function defaultState() {
   return state;
 }
 
-export function startSimulator({ host = '127.0.0.1', port = 10024 } = {}) {
+// host: indirizzo annunciato in /xinfo; bind: dove ascoltare ('0.0.0.0' = raggiungibile dalla rete, per l'app).
+export function startSimulator({ host = '127.0.0.1', port = 10024, bind = host } = {}) {
   const state = defaultState();
   // Snapshot: copie dello stato del mix (tutto tranne stato e snapshot stessi).
   const snaps = new Map();
@@ -362,6 +363,6 @@ export function startSimulator({ host = '127.0.0.1', port = 10024 } = {}) {
     }
   }, 50);
 
-  sock.bind(port, host, () => console.log(`Simulatore ${MODEL} in ascolto su ${host}:${port}`));
+  sock.bind(port, bind, () => console.log(`Simulatore ${MODEL} in ascolto su ${bind === host ? host : `${host} (tutte le reti)`}:${port}`));
   return sock;
 }
