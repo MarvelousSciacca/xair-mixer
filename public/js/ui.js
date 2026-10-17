@@ -52,6 +52,15 @@ function registerMeter(el, index) {
   });
 }
 
+/** Meter singolo (indice in /meters/1) aggiornato dal ciclo comune: usato dalla pagina Meter. */
+export function createMeter(index) {
+  const holder = document.createElement('div');
+  holder.innerHTML = METER_HTML;
+  const el = holder.firstChild;
+  registerMeter(el, index);
+  return el;
+}
+
 // --- trascinamento generico (fader e pan) --------------------------------------
 
 function draggable(el, { getValue, setValue, axis, length, reset }) {

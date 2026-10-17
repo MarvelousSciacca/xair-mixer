@@ -11,6 +11,7 @@ import { createFxRack, fxInsertAddress } from './fx-rack.js';
 import { createRouting } from './routing.js';
 import { applyTheme } from './theme.js';
 import { createView, createViewPanel } from './view.js';
+import { createMeterPage } from './meters.js';
 import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
@@ -118,18 +119,21 @@ faderTarget.addEventListener('change', () => selectFaderTarget(faderTarget.value
 // --- schede ---------------------------------------------------------------------
 
 const tabs = document.querySelectorAll('.topbar .tab');
+let meterPage = null; // la pagina Meter chiede l'RTA al mixer solo quando è visibile
 function showTab(group) {
   stripsEl.dataset.group = group;
   document.body.dataset.tab = group;
   tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.group === group)));
   storage.set(TAB_KEY, group);
+  meterPage?.setVisible(group === 'meters');
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
 createRouting({ mixer, strips, container: document.querySelector('.mixer') });
+meterPage = createMeterPage({ mixer, strips, rta, container: document.querySelector('.mixer') });
 const view = createView({ mixerEl: document.querySelector('.mixer'), stripsEl });
 const viewPanel = createViewPanel(view);
 document.getElementById('view-btn').addEventListener('click', () => viewPanel.open());
-showTab(['bus', 'dca', 'fx', 'routing'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
+showTab(['bus', 'dca', 'fx', 'routing', 'meters'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
 
 // --- stato connessione --------------------------------------------------------------
 
