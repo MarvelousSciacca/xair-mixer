@@ -4,3 +4,4 @@ node_modules/
 keystore/
 *.keystore
 *.jks
+tools/qa/out/
