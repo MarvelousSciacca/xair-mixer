@@ -211,13 +211,16 @@ export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedbac
       ctx.lineTo(xs[RTA_BINS - 1] * sx, Yrta(RTA_FLOOR) * sy);
       ctx.closePath();
       const gradient = ctx.createLinearGradient(0, PT * sy, 0, (H - PB) * sy);
-      gradient.addColorStop(0, 'rgba(56, 189, 248, 0.30)');
-      gradient.addColorStop(1, 'rgba(56, 189, 248, 0.04)');
+      // colori dal tema (variabili CSS --rta-canvas-*), con i valori del tema scuro come riserva
+      const css = window.getComputedStyle(canvas);
+      const color = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+      gradient.addColorStop(0, color('--rta-canvas-top', 'rgba(56, 189, 248, 0.30)'));
+      gradient.addColorStop(1, color('--rta-canvas-bottom', 'rgba(56, 189, 248, 0.04)'));
       ctx.fillStyle = gradient;
       ctx.fill();
       ctx.beginPath();
       for (let i = 0; i < RTA_BINS; i++) ctx[i ? 'lineTo' : 'moveTo'](xs[i] * sx, Yrta(peak[i]) * sy);
-      ctx.strokeStyle = 'rgba(125, 211, 252, 0.45)';
+      ctx.strokeStyle = color('--rta-canvas-peak', 'rgba(125, 211, 252, 0.45)');
       ctx.lineWidth = Math.max(1, sx);
       ctx.stroke();
     };

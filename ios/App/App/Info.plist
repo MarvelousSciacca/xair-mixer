@@ -53,8 +53,6 @@
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Serve per trovare e controllare il mixer X Air sulla rete Wi-Fi.</string>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -1,0 +1,148 @@
+/* Tema chiaro (predefinito): bianco caldo, superfici pulite, ombre morbide, titoli serif.
+   Ispirazione: interfacce Tesla e un tocco "neoclassico" nella tipografia.
+   Il tema scuro è quello di style.css; questo file ridefinisce le variabili e rifinisce i componenti. */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f4f4;
+  --panel: #ffffff;
+  --panel-2: #f6f6f6;
+  --line: #e6e6e6;
+  --text: #171a20;
+  --muted: #5c5e62;
+  --muted-2: #9a9ca0;
+  --accent: #3e6ae1;
+  --on-accent: #ffffff;
+  --mute: #e31937;
+  --solo: #f2b705;
+  --ok: #1f8a4c;
+  --font-display: "New York", ui-serif, "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+
+  --well: #efefef;
+  --slot: #d9d9d9;
+  --meter-track: #ececec;
+  --meter-edge: inset 0 0 0 1px rgba(0, 0, 0, .04);
+  --strip-bg: #ffffff;
+  --strip-bg-alt: #fcfcfc;
+  --strip-sep: #ededed;
+  --grid: #f0f0f0;
+  --grid-strong: #d6d6d6;
+  --zone: rgba(23, 26, 32, .022);
+  --zone-name: #b4b6ba;
+  --graph-bg: #ffffff;
+  --curve: #171a20;
+  --curve-fill: rgba(62, 106, 225, .10);
+  --tip-bg: rgba(255, 255, 255, .96);
+  --knob-track: #e8e8e8;
+  --knob-body: #ffffff;
+  --knob-edge: #dcdcdc;
+  --knob-body-active: #f3f3f3;
+  --cap-body: linear-gradient(#ffffff, #eeeeee);
+  --cap-shadow: 0 2px 6px rgba(0, 0, 0, .16), 0 0 0 1px rgba(0, 0, 0, .07);
+  --cap-line-default: #171a20;
+  --ok-bg: #e7f4ec;
+  --warn-bg: #fdecef;
+  --warn-fg: #b3122b;
+  --sky: #2f6fe0;
+  --rta-fill: rgba(62, 106, 225, .10);
+  --rta-line: rgba(62, 106, 225, .35);
+  --rta-canvas-top: rgba(23, 26, 32, 0.10);
+  --rta-canvas-bottom: rgba(23, 26, 32, 0.015);
+  --rta-canvas-peak: rgba(23, 26, 32, 0.22);
+  --overlay: rgba(23, 26, 32, .22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .07);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .04);
+  --shadow-lg: 0 30px 80px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .05);
+}
+
+[data-theme="light"] body { letter-spacing: .005em; }
+
+/* --- tipografia: titoli serif, etichette sobrie -------------------------------------------- */
+[data-theme="light"] .brand,
+[data-theme="light"] dialog h2,
+[data-theme="light"] .rt-head h2,
+[data-theme="light"] .editor-title .name,
+[data-theme="light"] .fx-card-title strong {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+[data-theme="light"] .brand { font-size: 17px; }
+[data-theme="light"] .brand span { color: var(--text); font-style: italic; }
+[data-theme="light"] dialog h2 { font-size: 21px; }
+[data-theme="light"] .rt-head h2 { font-size: 20px; }
+[data-theme="light"] .editor-title .name { font-size: 19px; }
+[data-theme="light"] .ed-section h3 { font-weight: 500; letter-spacing: .12em; color: var(--muted-2); }
+
+/* --- barra superiore: vetro chiaro ------------------------------------------------------------ */
+[data-theme="light"] .topbar {
+  background: rgba(255, 255, 255, .82);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom-color: #ececec;
+}
+[data-theme="light"] .tabs { background: #f1f1f1; border-color: transparent; }
+[data-theme="light"] .tab { font-weight: 500; }
+[data-theme="light"] .tab[aria-selected="true"] { background: #ffffff; }
+
+/* --- pulsanti --------------------------------------------------------------------------------- */
+[data-theme="light"] .btn { border-radius: 10px; font-weight: 500; }
+[data-theme="light"] .btn.ghost { background: #f2f2f2; border-color: transparent; color: var(--text); }
+[data-theme="light"] .btn.ghost:hover { background: #e9e9e9; filter: none; }
+[data-theme="light"] .topbar-actions .btn.ghost .ico { color: var(--text); }
+[data-theme="light"] .icon-btn { background: #f2f2f2; border-color: transparent; border-radius: 10px; }
+[data-theme="light"] .toggle { background: #f2f2f2; border-color: transparent; color: var(--muted); font-weight: 600; }
+[data-theme="light"] .toggle[aria-pressed="true"] { border-color: transparent; box-shadow: inset 0 0 0 1.5px var(--ok); }
+[data-theme="light"] .toggle.warn[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--mute); }
+[data-theme="light"] .segmented { border-color: transparent; background: #f1f1f1; padding: 2px; border-radius: 9px; gap: 2px; }
+[data-theme="light"] .segmented button { border-radius: 7px; background: transparent; }
+[data-theme="light"] .segmented button + button { border-left: 0; }
+[data-theme="light"] .segmented button[aria-pressed="true"] { background: #ffffff; color: var(--text); box-shadow: var(--shadow-sm); }
+[data-theme="light"] .chip-btn { background: #ffffff; border-color: #e3e3e3; }
+[data-theme="light"] .chip-btn:hover { border-color: var(--text); color: var(--text); }
+[data-theme="light"] .choice select,
+[data-theme="light"] .fader-target select { background-color: #ffffff; border-color: #e0e0e0; border-radius: 9px; }
+[data-theme="light"] dialog input { background: #ffffff; }
+
+/* --- superfici: carte bianche con ombra leggera --------------------------------------------- */
+[data-theme="light"] dialog,
+[data-theme="light"] .editor-panel { border: 0; border-radius: 20px; box-shadow: var(--shadow-lg); }
+[data-theme="light"] .editor-head { border-bottom-color: #efefef; }
+[data-theme="light"] .rt-block,
+[data-theme="light"] .fx-card { border: 0; border-radius: 18px; box-shadow: var(--shadow-md); }
+[data-theme="light"] .rt-in,
+[data-theme="light"] .eq-band,
+[data-theme="light"] .send-card { background: #fafafa; border-color: #efefef; border-radius: 14px; }
+[data-theme="light"] .graph-box { border-color: #ececec; border-radius: 16px; }
+[data-theme="light"] .main-strip { border-left: 1px solid #e6e6e6; background: #ffffff; }
+
+/* --- strip ----------------------------------------------------------------------------------- */
+[data-theme="light"] .scribble {
+  background: color-mix(in srgb, var(--strip-color) 13%, #ffffff);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--strip-color);
+  border-radius: 8px;
+}
+[data-theme="light"] .strip.inverted .scribble { background: var(--strip-color); color: #ffffff; box-shadow: none; }
+[data-theme="light"] .proc-btn { background: #f2f2f2; border-color: transparent; }
+[data-theme="light"] .proc-btn.active { background: var(--ok-bg); color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); }
+[data-theme="light"] .solo, [data-theme="light"] .mute { background: #ffffff; border-color: #e3e3e3; color: var(--muted); }
+[data-theme="light"] .solo.active { background: var(--solo); border-color: var(--solo); color: #2a2200; }
+[data-theme="light"] .mute.active { background: var(--mute); border-color: var(--mute); color: #ffffff; }
+[data-theme="light"] .mark.zero { color: var(--text); }
+[data-theme="light"] .db { background: #f2f2f2; color: var(--text); }
+[data-theme="light"] .meter { background: linear-gradient(to top, #2fb560 0%, #4cc774 58%, #f2c230 80%, #f08a24 92%, #e31937 100%); }
+[data-theme="light"] .strip-dca { --cap-line: #8b5cf6; }
+[data-theme="light"] .strip-bus { --cap-line: #2f6fe0; }
+[data-theme="light"] .strip.usb-source .scribble::before { background: var(--sky); }
+
+/* --- grafici ---------------------------------------------------------------------------------- */
+[data-theme="light"] .eq-node text { fill: var(--text); }
+[data-theme="light"] .eq-graph.off .eq-fill { fill: rgba(0, 0, 0, .03); }
+[data-theme="light"] .rta-btn { background: #ffffff; }
+[data-theme="light"] .eq-types { background: #f1f1f1; border-color: transparent; }
+[data-theme="light"] .geq-fill { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* --- avvisi ------------------------------------------------------------------------------------ */
+[data-theme="light"] .send-banner { background: #eaf0fd; color: #2448b5; }

@@ -9,6 +9,7 @@ import { createEditor, hasProcessing } from './editor.js';
 import { fxAddresses, FX_SLOTS } from './fx.js';
 import { createFxRack, fxInsertAddress } from './fx-rack.js';
 import { createRouting } from './routing.js';
+import { applyTheme } from './theme.js';
 import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
@@ -29,6 +30,7 @@ const storage = {
   },
 };
 
+applyTheme();
 // Nell'app (Android) si parla al mixer in UDP nativo; nel browser tramite il ponte Node.
 const native = Capacitor.isNativePlatform();
 document.body.classList.toggle('native-app', native);

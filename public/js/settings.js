@@ -6,6 +6,7 @@ import { Scope, knob, toggle, choice } from './controls.js';
 import { ZERO_DB } from './mixer.js';
 import { ask, notify } from './dialogs.js';
 import { captureScene, downloadScene } from './scenes.js';
+import { THEMES, setTheme, currentTheme } from './theme.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const pad2 = n => String(n).padStart(2, '0');
@@ -62,7 +63,22 @@ export function createSettings({ mixer, addresses, onReload }) {
   init.type = 'button';
   init.addEventListener('click', initialize);
 
+  // Aspetto: tema chiaro/scuro (salvato su questo dispositivo, non sul mixer)
+  const themeBox = h('div', 'segmented');
+  const themeButtons = THEMES.map(([id, label]) => {
+    const b = h('button', null, label);
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      setTheme(id);
+      themeButtons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    });
+    b.setAttribute('aria-pressed', String(currentTheme() === id));
+    themeBox.append(b);
+    return b;
+  });
+
   body.append(
+    section('Aspetto', themeBox),
     section('Mixer', info),
     section('Solo / cuffie',
       knob(sc, SETTINGS.soloLevel, { kind: 'fader', label: 'Livello solo', def: ZERO_DB }, { reset: ZERO_DB }),

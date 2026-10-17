@@ -3,9 +3,9 @@
   "appName": "X Air Mixer",
   "webDir": "public",
   "android": {
-    "backgroundColor": "#111317"
+    "backgroundColor": "#f4f4f4"
   },
   "ios": {
-    "backgroundColor": "#111317"
+    "backgroundColor": "#f4f4f4"
   }
 }

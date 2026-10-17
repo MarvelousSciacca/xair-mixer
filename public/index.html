@@ -10,6 +10,14 @@
   <link rel="icon" href="img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="img/icon.svg">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme-light.css">
+  <script>
+    // tema prima del primo disegno (vedi js/theme.js)
+    try {
+      const t = localStorage.getItem('xair.theme') || 'light';
+      document.documentElement.dataset.theme = t === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t;
+    } catch { document.documentElement.dataset.theme = 'light'; }
+  </script>
 </head>
 <body class="offline">
   <header class="topbar">
