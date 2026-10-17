@@ -1,0 +1,59 @@
+# Compila l'app iOS a ogni modifica: pacchetto .ipa NON firmato, pubblicato nella pagina "Releases".
+# La firma avviene all'installazione (es. Sideloadly con un ID Apple), oppure in futuro qui
+# con un account sviluppatore Apple per TestFlight.
+name: App iOS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Interfaccia web nel progetto iOS
+        run: |
+          npm ci
+          cp node_modules/@capacitor/core/dist/index.js public/vendor/capacitor-core.js
+          npx cap sync ios
+
+      - name: Compilazione (senza firma)
+        run: |
+          xcodebuild -version
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            MARKETING_VERSION=1.0.${{ github.run_number }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tail -40
+          test -d build/Build/Products/Release-iphoneos/App.app
+
+      - name: Pacchetto .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -qry "$RUNNER_TEMP/X-Air-Mixer.ipa" Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: X-Air-Mixer-ios
+          path: ${{ runner.temp }}/X-Air-Mixer.ipa
+
+      - name: Pubblicazione
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "ios-${{ github.run_number }}" "$RUNNER_TEMP/X-Air-Mixer.ipa" \
+            --title "X Air Mixer per iOS 1.0.${{ github.run_number }} (da firmare)" \
+            --notes "Pacchetto non firmato: si installa con Sideloadly (ID Apple gratuito) o tramite TestFlight con un account sviluppatore." \
+            --latest=false

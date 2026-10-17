@@ -4,5 +4,8 @@
   "webDir": "public",
   "android": {
     "backgroundColor": "#111317"
+  },
+  "ios": {
+    "backgroundColor": "#111317"
   }
 }
