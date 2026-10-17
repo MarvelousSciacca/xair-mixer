@@ -6,7 +6,8 @@ import { ZERO_DB } from './mixer.js';
 import { AUTOMIX } from './model.js';
 import { fxControls } from './fx-ui.js';
 import { eqGraph, dynGraph, BAND_COLORS } from './graphs.js';
-import { eqTypePicker, eqPresetBar, bandTitle } from './eq-ui.js';
+import { eqTypePicker, bandTitle } from './eq-ui.js';
+import { presetMenu } from './presets.js';
 import { isCut } from './dsp.js';
 import { applyColor } from './ui.js';
 
@@ -65,12 +66,18 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
   const tabsEl = $('.editor-tabs');
   let scope = null;
   let current = null;
-  let tab = 'eq';
+  let tab = 'input'; // la prima pagina della traccia: preset, sorgente, preamp
 
   const builders = {
     input(sc, s, params) {
       const p = a => params.get(a);
       const parts = [];
+      // preset dello strumento: low cut, gate, compressore ed EQ in un colpo solo
+      if (s.preamp && s.eqBands === 4) {
+        const sec = section('Preset', presetMenu(sc, s, params, 'channel'));
+        sec.append(h('p', 'fx-note', 'Un punto di partenza per mixare: imposta low cut, gate, compressore ed EQ. Poi rifinisci a orecchio con il segnale vero.'));
+        parts.push(sec);
+      }
       if (s.source) parts.push(sourceSection(sc, s, params));
       if (s.headamp) {
         const ha = `/headamp/${String(s.headamp).padStart(2, '0')}`;
@@ -214,7 +221,7 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
         bands.append(col);
       }
       columns[0].classList.add('selected');
-      const head = section(null, toggle(sc, `${s.base}/eq/on`, SPEC.eqOn, { label: 'EQ attivo', className: 'big' }), eqPresetBar(sc, s, params));
+      const head = section(null, toggle(sc, `${s.base}/eq/on`, SPEC.eqOn, { label: 'EQ attivo', className: 'big' }), presetMenu(sc, s, params, 'eq'));
       const hint = h('p', 'eq-hint', 'Trascina i punti sul grafico: in orizzontale la frequenza, in verticale il guadagno. Due dita o la rotella del mouse cambiano la larghezza della banda (Q). Doppio tocco: guadagno a zero.');
       return [head, box, hint, bands];
     },

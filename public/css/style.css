@@ -1024,18 +1024,8 @@ body[data-tab="fx"] .strips { display: none; }
 .eq-type-name { font-size: 11px; color: var(--muted); }
 .eq-band.cut .eq-gain { opacity: .3; pointer-events: none; }
 
-.eq-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.eq-presets-label { font-size: 12px; color: var(--muted); margin-right: 2px; }
-.chip-btn {
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  font-size: 13px;
-  cursor: pointer;
-}
+.chip-btn { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2); font-size: 13px; cursor: pointer; }
 .chip-btn:hover { border-color: var(--accent); color: var(--accent); }
-.eq-undo { padding: 6px 12px; }
 .eq-hint { margin: -4px 2px 0; font-size: 12px; color: var(--muted-2); }
 @media (hover: none) { .eq-hint { font-size: 11px; } }
 
