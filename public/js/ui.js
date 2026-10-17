@@ -3,6 +3,7 @@
 import { ZERO_DB, faderToDb, dbToFader, formatDb } from './mixer.js';
 import { COLORS, soloAddress } from './model.js';
 import { sendAddress } from './params.js';
+import { createStripSections } from './strip-sections.js';
 
 const FADER_MARKS = [10, 5, 0, -5, -10, -20, -30, -50, -Infinity];
 const METER_FLOOR = -60;
@@ -134,13 +135,15 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
     </div>
     <div class="db">-∞</div>
     <div class="buttons">
-      ${strip.solo ? '<button class="solo" type="button">SOLO</button>' : ''}
-      <button class="mute" type="button">MUTE</button>
+      ${strip.solo ? '<button class="solo" type="button" aria-label="Solo"><span class="long">SOLO</span><span class="short">S</span></button>' : ''}
+      <button class="mute" type="button" aria-label="Mute"><span class="long">MUTE</span><span class="short">M</span></button>
     </div>
     <button class="label" type="button" title="Elaborazione del canale">${strip.label}</button>`;
 
   const $ = sel => el.querySelector(sel);
   const base = strip.base;
+  // sezioni in miniatura (preamp, gate, compressore, EQ, mandate): visibili secondo la "Vista"
+  $('.proc').after(createStripSections(mixer, strip, { onProcess }));
 
   // Nome e colore
   const scribble = $('.scribble');

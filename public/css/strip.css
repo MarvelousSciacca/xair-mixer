@@ -1,0 +1,170 @@
+/* Superfici e channel strip: profondità leggera (tasti in rilievo, pozzetti incassati), forme nette,
+   colore del canale su tutta la strip e sezioni in miniatura scelte dalla "Vista".
+   Le variabili hanno valori per il tema scuro qui e per il chiaro in theme-light.css. */
+
+:root {
+  --r-ctl: 6px;           /* angoli dei controlli */
+  --r-panel: 10px;        /* angoli di pannelli e carte */
+  --key-bg: linear-gradient(#2c3038, #22262d);
+  --key-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 1px 0 rgba(0, 0, 0, .55), 0 2px 4px rgba(0, 0, 0, .3);
+  --key-pressed: inset 0 1px 3px rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 0, 0, .35);
+  --well-shadow: inset 0 1px 3px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(0, 0, 0, .35);
+  --sec-bg: rgba(0, 0, 0, .22);
+  --tint-base: #16191e;
+  --tint-top: 26%;
+  --tint-body: 8%;
+  --sec-gate: #34d399;
+  --sec-dyn: #fbbf24;
+  --sec-eq: #60a5fa;
+  --strip-scale: 1;
+}
+
+/* --- tasti in rilievo, premuti quando attivi ------------------------------------------------ */
+.btn.ghost, .toggle, .proc-btn, .solo, .mute, .icon-btn, .chip-btn, .segmented, .tabs, .lib-cat, .mg-btn {
+  border-radius: var(--r-ctl);
+}
+.btn.ghost, .toggle, .proc-btn, .solo, .mute, .icon-btn, .chip-btn {
+  background: var(--key-bg);
+  border-color: transparent;
+  box-shadow: var(--key-shadow);
+}
+.toggle[aria-pressed="true"], .proc-btn.active, .solo.active, .mute.active,
+.btn.ghost:active, .chip-btn:active, .toggle:active, .icon-btn:active {
+  box-shadow: var(--key-pressed);
+}
+.chip-btn { padding: 6px 11px; font-size: 13px; }
+.btn { border-radius: var(--r-ctl); box-shadow: 0 1px 0 rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .18); }
+.segmented, .tabs { box-shadow: var(--well-shadow); }
+
+/* pozzetti incassati: meter, slot dei fader, grafici, valori */
+.meter, .fader-slot, .pan-track, .db, .graph-box, .geq-body { box-shadow: var(--well-shadow); }
+.graph-box, .rt-block, .fx-card, .editor-panel, dialog { border-radius: var(--r-panel); }
+.rt-in, .eq-band, .send-card { border-radius: 8px; }
+
+/* --- colore del canale su tutta la strip -------------------------------------------------------- */
+.strip,
+.strip:nth-child(even) {
+  flex: 0 0 calc(var(--strip-w) * var(--strip-scale));
+  width: calc(var(--strip-w) * var(--strip-scale));
+  min-width: 0;
+  background:
+    linear-gradient(to bottom,
+      color-mix(in srgb, var(--strip-color) var(--tint-top), var(--tint-base)) 0,
+      color-mix(in srgb, var(--strip-color) var(--tint-body), var(--tint-base)) 30%,
+      color-mix(in srgb, var(--strip-color) var(--tint-body), var(--tint-base)) 100%);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, .03);
+}
+.strip.inverted { --tint-top: 14%; }
+
+/* --- sezioni in miniatura ------------------------------------------------------------------------ */
+.strip-sections { display: flex; flex-direction: column; gap: 4px; min-height: 0; min-width: 0; }
+.sec {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  padding: 3px 4px 4px;
+  border: 0;
+  border-radius: var(--r-ctl);
+  background: var(--sec-bg);
+  box-shadow: var(--well-shadow);
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+.sec:hover { filter: brightness(1.06); }
+.sec-head { min-width: 0; overflow: hidden; display: flex; align-items: baseline; justify-content: space-between; gap: 3px; line-height: 1; }
+.sec-name { font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.sec-value { font-size: 10px; font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; }
+.sec-graph { display: block; width: 100%; max-width: 100%; contain: size; flex: 1; min-height: 0; overflow: visible; }
+.sec-curve { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
+.sec-fill { fill: currentColor; opacity: .0; }
+.sec-unity { fill: none; stroke: var(--grid-strong); stroke-width: 1; stroke-dasharray: 2 2; }
+.sec-thr { fill: none; stroke: var(--muted-2); stroke-width: 1; stroke-dasharray: 2 2; }
+
+.sec-gate.on { color: var(--sec-gate); }
+.sec-dyn.on { color: var(--sec-dyn); }
+.sec-eq.on { color: var(--sec-eq); }
+.sec.on .sec-curve { stroke: currentColor; }
+.sec.on .sec-fill { opacity: .16; }
+.sec.on .sec-name { color: currentColor; }
+.sec:not(.on) .sec-graph { opacity: .55; }
+
+/* preamp: guadagno con barra e spie */
+.sec-preamp .sec-value { font-size: 11px; font-weight: 600; }
+.sec-bar { position: relative; height: 4px; border-radius: 2px; background: var(--well); box-shadow: var(--well-shadow); }
+.sec-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--fill, 0) * 100%); border-radius: 2px; background: var(--muted); }
+.sec-flags { display: flex; flex-wrap: wrap; gap: 2px; min-height: 0; overflow: hidden; }
+.flag { padding: 0 3px; border-radius: 3px; font-size: 8px; font-weight: 700; line-height: 12px; background: var(--well); color: var(--text); }
+.flag.warn { background: var(--mute); color: #fff; }
+.flag.usb { background: var(--sky); color: #fff; }
+
+/* mandate: barrette verticali (bus blu, effetti verde acqua) */
+.sec-sends { display: flex; align-items: stretch; gap: 2px; flex: 1; min-height: 0; }
+.sec-send { position: relative; flex: 1; border-radius: 2px; background: var(--well); overflow: hidden; }
+.sec-send > span { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--v, 0) * 100%); background: #60a5fa; }
+.sec-send.fx > span { background: #2dd4bf; }
+
+/* quali sezioni mostrare (data-show sulla .mixer, impostato dalla Vista) */
+.mixer:not([data-show~="preamp"]) .sec-preamp,
+.mixer:not([data-show~="gate"]) .sec-gate,
+.mixer:not([data-show~="dyn"]) .sec-dyn,
+.mixer:not([data-show~="eq"]) .sec-eq,
+.mixer:not([data-show~="sends"]) .sec-sends,
+.mixer:not([data-show~="sends"]) .sec[data-sec="sends"],
+.mixer:not([data-show~="pan"]) .strip .pan { display: none; }
+/* i tasti G/C/EQ servono solo se la sezione corrispondente è nascosta */
+.mixer[data-show~="gate"] .proc-btn[data-tab="gate"],
+.mixer[data-show~="dyn"] .proc-btn[data-tab="dyn"],
+.mixer[data-show~="eq"] .proc-btn[data-tab="eq"] { display: none; }
+.proc:empty, .proc.all-hidden { display: none; }
+
+/* densità: piena / compatta / mini, scelta in base all'altezza disponibile */
+.mixer[data-density="full"] .sec-preamp { height: 38px; }
+.mixer[data-density="full"] .sec-gate, .mixer[data-density="full"] .sec-dyn { height: 44px; }
+.mixer[data-density="full"] .sec-eq { height: 48px; }
+.mixer[data-density="full"] .sec[data-sec="sends"] { height: 40px; }
+
+.mixer[data-density="compact"] .sec-preamp { height: 24px; }
+.mixer[data-density="compact"] .sec-preamp .sec-flags { display: none; }
+.mixer[data-density="compact"] .sec-gate, .mixer[data-density="compact"] .sec-dyn { height: 26px; }
+.mixer[data-density="compact"] .sec-eq { height: 30px; }
+.mixer[data-density="compact"] .sec[data-sec="sends"] { height: 22px; }
+.mixer[data-density="compact"] .sec:not(.sec-preamp) .sec-head { display: none; }
+
+.mixer[data-density="mini"] .strip-sections { flex-direction: row; flex-wrap: wrap; gap: 3px; }
+.mixer[data-density="mini"] .sec { height: 20px; flex: 1; justify-content: center; align-items: center; padding: 0 2px; }
+.mixer[data-density="mini"] .sec-preamp { flex-basis: 100%; }
+.mixer[data-density="mini"] .sec-preamp .sec-head { width: 100%; }
+.mixer[data-density="mini"] .sec-graph,
+.mixer[data-density="mini"] .sec-flags,
+.mixer[data-density="mini"] .sec-bar,
+.mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-value,
+.mixer[data-density="mini"] .sec[data-sec="sends"] { display: none; }
+.mixer[data-density="mini"] .sec.on { box-shadow: var(--key-pressed); }
+.mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-name { font-size: 0; letter-spacing: 0; }
+.mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-name::after { content: attr(data-short); font-size: 10px; }
+
+/* fader corti: più spazio alle sezioni, l'EQ si allunga */
+.mixer[data-fader="short"] .fader-area { flex: 0 0 150px; min-height: 0; }
+.mixer[data-fader="short"] .strip-sections { flex: 1; }
+.mixer[data-fader="short"] .sec-eq { flex: 1 1 auto; height: auto !important; min-height: 48px; }
+
+/* la modalità monitor non mostra le sezioni */
+.mon-strips .strip-sections { display: none; }
+
+/* --- pannello Vista ------------------------------------------------------------------------------ */
+.view-dialog { width: min(460px, calc(100vw - 32px)); }
+.view-help { margin: 0 0 6px; color: var(--muted); font-size: 13px; }
+.view-group h3 { margin: 14px 0 8px; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.view-toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.view-toggle { width: 100%; }
+
+/* SOLO/MUTE: per esteso, oppure S/M sugli schermi stretti */
+.solo .short, .mute .short { display: none; }
+@media (max-width: 700px) {
+  .solo .long, .mute .long { display: none; }
+  .solo .short, .mute .short { display: inline; font-size: 12px; }
+}

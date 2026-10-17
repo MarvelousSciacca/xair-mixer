@@ -360,16 +360,12 @@ export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedbac
 
 // --- curve gate / compressore --------------------------------------------------------------
 
-export function dynGraph(scope, strip, kind) {
-  const S = 200;
-  const lo = kind === 'gate' ? -80 : -60;
-  const P = db => ((clamp(db, lo, 0) - lo) / -lo) * S;
-  const base = `${strip.base}/${kind}`;
-  const spec = SPEC[kind];
-  const get = k => scope.get(`${base}/${k}`, spec[k]);
-  const real = k => fromNorm(spec[k], get(k));
-
-  const transfer = kind === 'gate'
+/**
+ * Curva di trasferimento (dB in -> dB out) di gate o compressore.
+ * get(k) = valore grezzo del parametro k, real(k) = valore reale. Usata dal grafico e dalla strip.
+ */
+export function dynTransfer(kind, get, real) {
+  return kind === 'gate'
     ? input => {
       const thr = real('thr'), range = real('range'), mode = GATE_MODES[get('mode')];
       if (mode === 'DUCK') return input > thr ? input - range : input;
@@ -388,6 +384,18 @@ export function dynGraph(scope, strip, kind) {
       else out = thr + over / ratio;
       return out + real('mgain');
     };
+}
+
+export function dynGraph(scope, strip, kind) {
+  const S = 200;
+  const lo = kind === 'gate' ? -80 : -60;
+  const P = db => ((clamp(db, lo, 0) - lo) / -lo) * S;
+  const base = `${strip.base}/${kind}`;
+  const spec = SPEC[kind];
+  const get = k => scope.get(`${base}/${k}`, spec[k]);
+  const real = k => fromNorm(spec[k], get(k));
+
+  const transfer = dynTransfer(kind, get, real);
 
   const svg = svgEl('svg', { viewBox: `-24 -6 ${S + 30} ${S + 26}`, class: 'dyn-graph' });
   const grid = svgEl('g', { class: 'grid' }, svg);

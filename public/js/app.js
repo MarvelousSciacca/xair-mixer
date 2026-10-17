@@ -10,6 +10,7 @@ import { fxAddresses, FX_SLOTS } from './fx.js';
 import { createFxRack, fxInsertAddress } from './fx-rack.js';
 import { createRouting } from './routing.js';
 import { applyTheme } from './theme.js';
+import { createView, createViewPanel } from './view.js';
 import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
@@ -125,6 +126,9 @@ function showTab(group) {
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
 createRouting({ mixer, strips, container: document.querySelector('.mixer') });
+const view = createView({ mixerEl: document.querySelector('.mixer'), stripsEl });
+const viewPanel = createViewPanel(view);
+document.getElementById('view-btn').addEventListener('click', () => viewPanel.open());
 showTab(['bus', 'dca', 'fx', 'routing'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
 
 // --- stato connessione --------------------------------------------------------------
