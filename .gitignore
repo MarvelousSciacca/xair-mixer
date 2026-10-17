@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+# chiave di firma dell'app Android: MAI nel repository (va nei segreti di GitHub)
+keystore/
+*.keystore
+*.jks

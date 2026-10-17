@@ -1,0 +1,8 @@
+{
+  "appId": "it.xairmixer.app",
+  "appName": "X Air Mixer",
+  "webDir": "public",
+  "android": {
+    "backgroundColor": "#111317"
+  }
+}

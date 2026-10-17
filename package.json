@@ -1,0 +1,22 @@
+{
+  "name": "xair-mixer",
+  "version": "1.0.0",
+  "description": "Controller per mixer Behringer X Air (XR12/XR16/XR18)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js --sim"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
+  }
+}
