@@ -89,3 +89,13 @@ lato JavaScript `public/js/transport-udp.js` e `public/js/osc.js`).
   `XAIR_KEYSTORE_BASE64` e `XAIR_KEYSTORE_PASSWORD`. **Non perderla**: senza la stessa chiave
   gli aggiornamenti non si installano sopra la versione precedente.
 - Dopo modifiche a `public/`: `npx cap sync android` (lo fa anche la compilazione su GitHub).
+
+## App iOS
+
+Stessa interfaccia in Capacitor (`ios/`), plugin UDP in Swift (`ios/App/App/UdpPlugin.swift`, registrato da
+`MainViewController`). Su iOS il broadcast richiede un permesso speciale di Apple: per trovare il mixer
+`transport-udp.js` interroga anche gli indirizzi della rete Wi-Fi uno per uno (`interfaces` del plugin).
+
+- Compilazione: GitHub Actions (`.github/workflows/ios.yml`), `.ipa` NON firmato nelle Releases (`ios-N`).
+- Installazione per ora gratuita con Sideloadly + ID Apple (l'app scade dopo 7 giorni, va reinstallata).
+  In futuro: account sviluppatore Apple + TestFlight (firma su GitHub con chiave API di App Store Connect).
