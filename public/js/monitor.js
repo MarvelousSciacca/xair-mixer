@@ -3,6 +3,7 @@
 // quindi non cambiano il mix di sala. Si può bloccare la schermata (uscita tenendo premuto).
 // Apertura diretta da link: ?monitor=2 (bus 2), aggiungendo &lock=1 la schermata parte bloccata.
 
+import { alignFaders } from './view.js';
 import { createStrip } from './ui.js';
 
 const PREF_KEY = 'xair.monitor';
@@ -126,6 +127,7 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
     $('.mon-lock').setAttribute('aria-pressed', String(settings.locked));
     $('.mon-lock').textContent = settings.locked ? 'Bloccato' : 'Blocca';
     renderHint();
+    requestAnimationFrame(() => alignFaders(root));
   }
   links.onChange(() => { if (!root.hidden) render(); });
 

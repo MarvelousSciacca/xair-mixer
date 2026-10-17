@@ -59,6 +59,7 @@ export function createView({ mixerEl, stripsEl }) {
       proc.classList.toggle('all-hidden', tabs.every(t => view.sections[t]));
     }
     listeners.forEach(cb => cb(view));
+    requestAnimationFrame(() => alignFaders());
   };
 
   const refreshDensity = () => surfaces.forEach(s => {
@@ -66,7 +67,7 @@ export function createView({ mixerEl, stripsEl }) {
     if (s.mixerEl.dataset.density !== d) s.mixerEl.dataset.density = d;
   });
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(refreshDensity) : null;
-  window.addEventListener('resize', refreshDensity);
+  window.addEventListener('resize', () => { refreshDensity(); requestAnimationFrame(() => alignFaders()); });
   const attach = (m, s) => {
     surfaces.push({ mixerEl: m, stripsEl: s });
     observer?.observe(s);
@@ -92,6 +93,21 @@ export function createView({ mixerEl, stripsEl }) {
       return () => listeners.delete(cb);
     },
   };
+}
+
+/**
+ * Allinea i fader delle strip visibili: le strip senza sezioni o senza pan (mandate FX, DCA)
+ * avrebbero il fader più in alto delle altre. Si aggiunge lo spazio mancante sopra il fader.
+ */
+export function alignFaders(root = document) {
+  for (const mixer of root.querySelectorAll('.mixer')) {
+    const areas = [...mixer.querySelectorAll('.strip .fader-area')].filter(a => a.offsetParent);
+    areas.forEach(a => { a.style.marginTop = ''; });
+    if (areas.length < 2) continue;
+    const tops = areas.map(a => a.getBoundingClientRect().top);
+    const max = Math.max(...tops);
+    areas.forEach((a, i) => { if (max - tops[i] > 1) a.style.marginTop = `${max - tops[i]}px`; });
+  }
 }
 
 /** Pannello "Vista": interruttori per sezioni e pan, scelta di fader e larghezza. */

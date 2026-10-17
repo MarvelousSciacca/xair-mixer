@@ -369,7 +369,7 @@ dialog input {
   .topbar-actions .btn { padding: 0 10px; }
   .fb-btn { gap: 4px; }
 }
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
   .topbar { flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 8px; }
   .topbar-nav { order: 2; }
   .topbar-actions { justify-content: flex-end; }
@@ -944,7 +944,7 @@ body[data-tab="fx"] .strips { display: none; }
 .fx-pick { display: flex; align-items: flex-end; gap: 6px; }
 .fx-pick .btn { padding: 7px 10px; font-size: 12px; }
 
-.fx-lib { width: min(980px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); flex-direction: column; }
+.fx-lib { width: min(980px, calc(100vw - 32px)); height: min(780px, calc(100dvh - 32px)); max-height: calc(100dvh - 32px); flex-direction: column; }
 .fx-lib[open] { display: flex; }
 .lib-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0; }
 .lib-slot {
@@ -983,9 +983,9 @@ body[data-tab="fx"] .strips { display: none; }
 }
 .lib-card[hidden] { display: none; }
 .lib-card:hover { border-color: #3b82f6; }
-.lib-card.loaded { border-color: var(--ok); background: #0e2a1f; }
+.lib-card.loaded { border-color: var(--ok); background: var(--ok-bg); box-shadow: inset 0 0 0 1px var(--ok); }
 .lib-card-name { font-weight: 700; }
-.lib-card-meta { font-size: 11px; color: #7dd3fc; text-transform: uppercase; letter-spacing: .04em; }
+.lib-card-meta { font-size: 11px; color: var(--sky); text-transform: uppercase; letter-spacing: .04em; }
 .lib-card-desc { font-size: 12px; color: var(--muted); }
 .lib-card-where { font-size: 11px; color: var(--ok); font-weight: 600; }
 .lib-card-where:empty { display: none; }

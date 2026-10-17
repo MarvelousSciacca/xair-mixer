@@ -10,7 +10,7 @@ import { fxAddresses, FX_SLOTS } from './fx.js';
 import { createFxRack, fxInsertAddress } from './fx-rack.js';
 import { createRouting } from './routing.js';
 import { applyTheme } from './theme.js';
-import { createView, createViewPanel } from './view.js';
+import { createView, createViewPanel, alignFaders } from './view.js';
 import { createMeterPage } from './meters.js';
 import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
@@ -126,6 +126,7 @@ function showTab(group) {
   tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.group === group)));
   storage.set(TAB_KEY, group);
   meterPage?.setVisible(group === 'meters');
+  requestAnimationFrame(() => alignFaders());
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
 createRouting({ mixer, strips, container: document.querySelector('.mixer') });

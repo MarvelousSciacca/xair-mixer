@@ -122,7 +122,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   const marks = FADER_MARKS.map(db => {
     const pos = dbToFader(db);
     const text = Number.isFinite(db) ? (db > 0 ? `+${db}` : `${db}`) : '-∞';
-    return `<span class="mark${db === 0 ? ' zero' : ''}" style="--p:${pos}">${text}</span>`;
+    return `<span class="mark${db === 0 ? ' zero' : ''}${[10, 0, -10, -30, -Infinity].includes(db) ? ' major' : ''}" style="--p:${pos}">${text}</span>`;
   }).join('');
 
   el.innerHTML = `

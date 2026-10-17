@@ -269,3 +269,28 @@ body[data-tab="meters"] .strips { display: none; }
   .mb-name { font-size: 9px; height: 56px; }
   .mb-scale { margin-bottom: 62px; }
 }
+
+/* schermi bassi (telefono in orizzontale): scala del fader ridotta ai valori principali */
+@media (max-height: 520px) {
+  .mark:not(.major) { display: none; }
+  .strip-sections, .strip .pan, .strip .scribble, .strip .proc { flex-shrink: 0; }
+  .fader-area { min-height: 60px; }
+  .topbar { padding-top: 4px; padding-bottom: 4px; gap: 4px; }
+}
+
+/* fader molto corti: la scala sparisce se non c'è posto per scriverla */
+.fader { container-type: size; }
+@container (max-height: 130px) { .mark { display: none; } }
+
+/* telefono in orizzontale: barra su una riga sola e compatta, così i fader restano lunghi */
+@media (max-height: 520px) and (min-width: 640px) {
+  .topbar:not(.monitor-head) { flex-direction: row; align-items: center; gap: 6px; padding: 4px 6px; }
+  .topbar-nav { order: 0; flex: 1 1 auto; min-width: 0; }
+  .topbar-actions { flex: 0 0 auto; gap: 4px; }
+  .topbar-actions .status { margin-right: 0; padding: 0 2px; }
+  .topbar-actions .status-text, .topbar-actions .status-name, .brand, .fader-target > span { display: none; }
+  .topbar-actions .btn { height: 32px; padding: 0 8px; }
+  .tabs { flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .tab { flex: 0 0 auto; padding: 5px 9px; font-size: 13px; }
+  .fader-target select { padding-top: 5px; padding-bottom: 5px; }
+}
