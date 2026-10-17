@@ -3,7 +3,7 @@
 
 import dgram from 'node:dgram';
 import { encode, decode } from './osc.js';
-import { buildStrips, rtaSource, RTA_METERS, RTA_SOURCE, SNAPSHOTS, INIT_COMMAND, SETTINGS, ROUTING, routingAddress, MULTI_VALUE } from '../public/js/model.js';
+import { buildStrips, rtaSource, RTA_METERS, RTA_SOURCE, SNAPSHOTS, INIT_COMMAND, SETTINGS, ROUTING, routingAddress, routingPosAddress, MULTI_VALUE } from '../public/js/model.js';
 import { RTA_BINS, binFreq, freqBin, stripFilters, responseDb } from '../public/js/dsp.js';
 import { SPEC, stripParams, oscType, defaultValue, toNorm } from '../public/js/params.js';
 import { FX_SLOTS, FX_PARAM_COUNT, SIM_FX_TYPES, fxParams, fxTypeAddress, fxParamAddress } from '../public/js/fx.js';
@@ -113,7 +113,10 @@ function defaultState() {
   put(SETTINGS.soloMono, 'i', 0);
   for (const k of ['linkEq', 'linkDyn', 'linkFader']) put(SETTINGS[k], 'i', 1);
   for (const r of ROUTING) {
-    for (let n = 1; n <= r.count; n++) put(routingAddress(r.id, n), 'i', r.id === 'aux' ? 25 + n : n - 1);
+    for (let n = 1; n <= r.count; n++) {
+      put(routingAddress(r.id, n), 'i', r.id === 'aux' ? 25 + n : n - 1);
+      put(routingPosAddress(r.id, n), 'i', { aux: 10, usb: 0, p16: 2 }[r.id]);
+    }
   }
   for (let n = 1; n <= SNAPSHOTS.count; n++) put(SNAPSHOTS.name(n), 's', '');
   put(SNAPSHOTS.index, 'i', 1);

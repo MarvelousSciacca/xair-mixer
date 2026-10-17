@@ -8,6 +8,7 @@ import { stripParams } from './params.js';
 import { createEditor, hasProcessing } from './editor.js';
 import { fxAddresses, FX_SLOTS } from './fx.js';
 import { createFxRack, fxInsertAddress } from './fx-rack.js';
+import { createRouting } from './routing.js';
 import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
@@ -121,7 +122,8 @@ function showTab(group) {
   storage.set(TAB_KEY, group);
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
-showTab(['bus', 'dca', 'fx'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
+createRouting({ mixer, strips, container: document.querySelector('.mixer') });
+showTab(['bus', 'dca', 'fx', 'routing'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
 
 // --- stato connessione --------------------------------------------------------------
 

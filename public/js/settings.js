@@ -1,7 +1,7 @@
 // Impostazioni del mixer: informazioni, solo, opzioni del link stereo, patch delle uscite,
 // rilettura dei parametri e inizializzazione (con backup automatico prima).
 
-import { SETTINGS, ROUTING, ROUTING_SOURCES, routingAddress, SNAPSHOTS, INIT_COMMAND } from './model.js';
+import { SETTINGS, SNAPSHOTS, INIT_COMMAND } from './model.js';
 import { Scope, knob, toggle, choice } from './controls.js';
 import { ZERO_DB } from './mixer.js';
 import { ask, notify } from './dialogs.js';
@@ -40,7 +40,6 @@ export function createSettings({ mixer, addresses, onReload }) {
 
   const sc = new Scope(mixer);
   const bool = label => ({ kind: 'bool', label, def: 1 });
-  const sourceSpec = { kind: 'enum', label: 'Sorgente', options: ROUTING_SOURCES, def: 0 };
 
   const info = h('dl', 'st-info');
   const renderInfo = () => {
@@ -52,17 +51,6 @@ export function createSettings({ mixer, addresses, onReload }) {
   };
   mixer.onStatus(renderInfo);
 
-  const patch = h('div', 'st-patch');
-  for (const group of ROUTING) {
-    const box = h('div', 'st-patch-group');
-    box.append(h('h4', null, group.label));
-    const grid = h('div', 'st-patch-grid');
-    for (let n = 1; n <= group.count; n++) {
-      grid.append(choice(sc, routingAddress(group.id, n), sourceSpec, { label: `${group.label} ${n}` }));
-    }
-    box.append(grid);
-    patch.append(box);
-  }
 
   const reload = h('button', 'btn ghost', 'Rileggi tutti i parametri');
   reload.type = 'button';
@@ -83,7 +71,7 @@ export function createSettings({ mixer, addresses, onReload }) {
       toggle(sc, SETTINGS.linkEq, bool('EQ')),
       toggle(sc, SETTINGS.linkDyn, bool('Dinamiche')),
       toggle(sc, SETTINGS.linkFader, bool('Fader e mute'))),
-    section('Patch delle uscite', h('p', 'fx-note', 'Sorgenti indicate con (?) non ancora verificate sul mixer.'), patch),
+    section('Routing', h('p', 'fx-note', 'Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.')),
     section('Manutenzione', reload, init),
   );
 

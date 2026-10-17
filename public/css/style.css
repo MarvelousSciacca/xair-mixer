@@ -328,7 +328,7 @@ dialog input {
 
 /* --- schermi piccoli -------------------------------------------------------------- */
 
-@media (max-width: 1180px) {
+@media (max-width: 1380px) {
   .status-name, .brand { display: none; }
   .topbar-actions .btn-text { display: none; }
   .topbar-actions .btn { padding: 0 10px; }
@@ -576,7 +576,7 @@ button.label:disabled { cursor: default; }
 
 .fb-btn { position: relative; display: flex; align-items: center; gap: 7px; }
 .fb-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
-@media (max-width: 1180px) {
+@media (max-width: 1380px) {
   .fb-dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; }
 }
 .fb-btn[data-state="on"] .fb-dot { background: var(--ok); }
@@ -1030,4 +1030,43 @@ body[data-tab="fx"] .strips { display: none; }
 @media (max-width: 700px) {
   .geq-track, .geq-scale { height: 120px; }
   .geq-band:nth-child(even) .geq-label { visibility: hidden; }
+}
+
+/* --- scheda Routing ------------------------------------------------------------------------- */
+
+body:not([data-tab="routing"]) .routing { display: none; }
+body[data-tab="routing"] .strips { display: none; }
+.routing { flex: 1; min-width: 0; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 16px; }
+.rt-intro { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.rt-block { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.rt-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.rt-head h2 { margin: 0; font-size: 16px; }
+.rt-sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.rt-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.rt-presets-label { font-size: 12px; color: var(--muted); }
+
+.rt-inputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.rt-in { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); }
+.rt-in.is-usb { border-color: #0ea5e9; box-shadow: inset 3px 0 0 #0ea5e9; }
+.rt-in-name { --strip-color: #3a3d44; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.rt-in-name .chip { width: 10px; height: 10px; border-radius: 3px; background: var(--strip-color); flex: none; }
+.rt-in-name strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-in-num { margin-left: auto; color: var(--muted); font-size: 11px; white-space: nowrap; }
+.rt-in .choice select { width: 100%; }
+.rt-in .inactive { display: none; }
+.rt-fixed { font-size: 12px; color: var(--muted); padding: 4px 0; }
+
+.rt-outputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+.rt-out-list { display: flex; flex-direction: column; }
+.rt-out { display: grid; grid-template-columns: 70px 1fr 1fr; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.rt-out:first-child { border-top: 0; }
+.rt-out .choice-label { display: none; }
+.rt-out .choice select { width: 100%; }
+.rt-out-num { font-size: 12px; font-weight: 600; color: var(--muted); }
+@media (max-width: 700px) {
+  .routing { padding: 8px; }
+  .rt-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rt-block { padding: 10px; }
+  .rt-out { grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr); }
+  body[data-tab="routing"] .main-strip { display: none; }
 }

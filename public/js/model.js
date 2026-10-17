@@ -128,14 +128,33 @@ export const ROUTING = [
   { id: 'p16', label: 'Ultranet', count: 16 },
 ];
 export const routingAddress = (id, n) => `/routing/${id}/${pad2(n)}/src`;
-export const ROUTING_SOURCES = [
-  ...Array.from({ length: 16 }, (_, i) => `Ch ${i + 1}`),
-  'Aux L', 'Aux R',
-  ...[1, 2, 3, 4].flatMap(n => [`FX ${n} L`, `FX ${n} R`]),
-  ...Array.from({ length: 6 }, (_, i) => `Bus ${i + 1}`),
-  ...Array.from({ length: 4 }, (_, i) => `FX Send ${i + 1}`),
-  'Main L (?)', 'Main R (?)', 'Monitor L (?)', 'Monitor R (?)',
+/** Punto di prelievo di un'uscita (nome da X-AIR-Edit; numerazione da verificare con tools/probe-routing.js). */
+export const routingPosAddress = (id, n) => `/routing/${id}/${pad2(n)}/pos`;
+
+/**
+ * Sorgenti del patch: codice (come nei preset di X-AIR-Edit) e nome. Verificati 0-15 e 26-31;
+ * gli altri seguono l'ordine dei meter. Le voci da 38 (ritorni USB) sono un'ipotesi: compaiono nei
+ * preset Ultranet di X-AIR-Edit ma il loro numero non è ancora verificato.
+ */
+export const ROUTING_SOURCE_LIST = [
+  ...Array.from({ length: 16 }, (_, i) => [`Ch${pad2(i + 1)}`, `Ch ${i + 1}`]),
+  ['AuxL', 'Aux L'], ['AuxR', 'Aux R'],
+  ...[1, 2, 3, 4].flatMap(n => [[`Fx${n}L`, `FX ${n} L`], [`Fx${n}R`, `FX ${n} R`]]),
+  ...Array.from({ length: 6 }, (_, i) => [`Bus${i + 1}`, `Bus ${i + 1}`]),
+  ...Array.from({ length: 4 }, (_, i) => [`Send${i + 1}`, `FX Send ${i + 1}`]),
+  ['L', 'Main L'], ['R', 'Main R'],
+  ...Array.from({ length: 18 }, (_, i) => [`U${pad2(i + 1)}`, `USB ${i + 1} (?)`]),
 ];
+export const ROUTING_SOURCES = ROUTING_SOURCE_LIST.map(([, name]) => name);
+export const sourceIndex = code => ROUTING_SOURCE_LIST.findIndex(([c]) => c === code);
+
+/** Punti di prelievo ("+M" = segue anche il mute del canale). Ordine da verificare. */
+export const ROUTING_POS = [
+  ['AIN', 'Analogico'], ['AIN+M', 'Analogico +M'], ['IN', 'Ingresso'], ['IN+M', 'Ingresso +M'],
+  ['PREEQ', 'Prima EQ'], ['PREEQ+M', 'Prima EQ +M'], ['POSTEQ', 'Dopo EQ'], ['POSTEQ+M', 'Dopo EQ +M'],
+  ['PRE', 'Pre fader'], ['PRE+M', 'Pre fader +M'], ['POST', 'Post fader'],
+];
+export const ROUTING_POS_VERIFIED = false;
 
 /**
  * Automix (ducking automatico dei microfoni parlati): ogni canale 1-16 va nel gruppo X o Y con un peso.
@@ -155,6 +174,6 @@ export function settingsAddresses() {
     AUTOMIX.node,
     SNAPSHOTS.index,
     SNAPSHOTS.current,
-    ...ROUTING.flatMap(r => Array.from({ length: r.count }, (_, i) => routingAddress(r.id, i + 1))),
+    ...ROUTING.flatMap(r => Array.from({ length: r.count }, (_, i) => [routingAddress(r.id, i + 1), routingPosAddress(r.id, i + 1)]).flat()),
   ];
 }
