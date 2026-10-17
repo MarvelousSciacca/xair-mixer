@@ -38,7 +38,7 @@ function holdable(btn, needsHold, action) {
   });
 }
 
-export function createMonitor({ mixer, strips, links, editor, storage }) {
+export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null }) {
   const inputs = strips.filter(s => s.group === 'input' && s.sends);
   const buses = strips.filter(s => s.id.startsWith('bus'));
 
@@ -62,6 +62,7 @@ export function createMonitor({ mixer, strips, links, editor, storage }) {
       <div class="brand">In-ear <span>Monitor</span></div>
       <select class="mon-bus" aria-label="Bus monitor"></select>
       <button class="btn ghost mon-pick" type="button">Canali</button>
+      <button class="btn ghost mon-view" type="button" title="Vista: cosa mostrare sui canali"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg><span class="btn-text">Vista</span></button>
       <div class="spacer"></div>
       <button class="toggle mon-lock" type="button">Blocca</button>
       <button class="btn mon-exit" type="button">Esci</button>
@@ -74,6 +75,8 @@ export function createMonitor({ mixer, strips, links, editor, storage }) {
   document.body.append(root);
   const $ = sel => root.querySelector(sel);
   const busSelect = $('.mon-bus');
+  if (viewPanel) $('.mon-view').addEventListener('click', () => viewPanel.open());
+  else $('.mon-view').hidden = true;
   const hint = $('.mon-hint');
 
   // Le strip vengono create una volta sola; cambiando bus o canali si mostrano/nascondono.
@@ -88,6 +91,8 @@ export function createMonitor({ mixer, strips, links, editor, storage }) {
     $('.mon-master').append(el);
     return [s.id, el];
   }));
+
+  view?.attach($('.mon-body'), $('.mon-strips'));
 
   for (const b of buses) {
     const n = Number(b.id.slice(3));

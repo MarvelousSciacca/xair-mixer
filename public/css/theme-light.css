@@ -157,3 +157,10 @@
 
 /* --- avvisi ------------------------------------------------------------------------------------ */
 [data-theme="light"] .send-banner { background: #eaf0fd; color: #2448b5; }
+
+/* --- modalità monitor ------------------------------------------------------------------------- */
+[data-theme="light"] .mon-hint { background: #eaf0fd; color: #2448b5; }
+[data-theme="light"] .monitor-view.locked .mon-hint { background: #fff6e0; color: #8a5a00; }
+[data-theme="light"] .mon-strips .strip .db { color: #2448b5; }
+[data-theme="light"] .mon-lock[aria-pressed="true"] { background: #fff6e0; color: #8a5a00; box-shadow: var(--key-pressed), inset 0 0 0 1.5px #f59e0b; }
+[data-theme="light"] .mon-bus { background-color: #ffffff; color: var(--text); border-color: #e0e0e0; }

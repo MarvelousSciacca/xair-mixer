@@ -257,7 +257,7 @@ createFeedbackUI({ mixer, monitor: feedback, editor, storage });
 
 // --- modalità monitor (in-ear) -------------------------------------------------------------
 
-const monitorView = createMonitor({ mixer, strips, links, editor, storage });
+const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel });
 document.getElementById('monitor-btn').addEventListener('click', () => monitorView.enter());
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------

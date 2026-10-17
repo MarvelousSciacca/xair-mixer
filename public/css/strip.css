@@ -152,8 +152,9 @@
 .mixer[data-fader="short"] .strip-sections { flex: 1; }
 .mixer[data-fader="short"] .sec-eq { flex: 1 1 auto; height: auto !important; min-height: 48px; }
 
-/* la modalità monitor non mostra le sezioni */
-.mon-strips .strip-sections { display: none; }
+/* modalità monitor: le sezioni seguono la Vista ma non aprono il pannello; bloccata = solo lettura */
+.mon-strips .sec { cursor: default; }
+.monitor-view.locked .strip-sections { pointer-events: none; }
 
 /* --- pannello Vista ------------------------------------------------------------------------------ */
 .view-dialog { width: min(460px, calc(100vw - 32px)); }
@@ -162,9 +163,31 @@
 .view-toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .view-toggle { width: 100%; }
 
-/* SOLO/MUTE: per esteso, oppure S/M sugli schermi stretti */
-.solo .short, .mute .short { display: none; }
+/* SOLO / MUTE come tasti S e M */
+.solo, .mute { font-size: 13px; font-weight: 800; letter-spacing: 0; }
+
+/* --- fader: scala in una colonna sua, cappuccio sulla guida a destra (nessuna sovrapposizione) --- */
+.fader { width: 50px; }
+.fader-slot { left: auto; right: 13px; transform: translateX(50%); }
+.fader-cap { left: auto; right: 13px; width: 26px; transform: translateX(50%); }
+.mark { left: 0; width: 21px; text-align: right; }
+.mark::after { display: none; }
 @media (max-width: 700px) {
-  .solo .long, .mute .long { display: none; }
-  .solo .short, .mute .short { display: inline; font-size: 12px; }
+  .fader { width: 38px; }
+  .fader-slot, .fader-cap { right: 12px; }
+  .fader-cap { width: 24px; }
+  .mark { display: none; }
+  .sec-name { font-size: 8px; letter-spacing: 0; }
+  .sec-value { font-size: 9px; }
+  .sec-preamp .sec-value { font-size: 10px; }
+}
+.monitor-view.locked .mon-view { display: none; }
+
+/* barra della modalità monitor sugli schermi stretti: una o due righe compatte */
+@media (max-width: 760px) {
+  .topbar.monitor-head { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .monitor-head .brand, .monitor-head .spacer { display: none; }
+  .monitor-head .mon-bus { flex: 1 1 140px; min-width: 0; }
+  .monitor-head .btn, .monitor-head .toggle { flex: 0 0 auto; height: 36px; padding: 0 10px; }
+  .monitor-head .mon-view .btn-text { display: none; }
 }

@@ -135,8 +135,8 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
     </div>
     <div class="db">-∞</div>
     <div class="buttons">
-      ${strip.solo ? '<button class="solo" type="button" aria-label="Solo"><span class="long">SOLO</span><span class="short">S</span></button>' : ''}
-      <button class="mute" type="button" aria-label="Mute"><span class="long">MUTE</span><span class="short">M</span></button>
+      ${strip.solo ? '<button class="solo" type="button" aria-label="Solo" title="Solo">S</button>' : ''}
+      <button class="mute" type="button" aria-label="Mute" title="Mute">M</button>
     </div>
     <button class="label" type="button" title="Elaborazione del canale">${strip.label}</button>`;
 

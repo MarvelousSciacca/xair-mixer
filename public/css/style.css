@@ -1109,7 +1109,7 @@ body[data-tab="routing"] .strips { display: none; }
 }
 
 /* --- menu a tendina uniformi (senza lo stile nativo sfumato di Safari) ---------------------- */
-.choice select, .fader-target select, .fb-sim select {
+.choice select, .fader-target select, .fb-sim select, .mon-bus {
   -webkit-appearance: none;
   appearance: none;
   padding-right: 28px;

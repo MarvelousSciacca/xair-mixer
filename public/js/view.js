@@ -28,13 +28,15 @@ function load() {
 export function createView({ mixerEl, stripsEl }) {
   let view = load();
   const listeners = new Set();
+  // superfici che seguono la Vista: il mixer principale e, se aperta, la modalità monitor
+  const surfaces = [];
   const save = () => {
     try { localStorage.setItem(KEY, JSON.stringify(view)); } catch { /* non disponibile */ }
   };
 
   /** Densità più ricca che lascia al fader almeno l'altezza minima. */
-  const density = () => {
-    const h = stripsEl.clientHeight || window.innerHeight;
+  const density = strips => {
+    const h = strips.clientHeight || window.innerHeight;
     const shown = SECTIONS.filter(s => view.sections[s.id]).map(s => s.id);
     const need = d => shown.reduce((sum, id) => sum + SECTION_HEIGHT[d][id] + 4, 0)
       + (d === 'mini' && shown.some(id => ['gate', 'dyn', 'eq'].includes(id)) ? MINI_ROW : 0);
@@ -44,9 +46,12 @@ export function createView({ mixerEl, stripsEl }) {
   const apply = () => {
     const shown = Object.entries(view.sections).filter(([, on]) => on).map(([id]) => id);
     if (view.pan) shown.push('pan');
-    for (const target of [mixerEl, document.body]) target.dataset.show = shown.join(' ');
-    mixerEl.dataset.fader = view.fader;
-    mixerEl.dataset.density = density();
+    document.body.dataset.show = shown.join(' ');
+    for (const s of surfaces) {
+      s.mixerEl.dataset.show = shown.join(' ');
+      s.mixerEl.dataset.fader = view.fader;
+      s.mixerEl.dataset.density = density(s.stripsEl);
+    }
     document.documentElement.style.setProperty('--strip-scale', String(WIDTHS[view.width]));
     // la riga G/C/EQ sparisce se tutte le sue sezioni sono già visibili come miniature
     for (const proc of document.querySelectorAll('.mixer .proc')) {
@@ -56,15 +61,21 @@ export function createView({ mixerEl, stripsEl }) {
     listeners.forEach(cb => cb(view));
   };
 
-  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
-    const d = density();
-    if (mixerEl.dataset.density !== d) mixerEl.dataset.density = d;
-  }) : null;
-  observer?.observe(stripsEl);
-  window.addEventListener('resize', () => { mixerEl.dataset.density = density(); });
-  apply();
+  const refreshDensity = () => surfaces.forEach(s => {
+    const d = density(s.stripsEl);
+    if (s.mixerEl.dataset.density !== d) s.mixerEl.dataset.density = d;
+  });
+  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(refreshDensity) : null;
+  window.addEventListener('resize', refreshDensity);
+  const attach = (m, s) => {
+    surfaces.push({ mixerEl: m, stripsEl: s });
+    observer?.observe(s);
+    apply();
+  };
+  attach(mixerEl, stripsEl);
 
   return {
+    attach,
     get: () => view,
     set(patch) {
       view = { ...view, ...patch, sections: { ...view.sections, ...(patch.sections ?? {}) } };
