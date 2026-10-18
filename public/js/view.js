@@ -10,6 +10,7 @@ const DEFAULTS = {
   pan: true,
   fader: 'normal', // 'normal' | 'short'
   width: 'normal', // 'narrow' | 'normal' | 'wide'
+  hidden: [], // canali nascosti nella scheda Ingressi del mixer principale
 };
 const WIDTHS = { narrow: 0.85, normal: 1, wide: 1.25 }; // scala della larghezza base (che cambia col dispositivo)
 // spazio fisso della strip senza sezioni né fader: nome, tasti G/C/EQ, pan, valore, solo/mute, etichetta
@@ -53,6 +54,9 @@ export function createView({ mixerEl, stripsEl }) {
       s.mixerEl.dataset.density = density(s.stripsEl);
     }
     document.documentElement.style.setProperty('--strip-scale', String(WIDTHS[view.width]));
+    // canali scelti: valgono solo per il mixer principale (il monitor ha la sua scelta per bus)
+    const hidden = new Set(view.hidden);
+    for (const el of stripsEl.querySelectorAll('.strip[data-id]')) el.classList.toggle('user-hidden', hidden.has(el.dataset.id));
     // la riga G/C/EQ sparisce se tutte le sue sezioni sono già visibili come miniature
     for (const proc of document.querySelectorAll('.mixer .proc')) {
       const tabs = [...proc.querySelectorAll('.proc-btn')].map(b => b.dataset.tab);
@@ -110,13 +114,19 @@ export function alignFaders(root = document) {
   }
 }
 
-/** Pannello "Vista": interruttori per sezioni e pan, scelta di fader e larghezza. */
-export function createViewPanel(view) {
+/**
+ * Pannello "Vista": interruttori per sezioni e pan, scelta di fader e larghezza.
+ * channels: canali della scheda Ingressi che si possono nascondere ({ id, label, base });
+ * la scelta compare solo aprendo il pannello dal mixer principale (open({ channels: true })).
+ */
+export function createViewPanel(view, { channels = [], mixer = null, links = null } = {}) {
   const dialog = document.createElement('dialog');
   dialog.className = 'view-dialog';
   dialog.innerHTML = `
     <div class="dialog-head"><h2>Vista</h2><button class="icon-btn view-close" type="button" aria-label="Chiudi">✕</button></div>
     <p class="view-help">Scegli cosa mostrare su ogni canale. Se lo spazio non basta, le sezioni si compattano da sole.</p>
+    <div class="view-group view-channels"><h3>Canali in Ingressi</h3><div class="mon-picks view-picks"></div>
+      <div class="view-picks-actions"><button class="btn ghost view-all" type="button">Tutti</button><button class="btn ghost view-none" type="button">Nessuno</button></div></div>
     <div class="view-group"><h3>Sezioni dei canali</h3><div class="view-toggles"></div></div>
     <div class="view-group"><h3>Fader</h3><div class="segmented view-fader"></div></div>
     <div class="view-group"><h3>Larghezza canali</h3><div class="segmented view-width"></div></div>
@@ -139,6 +149,23 @@ export function createViewPanel(view) {
     $('.view-toggles').append(b);
     return [t.id, b];
   });
+  const channelButtons = channels.map(s => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'toggle';
+    b.textContent = s.label;
+    mixer?.on(`${s.base}/config/name`, name => { b.textContent = name || s.label; });
+    b.addEventListener('click', () => {
+      const hidden = new Set(view.get().hidden);
+      if (hidden.has(s.id)) hidden.delete(s.id); else hidden.add(s.id);
+      view.set({ hidden: [...hidden] });
+    });
+    $('.view-picks').append(b);
+    return [s, b];
+  });
+  $('.view-all').addEventListener('click', () => view.set({ hidden: [] }));
+  $('.view-none').addEventListener('click', () => view.set({ hidden: channels.map(s => s.id) }));
+
   const segmented = (container, key, options) => options.map(([value, label]) => {
     const b = document.createElement('button');
     b.type = 'button';
@@ -155,8 +182,19 @@ export function createViewPanel(view) {
     toggleButtons.forEach(([id, b]) => b.setAttribute('aria-pressed', String(id === 'pan' ? v.pan : !!v.sections[id])));
     faderButtons.forEach(([value, b]) => b.setAttribute('aria-pressed', String(v.fader === value)));
     widthButtons.forEach(([value, b]) => b.setAttribute('aria-pressed', String(v.width === value)));
+    const hidden = new Set(v.hidden);
+    channelButtons.forEach(([s, b]) => {
+      b.setAttribute('aria-pressed', String(!hidden.has(s.id)));
+      b.hidden = !!links?.isLinked(s) && !links.isPrimary(s); // il secondo di una coppia stereo segue il primo
+    });
   };
   view.onChange(render);
   render(view.get());
-  return { open: () => dialog.showModal() };
+  return {
+    open({ channels: withChannels = false } = {}) {
+      $('.view-channels').hidden = !withChannels || !channels.length;
+      render(view.get());
+      dialog.showModal();
+    },
+  };
 }

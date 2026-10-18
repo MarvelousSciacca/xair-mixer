@@ -40,7 +40,14 @@
       out.push('SOVRAPPOSTI: ' + name(a) + ' × ' + name(b) + ` (${w.toFixed(0)}x${h.toFixed(0)})`);
     }
   }
-  // 3) pagina che scorre in orizzontale
+  // 3) testo tagliato dal bordo dello schermo (fuori da aree che scorrono)
+  for (const el of document.querySelectorAll('button, label, span, strong, h2, h3, p, select, .tab')) {
+    if (!vis(el) || (modal && !modal.contains(el))) continue;
+    const b = clip(el), r = el.getBoundingClientRect();
+    if (b.l !== r.left || b.r !== r.right) continue; // dentro un'area che scorre: è normale
+    if (r.left < -1 || r.right > innerWidth + 1) out.push('FUORI SCHERMO: ' + name(el) + ` (${r.left.toFixed(0)}..${r.right.toFixed(0)})`);
+  }
+  // 4) pagina che scorre in orizzontale
   if (document.documentElement.scrollWidth > innerWidth + 1) out.push('PAGINA PIÙ LARGA DELLO SCHERMO: ' + document.documentElement.scrollWidth);
   const errs = (window.__errs || []);
   return [...new Set(out)].slice(0, 25).join('\n') + (errs.length ? '\nERRORI JS: ' + errs.join(' | ') : '') || 'nessun problema';

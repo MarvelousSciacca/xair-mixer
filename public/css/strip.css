@@ -294,3 +294,20 @@ body[data-tab="meters"] .strips { display: none; }
   .tab { flex: 0 0 auto; padding: 5px 9px; font-size: 13px; }
   .fader-target select { padding-top: 5px; padding-bottom: 5px; }
 }
+
+/* canali nascosti dalla Vista (solo mixer principale) */
+.strip.user-hidden { display: none !important; }
+.view-picks { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+.view-picks .toggle[hidden] { display: none; }
+.view-picks-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+/* stato della connessione: su schermi stretti testo breve, che non esce mai dalla barra */
+.status { min-width: 0; }
+.status-text { overflow: hidden; text-overflow: ellipsis; }
+.status-short { display: none; }
+@media (max-width: 520px) {
+  .topbar-actions { gap: 5px; }
+  .topbar-actions .btn { padding: 0 8px; }
+  .status .status-text { display: none; }
+  .status .status-short { display: inline; }
+}

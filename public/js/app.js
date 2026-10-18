@@ -132,8 +132,8 @@ tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
 createRouting({ mixer, strips, container: document.querySelector('.mixer') });
 meterPage = createMeterPage({ mixer, strips, rta, container: document.querySelector('.mixer') });
 const view = createView({ mixerEl: document.querySelector('.mixer'), stripsEl });
-const viewPanel = createViewPanel(view);
-document.getElementById('view-btn').addEventListener('click', () => viewPanel.open());
+const viewPanel = createViewPanel(view, { channels: strips.filter(s => s.group === 'input'), mixer, links });
+document.getElementById('view-btn').addEventListener('click', () => viewPanel.open({ channels: true }));
 showTab(['bus', 'dca', 'fx', 'routing', 'meters'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
 
 // --- stato connessione --------------------------------------------------------------
@@ -145,10 +145,14 @@ const STATUS_TEXT = {
   online: 'Connesso',
   lost: 'Mixer non risponde',
 };
+// versione breve per i telefoni in verticale (la barra non ha posto per la frase intera)
+const STATUS_SHORT = { disconnected: 'Offline', connecting: 'Attendi…', online: 'Online', lost: 'Perso' };
 mixer.onStatus((status, info) => {
   statusEl.dataset.status = status;
   const name = info ? `${info.name} · ${info.model}` : mixer.ip ?? '';
   statusEl.querySelector('.status-text').textContent = STATUS_TEXT[status];
+  statusEl.querySelector('.status-short').textContent = STATUS_SHORT[status];
+  statusEl.title = `${STATUS_TEXT[status]}${name && status !== 'disconnected' ? ` · ${name}` : ''}`;
   statusEl.querySelector('.status-name').textContent = status === 'disconnected' ? '' : name;
   document.body.classList.toggle('offline', status !== 'online');
 });
