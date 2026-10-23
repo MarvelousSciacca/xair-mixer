@@ -35,21 +35,57 @@ const polar = a => {
 };
 const arcPath = (a0, a1) => (a1 - a0 < 0.5 ? '' : `M ${polar(a0)} A 38 38 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${polar(a1)}`);
 
+// Allontanando il dito di lato dal controllo il movimento diventa più fine, fino a 1/10.
+const FINE_FROM_PX = 40;
+export const fineFactor = off => (off <= FINE_FROM_PX ? 1 : Math.max(0.1, FINE_FROM_PX / off));
+const DOUBLE_TAP_MS = 350;
+export const TAP_SLOP_PX = 8;
+
+/**
+ * Doppio tocco con le dita o la penna (col mouse c'è già dblclick).
+ * down(e) restituisce true se il tocco completa un doppio tocco; up(e, moved) va chiamata al rilascio.
+ */
+export function doubleTap() {
+  let last = null;
+  return {
+    down(e) {
+      const hit = e.pointerType !== 'mouse' && last && e.timeStamp - last.t < DOUBLE_TAP_MS
+        && Math.hypot(e.clientX - last.x, e.clientY - last.y) < TAP_SLOP_PX * 3;
+      last = null;
+      return !!hit;
+    },
+    up(e, moved) {
+      last = moved ? null : { t: e.timeStamp, x: e.clientX, y: e.clientY };
+    },
+  };
+}
+
 /** Gestisce trascinamento verticale, rotella, tastiera e doppio clic su un elemento. */
 export function dragValue(el, { get, set, reset, step = 0.01, pixels = 200 }) {
   let start = null;
+  const tap = doubleTap();
   el.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
+    if (tap.down(e)) return reset();
     el.setPointerCapture(e.pointerId);
-    start = { y: e.clientY, v: get() };
+    start = { x: e.clientX, y: e.clientY, v: get(), slop: e.pointerType === 'mouse' ? 0 : TAP_SLOP_PX, moved: false };
     el.classList.add('dragging');
   });
   el.addEventListener('pointermove', e => {
-    if (start) set(clamp(start.v + (start.y - e.clientY) / (pixels * (e.shiftKey ? 5 : 1))));
+    if (!start) return;
+    if (!start.moved && Math.hypot(e.clientX - start.x, e.clientY - start.y) < start.slop) return;
+    start.moved = true;
+    const fine = e.shiftKey ? 0.2 : fineFactor(Math.abs(e.clientX - start.x));
+    start.v = clamp(start.v + ((start.y - e.clientY) / pixels) * fine);
+    start.y = e.clientY;
+    el.classList.toggle('fine', fine < 1);
+    set(start.v);
   });
-  const end = () => {
+  const end = e => {
+    if (!start) return;
+    tap.up(e, start.moved);
     start = null;
-    el.classList.remove('dragging');
+    el.classList.remove('dragging', 'fine');
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);

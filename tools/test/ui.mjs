@@ -56,7 +56,19 @@ async function until(cond, ms = 8000, what = 'condizione') {
     await sleep(50);
   }
 }
-const pointer = (el, type, y) => el.dispatchEvent(new w.MouseEvent(type, { bubbles: true, clientX: 10, clientY: y, button: 0 }));
+// MouseEvent senza pointerType: per l'app vale come un dito (zona morta e doppio tocco attivi)
+const pointer = (el, type, y, x = 10) => el.dispatchEvent(new w.MouseEvent(type, { bubbles: true, clientX: x, clientY: y, button: 0 }));
+const near = (a, b, tol = 0.005) => Math.abs(a - b) < tol;
+const drag = async (el, from, to, x = 10, gap = 0) => {
+  pointer(el, 'pointerdown', from);
+  if (x !== 10) pointer(el, 'pointermove', from, x);
+  for (let y = from - 2; y >= to; y -= 2) {
+    pointer(el, 'pointermove', y, x);
+    if (gap) await sleep(gap); // movimenti su più fotogrammi, come un dito vero
+  }
+  await sleep(60);
+  pointer(el, 'pointerup', to, x);
+};
 let failed = 0;
 async function test(name, fn) {
   try {
@@ -138,6 +150,73 @@ await test('monitor: entra ed esce', async () => {
   $('.view-close').click();
   $('.mon-exit').click();
   assert($('.monitor-view').hidden, 'monitor non chiuso');
+});
+
+await test('annulla e ripeti: un trascinamento è un solo passo', async () => {
+  const fader = $('.strip[data-id=ch3] .fader');
+  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  const before = simValue('/ch/03/mix/fader');
+  await drag(fader, 200, 120, 10, 25);
+  await until(() => Math.abs(simValue('/ch/03/mix/fader') - before) > 0.1, 3000, 'trascinamento nel simulatore');
+  const after = simValue('/ch/03/mix/fader');
+  assert(!$('#undo-btn').disabled, 'Annulla disattivato');
+  $('#undo-btn').click();
+  await until(() => near(simValue('/ch/03/mix/fader'), before), 3000, 'valore di partenza dopo Annulla');
+  assert(!$('#redo-btn').disabled, 'Ripeti disattivato');
+  $('#redo-btn').click();
+  await until(() => near(simValue('/ch/03/mix/fader'), after), 3000, 'valore finale dopo Ripeti');
+  // da tastiera
+  w.document.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true }));
+  await until(() => near(simValue('/ch/03/mix/fader'), before), 3000, 'Ctrl+Z');
+  assert($('#redo-btn').disabled === false, 'Ripeti dopo Ctrl+Z');
+});
+
+await test('mute: Annulla lo riaccende', async () => {
+  const mute = $('.strip[data-id=ch6] .mute');
+  const before = simValue('/ch/06/mix/on');
+  mute.click();
+  await until(() => simValue('/ch/06/mix/on') !== before, 3000, 'mute nel simulatore');
+  $('#undo-btn').click();
+  await until(() => simValue('/ch/06/mix/on') === before, 3000, 'mute annullato');
+});
+
+await test('movimento fine: dito allontanato di lato', async () => {
+  const fader = $('.strip[data-id=ch4] .fader');
+  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  const before = simValue('/ch/04/mix/fader');
+  await drag(fader, 200, 150, 210); // 50 px in su, 200 px di lato: un quinto della corsa normale
+  await until(() => !near(simValue('/ch/04/mix/fader'), before, 0.001), 3000, 'movimento nel simulatore');
+  const delta = simValue('/ch/04/mix/fader') - before;
+  assert(delta > 0.015 && delta < 0.06, `spostamento ${delta.toFixed(3)} invece di circa 0.03`);
+  assert(!fader.classList.contains('fine'), 'segnale "fine" rimasto dopo il rilascio');
+});
+
+await test('doppio tocco: fader a 0 dB', async () => {
+  const fader = $('.strip[data-id=ch5] .fader');
+  await drag(fader, 200, 100);
+  await until(() => !near(simValue('/ch/05/mix/fader'), 0.75), 3000, 'fader spostato');
+  for (let i = 0; i < 2; i++) {
+    pointer(fader, 'pointerdown', 100);
+    pointer(fader, 'pointerup', 100);
+  }
+  await until(() => near(simValue('/ch/05/mix/fader'), 0.75), 3000, 'fader a 0 dB');
+});
+
+await test('blocco: ferma la tastiera e si sblocca tenendo premuto', async () => {
+  $('#lock-btn').click();
+  assert(!$('#lock-overlay').hidden && w.document.body.classList.contains('locked'), 'non bloccato');
+  const before = simValue('/ch/03/mix/fader');
+  w.document.body.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'y', ctrlKey: true, bubbles: true }));
+  await sleep(200);
+  assert(near(simValue('/ch/03/mix/fader'), before), 'Ctrl+Y ha agito con i comandi bloccati');
+  const pill = $('#unlock-btn');
+  pointer(pill, 'pointerdown', 10);
+  await sleep(300);
+  pointer(pill, 'pointerup', 10);
+  assert(!$('#lock-overlay').hidden, 'sbloccato con un tocco breve');
+  pointer(pill, 'pointerdown', 10);
+  await sleep(950);
+  assert($('#lock-overlay').hidden && !w.document.body.classList.contains('locked'), 'non sbloccato tenendo premuto');
 });
 
 await test('nessun errore JavaScript', async () => {

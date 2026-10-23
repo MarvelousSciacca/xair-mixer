@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import Capacitor
 import Darwin
 
@@ -17,6 +18,7 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "broadcastAddresses", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "interfaces", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "close", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "keepAwake", returnType: CAPPluginReturnPromise),
     ]
 
     private var fd: Int32 = -1
@@ -79,6 +81,15 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func close(_ call: CAPPluginCall) {
         closeSocket()
         call.resolve()
+    }
+
+    /// Schermo sempre acceso mentre si è collegati al mixer (on: true/false).
+    @objc func keepAwake(_ call: CAPPluginCall) {
+        let on = call.getBool("on") ?? true
+        DispatchQueue.main.async {
+            UIApplication.shared.isIdleTimerDisabled = on
+            call.resolve()
+        }
     }
 
     deinit {

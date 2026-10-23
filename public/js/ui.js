@@ -4,6 +4,7 @@ import { ZERO_DB, faderToDb, dbToFader, formatDb } from './mixer.js';
 import { COLORS, soloAddress } from './model.js';
 import { sendAddress } from './params.js';
 import { createStripSections } from './strip-sections.js';
+import { fineFactor, doubleTap, TAP_SLOP_PX } from './controls.js';
 
 const FADER_MARKS = [10, 5, 0, -5, -10, -20, -30, -50, -Infinity];
 const METER_FLOOR = -60;
@@ -81,33 +82,44 @@ function draggable(el, { getValue, setValue, axis, length, reset, onGrab = () =>
   // i movimenti arrivano anche a 120-240 al secondo: si applica solo l'ultimo di ogni fotogramma
   let next = null;
   let raf = 0;
+  const tap = doubleTap();
   const apply = () => {
     raf = 0;
     if (next !== null) setValue(next);
     next = null;
   };
+  const along = e => (axis === 'y' ? -e.clientY : e.clientX);
+  const across = e => (axis === 'y' ? e.clientX : e.clientY);
   el.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
+    if (tap.down(e)) return setValue(reset);
     el.setPointerCapture(e.pointerId);
-    start = { x: e.clientX, y: e.clientY, v: getValue(), len: length() };
+    start = { x: e.clientX, y: e.clientY, at: along(e), side: across(e), v: getValue(), len: length(), slop: e.pointerType === 'mouse' ? 0 : TAP_SLOP_PX, moved: false };
     el.classList.add('dragging');
     onGrab();
   });
   el.addEventListener('pointermove', e => {
     if (!start) return;
-    const delta = axis === 'y' ? start.y - e.clientY : e.clientX - start.x;
-    const fine = e.shiftKey ? 0.2 : 1;
-    next = clamp(start.v + (delta / start.len) * fine);
+    const pos = along(e);
+    if (!start.moved && Math.hypot(e.clientX - start.x, e.clientY - start.y) < start.slop) return;
+    start.moved = true;
+    const fine = e.shiftKey ? 0.2 : fineFactor(Math.abs(across(e) - start.side));
+    // movimento relativo: cambiando la finezza a metà corsa il valore non salta
+    start.v = clamp(start.v + ((pos - start.at) / start.len) * fine);
+    start.at = pos;
+    el.classList.toggle('fine', fine < 1);
+    next = start.v;
     raf ||= requestAnimationFrame(apply);
   });
-  const end = () => {
+  const end = e => {
     if (!start) return;
     if (raf) {
       cancelAnimationFrame(raf);
       apply();
     }
+    tap.up(e, start.moved);
     start = null;
-    el.classList.remove('dragging');
+    el.classList.remove('dragging', 'fine');
     onRelease();
   };
   el.addEventListener('pointerup', end);

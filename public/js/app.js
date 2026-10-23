@@ -19,6 +19,7 @@ import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
 import { createFeedbackUI } from './feedback-ui.js';
+import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 
 const LAST_IP_KEY = 'xair.lastIp';
 const TAB_KEY = 'xair.tab';
@@ -36,8 +37,10 @@ applyTheme();
 // Nell'app (Android) si parla al mixer in UDP nativo; nel browser tramite il ponte Node.
 const native = Capacitor.isNativePlatform();
 document.body.classList.toggle('native-app', native);
-const transport = native ? new UdpTransport(registerPlugin('XAirUdp')) : new WebSocketTransport();
+const udpPlugin = native ? registerPlugin('XAirUdp') : null;
+const transport = native ? new UdpTransport(udpPlugin) : new WebSocketTransport();
 const mixer = new Mixer(transport);
+keepScreenAwake(mixer, udpPlugin);
 const strips = buildStrips();
 // Prima i parametri del mixer principale, poi quelli di elaborazione.
 const allAddresses = [
@@ -135,6 +138,15 @@ const view = createView({ mixerEl: document.querySelector('.mixer'), stripsEl })
 const viewPanel = createViewPanel(view, { channels: strips.filter(s => s.group === 'input'), mixer, links });
 document.getElementById('view-btn').addEventListener('click', () => viewPanel.open({ channels: true }));
 showTab(['bus', 'dca', 'fx', 'routing', 'meters'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
+
+// --- annulla, blocco ------------------------------------------------------------
+
+createHistoryButtons(mixer, { undoBtn: document.getElementById('undo-btn'), redoBtn: document.getElementById('redo-btn') });
+createLock({
+  lockBtn: document.getElementById('lock-btn'),
+  overlay: document.getElementById('lock-overlay'),
+  unlockBtn: document.getElementById('unlock-btn'),
+});
 
 // --- stato connessione --------------------------------------------------------------
 

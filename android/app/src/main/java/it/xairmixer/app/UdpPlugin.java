@@ -1,6 +1,7 @@
 package it.xairmixer.app;
 
 import android.util.Base64;
+import android.view.WindowManager;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
@@ -91,6 +92,17 @@ public class UdpPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("addresses", new JSArray(out));
         call.resolve(ret);
+    }
+
+    /** Schermo sempre acceso mentre si è collegati al mixer (on: true/false). */
+    @PluginMethod
+    public void keepAwake(PluginCall call) {
+        final boolean on = call.getBoolean("on", true);
+        getActivity().runOnUiThread(() -> {
+            if (on) getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            else getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            call.resolve();
+        });
     }
 
     @PluginMethod

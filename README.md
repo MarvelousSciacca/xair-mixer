@@ -27,7 +27,8 @@ I browser non possono usare UDP, quindi il ponte traduce i messaggi. Nelle futur
 | `server/osc.js` | codifica/decodifica OSC |
 | `server/bridge.js` | server web + ponte WebSocket ↔ UDP, ricerca mixer in rete |
 | `server/simulator.js` | simulatore XR18 su 127.0.0.1:10024 |
-| `public/js/mixer.js` | stato del mixer, keepalive `/xremote`, meter, legge del fader |
+| `public/js/mixer.js` | stato del mixer, keepalive `/xremote`, meter, legge del fader, cronologia Annulla/Ripeti |
+| `public/js/stage.js` | per il palco: pulsanti Annulla/Ripeti, blocco dei comandi, schermo sempre acceso |
 | `public/js/model.js` | canali, bus, indirizzi OSC, colori |
 | `public/js/ui.js` | channel strip, fader, pan, meter |
 | `public/js/app.js` | avvio, connessione, schede, editor nome/colore |
@@ -62,7 +63,8 @@ I browser non possono usare UDP, quindi il ponte traduce i messaggi. Nelle futur
 - [x] Snapshot del mixer, scene su file, impostazioni (solo, link, patch Aux out/USB/Ultranet), inizializzazione con backup
 - [x] Sorgenti d'ingresso (analogico / ritorno USB, trim USB, badge "USB" sulla strip) e automix (gruppi X/Y, peso)
 - [x] Grafica rifinita (strip, barra con icone e layout per telefono), EQ più intuitivo, EQ grafici a cursori
-- [ ] App installabili
+- [x] App installabili (Android, iOS, macOS, Windows, Linux)
+- [x] Per il palco: Annulla/Ripeti di ogni modifica (⌘Z/Ctrl+Z), blocco dei comandi (si sblocca tenendo premuto), schermo sempre acceso da collegati, movimento fine allontanando il dito di lato da fader e manopole, doppio tocco = 0 dB / valore di riposo
 
 Da verificare con un mixer reale:
 - range dei parametri degli effetti diversi da HALL, VRM, MODD, PLAT, D/CR;

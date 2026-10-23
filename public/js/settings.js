@@ -117,6 +117,7 @@ export function createSettings({ mixer, addresses, onReload }) {
     const probe = addresses.filter(a => /\/(config\/name|mix\/fader)$/.test(a));
     const before = probe.map(a => mixer.get(a));
     mixer.command(INIT_COMMAND, [{ type: 'i', value: 1 }]);
+    mixer.clearHistory();
     notify('Inizializzazione in corso…');
     await sleep(1500);
     onReload();

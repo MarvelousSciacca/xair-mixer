@@ -43,11 +43,16 @@
         <span class="status-short">Offline</span>
         <span class="status-name"></span>
       </div>
+      <div class="history">
+        <button class="btn ghost" id="undo-btn" type="button" disabled aria-label="Annulla" title="Annulla l’ultima modifica (⌘Z / Ctrl+Z)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+        <button class="btn ghost" id="redo-btn" type="button" disabled aria-label="Ripeti" title="Ripeti (⇧⌘Z / Ctrl+Y)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+      </div>
       <button class="btn ghost" id="view-btn" type="button" title="Vista: cosa mostrare sui canali"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg><span class="btn-text">Vista</span></button>
       <button class="btn ghost" id="monitor-btn" type="button" title="Modalità monitor in-ear"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><span class="btn-text">Monitor</span></button>
       <button class="btn ghost" id="scenes-btn" type="button" title="Scene e snapshot"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg><span class="btn-text">Scene</span></button>
       <button class="btn ghost" id="settings-btn" type="button" aria-label="Impostazioni mixer" title="Impostazioni mixer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
       <button class="btn ghost fb-btn" id="fb-btn" type="button" data-state="off" title="Rilevatore feedback"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h3l3-8 4 16 3-10 2 2h5"/></svg><span class="fb-dot"></span><span class="btn-text">Feedback</span><span class="fb-count"></span></button>
+      <button class="btn ghost" id="lock-btn" type="button" aria-label="Blocca i comandi" aria-pressed="false" title="Blocca i comandi contro i tocchi per sbaglio"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
       <button class="btn" id="connect-btn" type="button" title="Connetti al mixer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/><path d="M1.5 9a15 15 0 0 1 21 0"/></svg><span class="btn-text">Connetti</span></button>
     </div>
   </header>
@@ -60,6 +65,14 @@
     <div class="strips" id="strips"></div>
     <div class="main-strip" id="main-strip"></div>
   </main>
+
+  <div class="lock-overlay" id="lock-overlay" hidden>
+    <button class="lock-pill" id="unlock-btn" type="button" aria-label="Comandi bloccati: tieni premuto per sbloccare">
+      <span class="lock-progress" aria-hidden="true"></span>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <span>Bloccato · tieni premuto per sbloccare</span>
+    </button>
+  </div>
 
   <dialog id="connect-dialog">
     <div class="dialog-head">

@@ -11,6 +11,10 @@ const QUERY_BATCH = 12;
 const QUERY_GAP_MS = 15;
 const QUERY_RETRY_MS = 1000;
 const QUERY_RETRIES = 8;
+// Annulla/Ripeti: modifiche fatte di seguito sullo stesso parametro (un fader trascinato) diventano
+// un solo passo, come tutte quelle fatte nello stesso istante (un preset).
+const HISTORY_MAX = 100;
+const HISTORY_MERGE_MS = 1500;
 
 export const ZERO_DB = 0.75;
 
@@ -72,6 +76,9 @@ export class Mixer {
     this.meterListeners = new Map();
     this.setHooks = [];
     this.held = new Map(); // indirizzi che l'utente sta muovendo -> quante prese attive
+    this.undoStack = [];
+    this.redoStack = [];
+    this.historyListeners = new Set();
     transport.onMessage = m => this._receive(m);
   }
 
@@ -92,6 +99,7 @@ export class Mixer {
   /** Imposta un parametro: aggiorna subito l'interfaccia e invia al mixer (raggruppando i movimenti rapidi). */
   set(address, value, type = 'f', seen = new Set()) {
     if (seen.has(address)) return;
+    if (!seen.size) this._record(address, value, type);
     seen.add(address);
     this._store(address, value);
     this.pending.set(address, { type, value });
@@ -100,6 +108,86 @@ export class Mixer {
     for (const hook of this.setHooks) {
       for (const extra of hook(address, value, type) ?? []) this.set(extra.address, extra.value, extra.type ?? type, seen);
     }
+  }
+
+  // --- annulla / ripeti --------------------------------------------------------
+
+  /** cb({ canUndo, canRedo }) quando cambia la cronologia. */
+  onHistory(cb) {
+    this.historyListeners.add(cb);
+    cb(this._historyState());
+    return () => this.historyListeners.delete(cb);
+  }
+
+  undo() {
+    return this._step(this.undoStack, this.redoStack, 'before');
+  }
+
+  redo() {
+    return this._step(this.redoStack, this.undoStack, 'after');
+  }
+
+  clearHistory() {
+    this.undoStack.length = 0;
+    this.redoStack.length = 0;
+    this.openStep = null;
+    this._historyChanged();
+  }
+
+  _historyState() {
+    return { canUndo: this.undoStack.length > 0, canRedo: this.redoStack.length > 0 };
+  }
+
+  _historyChanged() {
+    const state = this._historyState();
+    this.historyListeners.forEach(cb => cb(state));
+  }
+
+  /** Registra una modifica dell'utente (non quelle di stato interno come la sorgente RTA, '/-...'). */
+  _record(address, value, type) {
+    if (this.replaying || address.startsWith('/-')) return;
+    const before = this.values.get(address);
+    if (before === undefined || before === value) return;
+    const now = Date.now();
+    const last = this.undoStack.at(-1);
+    const sameGesture = last && last === this.openStep && last.changes.has(address)
+      && (this.held.has(address) || now - last.at < HISTORY_MERGE_MS);
+    let step = last && (last === this.tickStep || sameGesture) ? last : null;
+    const created = !step;
+    if (created) {
+      step = { changes: new Map(), at: now };
+      this.undoStack.push(step);
+      if (this.undoStack.length > HISTORY_MAX) this.undoStack.shift();
+      this.tickStep = step;
+      queueMicrotask(() => { if (this.tickStep === step) this.tickStep = null; });
+    }
+    const change = step.changes.get(address);
+    if (change) change.after = value;
+    else step.changes.set(address, { before, after: value, type });
+    step.at = now;
+    this.openStep = step;
+    if (created || this.redoStack.length) {
+      this.redoStack.length = 0;
+      this._historyChanged();
+    }
+  }
+
+  _step(from, to, key) {
+    const step = from.pop();
+    if (!step) return false;
+    this.openStep = null;
+    this.tickStep = null;
+    this.replaying = true;
+    try {
+      const changes = [...step.changes];
+      if (key === 'before') changes.reverse();
+      for (const [address, c] of changes) this.set(address, c[key], c.type);
+    } finally {
+      this.replaying = false;
+    }
+    to.push(step);
+    this._historyChanged();
+    return true;
   }
 
   /** Mentre un controllo è tenuto, i valori ricevuti dal mixer per quell'indirizzo vengono ignorati. */
@@ -120,6 +208,7 @@ export class Mixer {
    * poi li rilegge per verificarli. onProgress(fatti, totali). Non applica i collegamenti stereo.
    */
   async setMany(entries, onProgress = () => {}) {
+    this.clearHistory(); // dopo una scena caricata, Annulla non riporta indietro solo pezzi di quella prima
     for (let i = 0; i < entries.length; i += QUERY_BATCH) {
       for (const { address, value, type } of entries.slice(i, i + QUERY_BATCH)) {
         this._store(address, value);
@@ -254,6 +343,7 @@ export class Mixer {
     this.queryQueue.length = 0;
     this.awaiting?.clear();
     clearTimeout(this.retryTimer);
+    this.clearHistory();
     this.meters.fill(-128);
     if (this.status !== 'disconnected') this._setStatus('disconnected');
   }

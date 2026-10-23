@@ -131,6 +131,7 @@ export function createScenes({ mixer, addresses, onReload }) {
     });
     if (!ok) return;
     mixer.command(SNAPSHOTS.load, [{ type: 'i', value: n }]);
+    mixer.clearHistory(); // Annulla non deve mescolare la scena nuova con quella di prima
     notify(`Caricamento di "${snapName(n)}"…`);
     await sleep(800);
     onReload(); // il mixer ha cambiato tutto: rilegge i parametri

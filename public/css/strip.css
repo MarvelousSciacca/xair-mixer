@@ -302,11 +302,13 @@ body[data-tab="meters"] .strips { display: none; }
 
 /* stato della connessione: su schermi stretti testo breve, che non esce mai dalla barra */
 .status { min-width: 0; }
-.status-text { overflow: hidden; text-overflow: ellipsis; }
+.status-text, .status-short { overflow: hidden; text-overflow: ellipsis; }
 .status-short { display: none; }
 @media (max-width: 520px) {
-  .topbar-actions { gap: 5px; }
-  .topbar-actions .btn { padding: 0 8px; }
+  #redo-btn { display: none; } /* sul telefono basta Annulla */
+  .history .btn:first-child { border-radius: 8px; }
+  .topbar-actions { gap: 4px; }
+  .topbar-actions .btn { padding: 0 6px; }
   .status .status-text { display: none; }
   .status .status-short { display: inline; }
 }
