@@ -1,4 +1,4 @@
-package it.xairmixer.app;
+package it.airdesk.app;
 
 import android.util.Base64;
 import android.view.WindowManager;
@@ -55,6 +55,10 @@ public class UdpPlugin extends Plugin {
             call.reject("host e data sono obbligatori");
             return;
         }
+        if (!allowedTarget(host, port)) {
+            call.reject("Indirizzo non ammesso: solo la porta del mixer sulla rete locale");
+            return;
+        }
         try {
             ensureOpen();
         } catch (SocketException e) {
@@ -71,6 +75,22 @@ public class UdpPlugin extends Plugin {
             }
         });
         call.resolve();
+    }
+
+    private static final int MIXER_PORT = 10024;
+
+    /**
+     * Solo indirizzi IPv4 della rete locale (broadcast compresi) e solo la porta OSC del mixer:
+     * l'app non può essere usata per mandare pacchetti verso Internet.
+     */
+    static boolean allowedTarget(String host, int port) {
+        if (port != MIXER_PORT || host == null || !host.matches("\\d{1,3}(\\.\\d{1,3}){3}")) return false;
+        String[] p = host.split("\\.");
+        int a = Integer.parseInt(p[0]), b = Integer.parseInt(p[1]);
+        for (String part : p) if (Integer.parseInt(part) > 255) return false;
+        if (host.equals("255.255.255.255")) return true;
+        return a == 10 || a == 127 || (a == 172 && b >= 16 && b <= 31) || (a == 192 && b == 168)
+            || (a == 169 && b == 254) || (a == 100 && b >= 64 && b <= 127);
     }
 
     /** Indirizzi di broadcast delle reti attive, più 255.255.255.255. */

@@ -2,3 +2,6 @@ node_modules/
 dist/
 public/
 server/
+LICENSE
+THIRD-PARTY-NOTICES.md
+PRIVACY.md

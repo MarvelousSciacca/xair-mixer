@@ -29,6 +29,29 @@ export function captureScene(mixer, addresses, name) {
   return { format: SCENE_FORMAT, version: 1, name, created: new Date().toISOString(), mixer: mixer.info, params };
 }
 
+const MAX_SCENE_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Tiene di una scena letta da file solo i parametri che l'app conosce, con valori validi:
+ * un file scambiato con altri non può mandare al mixer comandi o valori fuori scala.
+ */
+export function sanitizeScene(scene, addresses) {
+  if (!scene || scene.format !== SCENE_FORMAT || typeof scene.params !== 'object' || !scene.params) return null;
+  const known = new Set(addresses);
+  const params = {};
+  for (const [address, entry] of Object.entries(scene.params)) {
+    if (!known.has(address) || address.startsWith('/-') || !Array.isArray(entry) || entry.length !== 2) continue;
+    const [type, value] = entry;
+    const ok = (type === 'f' && typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1)
+      || (type === 'i' && Number.isInteger(value) && value >= 0 && value <= 0xffff)
+      || (type === 's' && typeof value === 'string' && value.length <= 32);
+    if (ok) params[address] = [type, value];
+  }
+  const name = typeof scene.name === 'string' ? scene.name.slice(0, 64) : 'Scena';
+  const model = typeof scene.mixer?.model === 'string' ? scene.mixer.model.slice(0, 16) : null;
+  return { ...scene, name, mixer: model ? { model } : null, params };
+}
+
 /** Scarica la scena come file .json. */
 export function downloadScene(scene) {
   const blob = new Blob([JSON.stringify(scene, null, 1)], { type: 'application/json' });
@@ -240,19 +263,24 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
     const file = fileInput.files[0];
     fileInput.value = '';
     if (!file) return;
-    let scene;
+    let scene = null;
     try {
-      scene = JSON.parse(await file.text());
-      if (scene.format !== SCENE_FORMAT || typeof scene.params !== 'object') throw new Error();
-    } catch {
-      notify('Il file non è una scena di X Air Mixer', { error: true });
+      if (file.size <= MAX_SCENE_BYTES) scene = sanitizeScene(JSON.parse(await file.text()), addresses);
+    } catch { /* non è JSON */ }
+    if (!scene || !Object.keys(scene.params).length) {
+      notify('Il file non è una scena di AirDesk', { error: true });
       return;
     }
     const count = Object.keys(scene.params).length;
     const otherModel = scene.mixer?.model && mixer.info?.model && scene.mixer.model !== mixer.info.model;
+    // la +48V accesa per sbaglio può danneggiare microfoni a nastro e alcune sorgenti di linea
+    const phantomOn = Object.entries(scene.params)
+      .filter(([a, [, v]]) => /^\/headamp\/\d\d\/phantom$/.test(a) && v && !mixer.get(a))
+      .map(([a]) => `In ${Number(a.split('/')[2])}`);
     const ok = await ask({
       title: `Caricare "${scene.name}"?`,
-      message: `${count} parametri sostituiranno il mix attuale.${otherModel ? ` Attenzione: la scena è stata salvata da un ${scene.mixer.model}.` : ''}`,
+      message: `${count} parametri sostituiranno il mix attuale.${otherModel ? ` Attenzione: la scena è stata salvata da un ${scene.mixer.model}.` : ''}`
+        + (phantomOn.length ? `\n\nAttenzione: la scena accende la +48V su ${phantomOn.join(', ')}. Controlla che lì non ci siano microfoni a nastro o sorgenti che la phantom può danneggiare.` : ''),
       confirmText: 'Carica',
       danger: true,
     });

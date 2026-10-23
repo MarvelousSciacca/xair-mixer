@@ -10,7 +10,25 @@ permissions:
   contents: write
 
 jobs:
+  # prove dell'interfaccia e di sicurezza del ponte: se falliscono non si pubblica niente
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prove
+        run: |
+          npm ci --no-audit --no-fund
+          (cd ../.. && npm ci --no-audit --no-fund --ignore-scripts)
+          npm test
+
   build:
+    needs: test
     strategy:
       fail-fast: false
       matrix:
@@ -57,6 +75,6 @@ jobs:
         run: |
           gh release create "desktop-${{ github.run_number }}" out/* \
             --repo "${{ github.repository }}" \
-            --title "X Air Mixer per computer 1.0.${{ github.run_number }}" \
-            --notes "macOS: X-Air-Mixer-mac-universal.dmg · Windows: X-Air-Mixer-Setup.exe · Linux: X-Air-Mixer-linux-x86_64.AppImage (o .deb)" \
+            --title "AirDesk per computer 1.0.${{ github.run_number }}" \
+            --notes "macOS: AirDesk-mac-universal.dmg · Windows: AirDesk-Setup.exe · Linux: AirDesk-linux-x86_64.AppImage (o .deb)" \
             --latest=false

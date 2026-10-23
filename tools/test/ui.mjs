@@ -14,7 +14,7 @@ const BRIDGE_PORT = 8097;
 const { startSimulator } = await import(`${ROOT}/server/simulator.js`);
 const { startBridge } = await import(`${ROOT}/server/bridge.js`);
 const sim = startSimulator({ port: SIM_PORT });
-const bridge = startBridge({ port: BRIDGE_PORT, host: '127.0.0.1', quiet: true });
+const bridge = startBridge({ port: BRIDGE_PORT, host: '127.0.0.1', quiet: true, mixerPort: SIM_PORT });
 const simValue = a => sim.state.get(a)?.value;
 
 // --- finestra jsdom con quello che manca rispetto a un browser ---------------------------------
@@ -30,17 +30,9 @@ w.Element.prototype.setPointerCapture = () => {};
 w.matchMedia ??= () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
 const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : k === 'measureText' ? () => ({ width: 10 }) : k === 'createLinearGradient' ? () => ({ addColorStop() {} }) : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
 w.HTMLCanvasElement.prototype.getContext = () => ctx;
-// la porta del mixer nel messaggio di connessione diventa quella del simulatore di prova
-class TestWS extends WS {
-  send(d) {
-    const m = JSON.parse(d);
-    if (m.type === 'connect') m.port = SIM_PORT;
-    super.send(JSON.stringify(m));
-  }
-}
 for (const k of ['window', 'document', 'location', 'localStorage', 'requestAnimationFrame', 'cancelAnimationFrame', 'HTMLElement', 'Option', 'navigator', 'getComputedStyle'])
   Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true });
-globalThis.WebSocket = TestWS;
+globalThis.WebSocket = WS;
 w.localStorage.setItem('xair.lastIp', '127.0.0.1');
 
 await import(`${ROOT}/public/js/app.js`);

@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "it.xairmixer.app"
+    namespace = "it.airdesk.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "it.xairmixer.app"
+        applicationId "it.airdesk.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // su GitHub ogni compilazione ha un numero crescente: Android accetta l'aggiornamento

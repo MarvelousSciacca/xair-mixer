@@ -1,6 +1,10 @@
-# X Air Mixer
+# AirDesk
 
-Controller per i mixer Behringer X Air (XR12 / XR16 / XR18 / X18) che funziona su qualsiasi dispositivo con un browser.
+Controller per mixer digitali compatibili con Behringer X Air (XR12 / XR16 / XR18 / X18), per iPhone, iPad,
+Android, macOS, Windows, Linux e qualsiasi browser.
+
+> AirDesk è un progetto indipendente: non è affiliato, approvato o sponsorizzato da Behringer o Music Tribe.
+> Vedi [Note legali](#note-legali).
 
 ## Avvio
 
@@ -91,7 +95,7 @@ in UDP con un plugin nativo (`android/app/src/main/java/it/xairmixer/app/UdpPlug
 lato JavaScript `public/js/transport-udp.js` e `public/js/osc.js`).
 
 - Compilazione: GitHub Actions (`.github/workflows/android.yml`) a ogni push su `main`; l'APK finisce
-  nella pagina Releases come `X-Air-Mixer.apk`.
+  nella pagina Releases come `AirDesk.apk`.
 - Firma: chiave in `keystore/` (solo sul Mac, esclusa da git) passata a GitHub come segreti
   `XAIR_KEYSTORE_BASE64` e `XAIR_KEYSTORE_PASSWORD`. **Non perderla**: senza la stessa chiave
   gli aggiornamenti non si installano sopra la versione precedente.
@@ -117,3 +121,23 @@ Electron (`desktop/`): il ponte Node (`server/bridge.js`) gira dentro l'app, sol
   `.dmg` (universale), `Setup.exe`, `.AppImage` e `.deb`.
 - Senza certificati: su macOS firma "ad hoc" (`desktop/build/adhoc-sign.cjs`), al primo avvio tasto destro → Apri;
   su Windows SmartScreen chiede "Ulteriori informazioni → Esegui comunque".
+
+## Note legali
+
+- **Licenza:** [MIT](LICENSE). Il software è fornito "così com'è", senza garanzie di alcun tipo; l'autore non
+  risponde di danni derivanti dal suo uso (testo completo nel file LICENSE).
+- **Marchi:** Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit e Ultranet sono marchi dei rispettivi
+  proprietari (Music Tribe). Sono citati solo per indicare con quali prodotti AirDesk è compatibile.
+  AirDesk non è affiliato, approvato o sponsorizzato da loro.
+- **Interoperabilità:** AirDesk comunica con il mixer tramite il protocollo OSC sulla rete locale, come
+  qualsiasi altro controller. Non contiene codice, firmware, grafica o file di Behringer/Music Tribe.
+- **Privacy:** l'app non raccoglie dati personali. Vedi [PRIVACY.md](PRIVACY.md).
+- **Componenti di terze parti:** vedi [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+- **Sicurezza d'uso:** un mixer può produrre livelli sonori dannosi per l'udito e la phantom (+48V) può
+  danneggiare alcuni microfoni e sorgenti. Fai le prime prove a volume basso e controlla sempre cosa cambi.
+- **Sicurezza informatica:** il ponte per browser e computer accetta solo la propria pagina (niente siti
+  esterni né DNS rebinding) e parla solo con indirizzi della rete locale sulla porta del mixer; le app
+  native hanno lo stesso limite. Prove automatiche in `tools/test/security.mjs`. Il protocollo OSC del
+  mixer non ha password: chiunque sia sulla stessa rete del mixer può comandarlo con qualsiasi app, quindi
+  proteggi la rete Wi-Fi del mixer con una password.
+

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">X Air Mixer</string>
-    <string name="title_activity_main">X Air Mixer</string>
-    <string name="package_name">it.xairmixer.app</string>
-    <string name="custom_url_scheme">it.xairmixer.app</string>
+    <string name="app_name">AirDesk</string>
+    <string name="title_activity_main">AirDesk</string>
+    <string name="package_name">it.airdesk.app</string>
+    <string name="custom_url_scheme">it.airdesk.app</string>
 </resources>

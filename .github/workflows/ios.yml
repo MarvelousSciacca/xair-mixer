@@ -42,18 +42,18 @@ jobs:
         run: |
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/App.app Payload/
-          zip -qry "$RUNNER_TEMP/X-Air-Mixer.ipa" Payload
+          zip -qry "$RUNNER_TEMP/AirDesk.ipa" Payload
 
       - uses: actions/upload-artifact@v4
         with:
-          name: X-Air-Mixer-ios
-          path: ${{ runner.temp }}/X-Air-Mixer.ipa
+          name: AirDesk-ios
+          path: ${{ runner.temp }}/AirDesk.ipa
 
       - name: Pubblicazione
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "ios-${{ github.run_number }}" "$RUNNER_TEMP/X-Air-Mixer.ipa" \
-            --title "X Air Mixer per iOS 1.0.${{ github.run_number }} (da firmare)" \
+          gh release create "ios-${{ github.run_number }}" "$RUNNER_TEMP/AirDesk.ipa" \
+            --title "AirDesk per iOS 1.0.${{ github.run_number }} (da firmare)" \
             --notes "Pacchetto non firmato: si installa con Sideloadly (ID Apple gratuito) o tramite TestFlight con un account sviluppatore." \
             --latest=false

@@ -1197,3 +1197,11 @@ body[data-tab="layer"] .layer-bar { display: flex; }
 .layer-dialog { width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); }
 .ly-label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
 .ly-group h3 { margin: 12px 0 8px; font-size: 13px; color: var(--muted); }
+
+/* --- informazioni e note legali (Impostazioni) ---------------------------------------------------- */
+.about { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.about-lead { margin: 0 0 4px; font-size: 14px; }
+.about-part { border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; background: var(--panel-2); }
+.about-part summary { min-height: 40px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.about-part p { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.about-license { margin: 0 0 12px; white-space: pre-wrap; font-size: 12px; color: var(--muted); font-family: inherit; }

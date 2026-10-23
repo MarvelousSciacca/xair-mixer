@@ -40,7 +40,11 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
             call.reject("host e data sono obbligatori")
             return
         }
-        let port = UInt16(call.getInt("port") ?? 10024)
+        let port = call.getInt("port") ?? UdpPlugin.mixerPort
+        guard UdpPlugin.allowedTarget(host, port) else {
+            call.reject("Indirizzo non ammesso: solo la porta del mixer sulla rete locale")
+            return
+        }
         guard ensureOpen() else {
             call.reject("Socket UDP non disponibile")
             return
@@ -51,7 +55,7 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
             var addr = sockaddr_in()
             addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
             addr.sin_family = sa_family_t(AF_INET)
-            addr.sin_port = port.bigEndian
+            addr.sin_port = UInt16(port).bigEndian
             guard inet_pton(AF_INET, host, &addr.sin_addr) == 1 else { return }
             bytes.withUnsafeBytes { raw in
                 withUnsafePointer(to: &addr) { ptr in
@@ -63,6 +67,20 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
             }
         }
         call.resolve()
+    }
+
+    static let mixerPort = 10024
+
+    /// Solo indirizzi IPv4 della rete locale (broadcast compresi) e solo la porta OSC del mixer:
+    /// l'app non può essere usata per mandare pacchetti verso Internet.
+    static func allowedTarget(_ host: String, _ port: Int) -> Bool {
+        let parts = host.split(separator: ".", omittingEmptySubsequences: false)
+        guard port == mixerPort, parts.count == 4 else { return false }
+        let b = parts.compactMap { $0.count <= 3 && $0.allSatisfy(\.isNumber) ? Int($0) : nil }
+        guard b.count == 4, b.allSatisfy({ $0 <= 255 }) else { return false }
+        if host == "255.255.255.255" { return true }
+        return b[0] == 10 || b[0] == 127 || (b[0] == 172 && (16...31).contains(b[1])) || (b[0] == 192 && b[1] == 168)
+            || (b[0] == 169 && b[1] == 254) || (b[0] == 100 && (64...127).contains(b[1]))
     }
 
     @objc func broadcastAddresses(_ call: CAPPluginCall) {

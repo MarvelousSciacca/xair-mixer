@@ -50,18 +50,18 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
-          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/X-Air-Mixer.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/AirDesk.apk"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: X-Air-Mixer-android
-          path: ${{ runner.temp }}/X-Air-Mixer.apk
+          name: AirDesk-android
+          path: ${{ runner.temp }}/AirDesk.apk
 
       - name: Pubblicazione
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "android-${{ github.run_number }}" "$RUNNER_TEMP/X-Air-Mixer.apk" \
-            --title "X Air Mixer per Android 1.0.${{ github.run_number }}" \
-            --notes "Scarica X-Air-Mixer.apk sul telefono o tablet Android e aprilo per installarlo." \
+          gh release create "android-${{ github.run_number }}" "$RUNNER_TEMP/AirDesk.apk" \
+            --title "AirDesk per Android 1.0.${{ github.run_number }}" \
+            --notes "Scarica AirDesk.apk sul telefono o tablet Android e aprilo per installarlo." \
             --latest

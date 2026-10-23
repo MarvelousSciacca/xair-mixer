@@ -207,7 +207,8 @@ async function scan() {
   try {
     mixers = await transport.discover();
   } catch (err) {
-    foundList.innerHTML = `<li class="hint">${err.message}</li>`;
+    foundList.innerHTML = '<li class="hint"></li>';
+    foundList.firstChild.textContent = err.message; // come testo, mai come HTML
     return;
   }
   foundList.innerHTML = '';

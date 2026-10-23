@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>X Air Mixer</string>
+        <string>AirDesk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -52,7 +52,7 @@
 		<string>arm64</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Serve per trovare e controllare il mixer X Air sulla rete Wi-Fi.</string>
+	<string>Serve per trovare e controllare il mixer sulla rete Wi-Fi.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

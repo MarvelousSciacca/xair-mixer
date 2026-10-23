@@ -7,6 +7,7 @@ import { ZERO_DB } from './mixer.js';
 import { ask, notify } from './dialogs.js';
 import { captureScene, downloadScene } from './scenes.js';
 import { THEMES, setTheme, currentTheme } from './theme.js';
+import { aboutSection } from './about.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const pad2 = n => String(n).padStart(2, '0');
@@ -89,6 +90,7 @@ export function createSettings({ mixer, addresses, onReload }) {
       toggle(sc, SETTINGS.linkFader, bool('Fader e mute'))),
     section('Routing', h('p', 'fx-note', 'Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.')),
     section('Manutenzione', reload, init),
+    section('Informazioni e note legali', aboutSection()),
   );
 
   async function initialize() {

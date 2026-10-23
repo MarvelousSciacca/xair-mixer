@@ -1,11 +1,14 @@
 {
-  "appId": "it.xairmixer.app",
-  "appName": "X Air Mixer",
+  "appId": "it.airdesk.app",
+  "appName": "AirDesk",
   "webDir": "public",
   "android": {
-    "backgroundColor": "#f4f4f4"
+    "backgroundColor": "#f4f4f4",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
   },
   "ios": {
-    "backgroundColor": "#f4f4f4"
+    "backgroundColor": "#f4f4f4",
+    "webContentsDebuggingEnabled": false
   }
 }

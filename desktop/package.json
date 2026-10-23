@@ -1,33 +1,36 @@
 {
-  "name": "x-air-mixer",
-  "productName": "X Air Mixer",
+  "name": "airdesk",
+  "productName": "AirDesk",
   "version": "1.0.0",
-  "description": "Controller per mixer Behringer X Air (XR12/XR16/XR18)",
-  "author": "X Air Mixer",
+  "description": "Controller per mixer digitali compatibili con Behringer X Air (XR12/XR16/XR18). Non affiliato con Behringer o Music Tribe.",
+  "author": "MarvelousSciacca",
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "prepare-app": "rm -rf public server && cp -R ../public ../server .",
+    "prepare-app": "rm -rf public server && cp -R ../public ../server . && cp ../LICENSE ../THIRD-PARTY-NOTICES.md ../PRIVACY.md .",
     "start": "npm run prepare-app && electron .",
     "dist": "npm run prepare-app && electron-builder --publish never"
   },
   "dependencies": {
-    "ws": "8.18.3"
+    "ws": "8.22.0"
   },
   "devDependencies": {
-    "electron": "38.8.6",
-    "electron-builder": "26.0.12"
+    "electron": "44.9.3",
+    "electron-builder": "26.15.3"
   },
   "build": {
-    "appId": "it.xairmixer.desktop",
-    "productName": "X Air Mixer",
-    "artifactName": "X-Air-Mixer-${os}-${arch}.${ext}",
+    "appId": "it.airdesk.desktop",
+    "productName": "AirDesk",
+    "artifactName": "AirDesk-${os}-${arch}.${ext}",
     "files": [
       "main.js",
       "public/**",
       "server/**",
       "build/icon.png",
-      "package.json"
+      "package.json",
+      "LICENSE",
+      "THIRD-PARTY-NOTICES.md",
+      "PRIVACY.md"
     ],
     "directories": {
       "output": "dist",
@@ -58,7 +61,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "X-Air-Mixer-Setup.${ext}"
+      "artifactName": "AirDesk-Setup.${ext}",
+      "license": "LICENSE"
     },
     "linux": {
       "target": [
@@ -76,9 +80,18 @@
         }
       ],
       "category": "Audio",
-      "maintainer": "X Air Mixer <noreply@xairmixer.it>"
+      "maintainer": "MarvelousSciacca <https://github.com/MarvelousSciacca>"
     },
-    "afterSign": "build/adhoc-sign.cjs"
+    "afterSign": "build/adhoc-sign.cjs",
+    "copyright": "Copyright © 2026 MarvelousSciacca",
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "onlyLoadAppFromAsar": true
+    }
   },
-  "homepage": "https://github.com/MarvelousSciacca/xair-mixer"
+  "homepage": "https://github.com/MarvelousSciacca/xair-mixer",
+  "license": "MIT"
 }

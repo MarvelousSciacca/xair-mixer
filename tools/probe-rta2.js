@@ -84,7 +84,7 @@ for (let i = 0; i < 5; i++) {
 }
 if (foreign.length) {
   log(`FERMATA: un'altra app sta cambiando la sorgente RTA (valori ${[...new Set(foreign)].join(', ')}).`);
-  log('Chiudi X-AIR-Edit e X Air Mixer su tutti i dispositivi (Mac, telefono, tablet), poi rilancia.');
+  log('Chiudi X-AIR-Edit e AirDesk su tutti i dispositivi (Mac, telefono, tablet), poi rilancia.');
   save();
   process.exit(1);
 }

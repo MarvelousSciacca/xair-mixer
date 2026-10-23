@@ -1,15 +1,14 @@
 {
-  "name": "xair-mixer",
+  "name": "airdesk",
   "version": "1.0.0",
-  "description": "Controller per mixer Behringer X Air (XR12/XR16/XR18)",
-  "main": "index.js",
+  "description": "Controller per mixer digitali compatibili con Behringer X Air (XR12/XR16/XR18). Non affiliato con Behringer o Music Tribe.",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js --sim"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "MarvelousSciacca",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "@capacitor/android": "^8.5.3",
@@ -19,5 +18,9 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MarvelousSciacca/xair-mixer"
   }
 }
