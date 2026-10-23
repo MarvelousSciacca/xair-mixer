@@ -1,0 +1,83 @@
+{
+  "name": "x-air-mixer",
+  "productName": "X Air Mixer",
+  "version": "1.0.0",
+  "description": "Controller per mixer Behringer X Air (XR12/XR16/XR18)",
+  "author": "X Air Mixer",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "prepare-app": "rm -rf public server && cp -R ../public ../server .",
+    "start": "npm run prepare-app && electron .",
+    "dist": "npm run prepare-app && electron-builder --publish never"
+  },
+  "dependencies": {
+    "ws": "8.18.3"
+  },
+  "devDependencies": {
+    "electron": "38.8.6",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "it.xairmixer.desktop",
+    "productName": "X Air Mixer",
+    "artifactName": "X-Air-Mixer-${os}-${arch}.${ext}",
+    "files": [
+      "main.js",
+      "public/**",
+      "server/**",
+      "build/icon.png",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "mac": {
+      "category": "public.app-category.music",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "identity": null
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "X-Air-Mixer-Setup.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Audio",
+      "maintainer": "X Air Mixer <noreply@xairmixer.it>"
+    },
+    "afterSign": "build/adhoc-sign.cjs"
+  }
+}

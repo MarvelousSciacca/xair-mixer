@@ -1,0 +1,61 @@
+# Compila l'app per computer (macOS, Windows, Linux) a ogni modifica e la pubblica in "Releases".
+name: App computer
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Compilazione
+        run: |
+          npm install --no-audit --no-fund
+          npm pkg set version="1.0.${{ github.run_number }}"
+          npm run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.os }}
+          path: |
+            desktop/dist/*.dmg
+            desktop/dist/*.exe
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Pubblicazione
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "desktop-${{ github.run_number }}" out/* \
+            --repo "${{ github.repository }}" \
+            --title "X Air Mixer per computer 1.0.${{ github.run_number }}" \
+            --notes "macOS: X-Air-Mixer-mac-universal.dmg · Windows: X-Air-Mixer-Setup.exe · Linux: X-Air-Mixer-linux-x86_64.AppImage (o .deb)" \
+            --latest=false

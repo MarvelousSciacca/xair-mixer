@@ -151,11 +151,12 @@ class Session {
   }
 }
 
-export function startBridge({ port = 8080 } = {}) {
+export function startBridge({ port = 8080, host, quiet = false } = {}) {
   const server = http.createServer(serveStatic);
   const wss = new WebSocketServer({ server, path: '/ws' });
   wss.on('connection', ws => new Session(ws));
-  server.listen(port, () => {
+  server.listen(port, host, () => {
+    if (quiet) return;
     console.log(`\nX Air Mixer pronto:`);
     console.log(`  questo computer:  http://localhost:${port}`);
     for (const ni of ipv4Interfaces()) console.log(`  altri dispositivi: http://${ni.address}:${port}`);

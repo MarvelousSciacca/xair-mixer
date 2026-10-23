@@ -99,3 +99,14 @@ Stessa interfaccia in Capacitor (`ios/`), plugin UDP in Swift (`ios/App/App/UdpP
 - Compilazione: GitHub Actions (`.github/workflows/ios.yml`), `.ipa` NON firmato nelle Releases (`ios-N`).
 - Installazione per ora gratuita con Sideloadly + ID Apple (l'app scade dopo 7 giorni, va reinstallata).
   In futuro: account sviluppatore Apple + TestFlight (firma su GitHub con chiave API di App Store Connect).
+
+## App per computer (macOS, Windows, Linux)
+
+Electron (`desktop/`): il ponte Node (`server/bridge.js`) gira dentro l'app, solo su `127.0.0.1:47824`
+(porta fissa così le preferenze restano tra un avvio e l'altro), e la finestra carica `public/`.
+
+- Prova locale: `cd desktop && npm install && npm start`; installer: `npm run dist` (finisce in `desktop/dist/`).
+- Compilazione: GitHub Actions (`.github/workflows/desktop.yml`) su Mac, Windows e Linux; release `desktop-N` con
+  `.dmg` (universale), `Setup.exe`, `.AppImage` e `.deb`.
+- Senza certificati: su macOS firma "ad hoc" (`desktop/build/adhoc-sign.cjs`), al primo avvio tasto destro → Apri;
+  su Windows SmartScreen chiede "Ulteriori informazioni → Esegui comunque".
