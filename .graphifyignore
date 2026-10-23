@@ -1,0 +1,7 @@
+# Escluso dal grafo di graphify: codice generato o di terze parti, che aggiunge solo rumore.
+public/vendor/
+android/app/src/test/
+android/app/src/androidTest/
+*.gradle
+android/gradlew
+ios/App/CapApp-SPM/
