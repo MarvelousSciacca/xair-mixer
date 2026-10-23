@@ -8,7 +8,7 @@ const C = `localStorage.setItem('xair.theme','${theme}');localStorage.removeItem
 const EX = `document.querySelector('.monitor-view')&&!document.querySelector('.monitor-view').hidden&&document.querySelector('.mon-exit').click()`;
 const tab = g => `document.querySelector('.topbar .tab[data-group=${g}]').click()`;
 const open = (id, t) => `${tab('input')};document.querySelector('.strip[data-id=${id}] .label').click();[...document.querySelectorAll('.editor-tabs .tab')].find(x=>x.textContent==='${t}')?.click()`;
-const sizes = { pc: [1280, 800], ipadL: [1180, 820], ipadP: [820, 1180], phone: [390, 844], phoneL: [844, 390] };
+const sizes = { wide: [1440, 900], pc: [1280, 800], ipadL: [1180, 820], ipadP: [820, 1180], phone: [390, 844], phoneL: [844, 390] };
 const screens = {
   ingressi: tab('input'), bus: tab('bus'), dca: tab('dca'), fx: tab('fx'), routing: tab('routing'), meter: tab('meters'),
   'ed-ingresso': open('ch13', 'Ingresso'), 'ed-gate': open('ch13', 'Gate'), 'ed-eq': open('ch13', 'EQ'), 'ed-comp': open('ch13', 'Compressore'),

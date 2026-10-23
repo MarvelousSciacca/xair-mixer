@@ -47,11 +47,8 @@
   flex: 0 0 calc(var(--strip-w) * var(--strip-scale));
   width: calc(var(--strip-w) * var(--strip-scale));
   min-width: 0;
-  background:
-    linear-gradient(to bottom,
-      color-mix(in srgb, var(--strip-color) var(--tint-top), var(--tint-base)) 0,
-      color-mix(in srgb, var(--strip-color) var(--tint-body), var(--tint-base)) 30%,
-      color-mix(in srgb, var(--strip-color) var(--tint-body), var(--tint-base)) 100%);
+  /* tinta piatta del colore del canale: si riconosce a colpo d'occhio, senza sfumature */
+  background: color-mix(in srgb, var(--strip-color) var(--tint-body), var(--tint-base));
   box-shadow: inset 1px 0 0 rgba(255, 255, 255, .03);
 }
 .strip.inverted { --tint-top: 14%; }
@@ -76,8 +73,8 @@
 }
 .sec:hover { filter: brightness(1.06); }
 .sec-head { min-width: 0; overflow: hidden; display: flex; align-items: baseline; justify-content: space-between; gap: 3px; line-height: 1; }
-.sec-name { font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
-.sec-value { font-size: 10px; font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; }
+.sec-name { font-size: 11px; font-weight: 600; }
+.sec-value { font-size: 11px; font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; }
 .sec-graph { display: block; width: 100%; max-width: 100%; contain: size; flex: 1; min-height: 0; overflow: visible; }
 .sec-curve { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linejoin: round; }
 .sec-fill { fill: currentColor; opacity: .0; }
@@ -97,7 +94,7 @@
 .sec-bar { position: relative; height: 4px; border-radius: 2px; background: var(--well); box-shadow: var(--well-shadow); }
 .sec-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--fill, 0) * 100%); border-radius: 2px; background: var(--muted); }
 .sec-flags { display: flex; flex-wrap: wrap; gap: 2px; min-height: 0; overflow: hidden; }
-.flag { padding: 0 3px; border-radius: 3px; font-size: 8px; font-weight: 700; line-height: 12px; background: var(--well); color: var(--text); }
+.flag { padding: 0 3px; border-radius: 3px; font-size: 11px; font-weight: 700; line-height: 12px; background: var(--well); color: var(--text); }
 .flag.warn { background: var(--mute); color: #fff; }
 .flag.usb { background: var(--sky); color: #fff; }
 
@@ -144,8 +141,9 @@
 .mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-value,
 .mixer[data-density="mini"] .sec[data-sec="sends"] { display: none; }
 .mixer[data-density="mini"] .sec.on { box-shadow: var(--key-pressed); }
-.mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-name { font-size: 0; letter-spacing: 0; }
-.mixer[data-density="mini"] .sec:not(.sec-preamp) .sec-name::after { content: attr(data-short); font-size: 10px; }
+.sn-short { display: none; }
+.mixer[data-density="mini"] .sec:not(.sec-preamp) .sn-long { display: none; }
+.mixer[data-density="mini"] .sec:not(.sec-preamp) .sn-short { display: inline; }
 
 /* fader corti: più spazio alle sezioni, l'EQ si allunga */
 .mixer[data-fader="short"] .fader-area { flex: 0 0 150px; min-height: 0; }
@@ -177,9 +175,10 @@
   .fader-slot, .fader-cap { right: 12px; }
   .fader-cap { width: 24px; }
   .mark { display: none; }
-  .sec-name { font-size: 8px; letter-spacing: 0; }
-  .sec-value { font-size: 9px; }
-  .sec-preamp .sec-value { font-size: 10px; }
+  /* strip strette: sigle brevi (G, C) e il gain solo come numero, così il valore resta intero */
+  .sn-long { display: none; }
+  .sn-short { display: inline; }
+  .sec-value, .sec-preamp .sec-value { font-size: 11px; }
 }
 .monitor-view.locked .mon-view { display: none; }
 
@@ -222,7 +221,7 @@ body[data-tab="meters"] .strips { display: none; }
 .mb-block { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--r-panel); background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow-md); min-height: 0; }
 .mb-block h2 { margin: 0; font-size: 15px; font-family: var(--font-display); font-weight: 500; }
 .mb-row { flex: 1; display: flex; gap: 3px; min-height: 200px; overflow-x: auto; overflow-y: hidden; }
-.mb-scale { position: relative; flex: none; width: 22px; margin: 18px 2px 70px 0; font-size: 9px; color: var(--muted-2); font-variant-numeric: tabular-nums; }
+.mb-scale { position: relative; flex: none; width: 24px; margin: 18px 2px 70px 0; font-size: 11px; color: var(--muted-2); font-variant-numeric: tabular-nums; }
 .mb-scale span { position: absolute; right: 0; top: calc((1 - var(--p)) * 100%); transform: translateY(-50%); }
 .mb-item {
   --strip-color: #3a3d44;
@@ -236,7 +235,7 @@ body[data-tab="meters"] .strips { display: none; }
   border-radius: 4px;
   background: color-mix(in srgb, var(--strip-color) 10%, transparent);
 }
-.mb-peak { height: 14px; font-size: 9px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.mb-peak { height: 14px; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); }
 .mb-peak.clip { color: var(--mute); font-weight: 700; }
 .mb-bars { flex: 1; display: flex; gap: 2px; justify-content: center; min-height: 0; width: 100%; }
 .mb-bars .meter { width: min(12px, 40%); }
@@ -244,7 +243,7 @@ body[data-tab="meters"] .strips { display: none; }
   height: 64px;
   padding: 3px 1px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
@@ -266,7 +265,7 @@ body[data-tab="meters"] .strips { display: none; }
 @media (max-width: 700px) {
   .meter-page { padding: 8px; }
   body[data-tab="meters"] .main-strip { display: none; }
-  .mb-name { font-size: 9px; height: 56px; }
+  .mb-name { font-size: 11px; height: 56px; }
   .mb-scale { margin-bottom: 62px; }
 }
 
@@ -288,7 +287,7 @@ body[data-tab="meters"] .strips { display: none; }
   .topbar-nav { order: 0; flex: 1 1 auto; min-width: 0; }
   .topbar-actions { flex: 0 0 auto; gap: 4px; }
   .topbar-actions .status { margin-right: 0; padding: 0 2px; }
-  .topbar-actions .status-text, .topbar-actions .status-name, .brand, .fader-target > span { display: none; }
+  .topbar-actions .status-text, .topbar-actions .status-name, .fader-target > span { display: none; }
   .topbar-actions .btn { height: 32px; padding: 0 8px; }
   .tabs { flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .tab { flex: 0 0 auto; padding: 5px 9px; font-size: 13px; }

@@ -367,5 +367,6 @@ export function startSimulator({ host = '127.0.0.1', port = 10024, bind = host }
   }, 50);
 
   sock.bind(port, bind, () => console.log(`Simulatore ${MODEL} in ascolto su ${bind === host ? host : `${host} (tutte le reti)`}:${port}`));
+  sock.state = state; // per le prove automatiche
   return sock;
 }

@@ -79,18 +79,18 @@ button { font: inherit; color: inherit; }
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 6px 10px;
+  padding: 6px 16px;
   background: var(--panel);
   border-bottom: 1px solid var(--line);
 }
 .topbar-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .topbar-nav { flex: 1; }
 .topbar-actions { flex: none; }
-.brand { font-weight: 700; letter-spacing: .02em; white-space: nowrap; margin-right: 4px; }
+.brand { margin: 0; font-size: inherit; font-weight: 700; letter-spacing: .02em; white-space: nowrap; margin-right: 4px; }
 .brand span { color: var(--accent); }
 .spacer { flex: 1; }
 
-.tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); }
+.tabs { display: flex; min-width: 0; overflow-x: auto; scrollbar-width: none; gap: 2px; padding: 3px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); }
 .tab {
   background: none;
   border: 0;
@@ -208,7 +208,7 @@ button { font: inherit; color: inherit; }
   background: var(--accent);
   border-radius: 3px;
 }
-.pan-val { text-align: center; font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pan-val { text-align: center; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .pan:focus-visible .pan-track, .fader:focus-visible .fader-cap { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* fader + meter */
@@ -224,8 +224,10 @@ button { font: inherit; color: inherit; }
   background: linear-gradient(to top, #16a34a 0%, #22c55e 60%, #eab308 80%, #f97316 92%, #ef4444 100%);
 }
 .meter-cover { position: absolute; inset: 0; background: var(--meter-track); border-radius: 3px; transform-origin: top; transform: scaleY(1); }
-.meter-peak { position: absolute; left: 0; right: 0; height: 2px; bottom: 0; background: var(--text); opacity: .8; }
-.meter-peak.clip { background: var(--mute); opacity: 1; }
+.meter-cover { will-change: transform; }
+/* il picco è alto quanto il meter con una riga in cima: si sposta con transform, senza impaginazione */
+.meter-peak { position: absolute; inset: 0; border-top: 2px solid var(--text); opacity: .8; transform: translateY(100%); will-change: transform; }
+.meter-peak.clip { border-top-color: var(--mute); opacity: 1; }
 
 .fader { --v: 0; position: relative; width: 48px; cursor: ns-resize; touch-action: none; outline: none; }
 .fader-slot {
@@ -245,7 +247,7 @@ button { font: inherit; color: inherit; }
   left: 0;
   top: calc((1 - var(--p)) * (100% - var(--cap-h)) + var(--cap-h) / 2);
   transform: translateY(-50%);
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1;
   color: var(--muted-2);
   font-variant-numeric: tabular-nums;
@@ -256,7 +258,10 @@ button { font: inherit; color: inherit; }
 .fader-cap {
   position: absolute;
   left: 50%;
-  top: calc((1 - var(--v)) * (100% - var(--cap-h)));
+  top: 0;
+  /* spostato con translate (niente ricalcolo dell'impaginazione a ogni movimento); 100cqh = altezza del fader */
+  translate: 0 calc((1 - var(--v, 0)) * (100cqh - var(--cap-h)));
+  will-change: translate;
   width: 30px;
   height: var(--cap-h);
   transform: translateX(-30%);
@@ -273,9 +278,13 @@ button { font: inherit; color: inherit; }
 .dragging .fader-cap { box-shadow: 0 0 0 2px var(--accent), var(--cap-shadow); }
 
 .db {
+  /* misure fisse e testo in un livello a parte: il numero cambia a ogni movimento del fader
+     senza far ricalcolare l'impaginazione di tutte le strip */
+  position: relative;
   align-self: center;
-  min-width: 46px;
-  padding: 2px 6px;
+  width: 46px;
+  height: calc(1.3em + 4px);
+  flex: none;
   border-radius: 5px;
   background: var(--well);
   text-align: center;
@@ -283,6 +292,7 @@ button { font: inherit; color: inherit; }
   font-variant-numeric: tabular-nums;
   color: var(--muted);
 }
+.db-val { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
 
 .buttons { display: flex; gap: 4px; }
 .solo, .mute {
@@ -301,7 +311,7 @@ button { font: inherit; color: inherit; }
 .solo.active { background: var(--solo); color: #1a1500; border-color: var(--solo); }
 .mute.active { background: var(--mute); color: #fff; border-color: var(--mute); }
 
-.label { text-align: center; font-size: 10px; color: var(--muted-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.label { text-align: center; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* --- finestre ------------------------------------------------------------------- */
 
@@ -363,8 +373,9 @@ dialog input {
 
 /* --- schermi piccoli -------------------------------------------------------------- */
 
+@media (max-width: 1600px) { .status-name { display: none; } }
 @media (max-width: 1380px) {
-  .status-name, .brand { display: none; }
+  .brand { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } /* resta il titolo per i lettori di schermo */
   .topbar-actions .btn-text { display: none; }
   .topbar-actions .btn { padding: 0 10px; }
   .fb-btn { gap: 4px; }
@@ -716,7 +727,7 @@ button.label:disabled { cursor: default; }
 }
 .mg-btn.active { background: var(--mute); border-color: var(--mute); color: #fff; }
 
-.fader-target { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.fader-target { display: flex; flex: none; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
 .fader-target select {
   background: var(--panel-2);
   color: var(--text);

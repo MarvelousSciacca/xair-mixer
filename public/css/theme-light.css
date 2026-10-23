@@ -10,7 +10,7 @@
   --line: #e6e6e6;
   --text: #171a20;
   --muted: #5c5e62;
-  --muted-2: #9a9ca0;
+  --muted-2: #6e7075;
   --accent: #3e6ae1;
   --on-accent: #ffffff;
   --mute: #e31937;
@@ -62,10 +62,10 @@
   --sec-bg: rgba(255, 255, 255, .72);
   --tint-base: #ffffff;
   --tint-top: 30%;
-  --tint-body: 9%;
-  --sec-gate: #12925a;
-  --sec-dyn: #c27803;
-  --sec-eq: #2f6fe0;
+  --tint-body: 11%;
+  --sec-gate: #0e7a4a;
+  --sec-dyn: #9a5b00;
+  --sec-eq: #2560c8;
 }
 
 [data-theme="light"] body { letter-spacing: .005em; }
@@ -130,7 +130,7 @@
 
 /* --- strip ----------------------------------------------------------------------------------- */
 [data-theme="light"] .scribble {
-  background: linear-gradient(color-mix(in srgb, var(--strip-color) 34%, #ffffff), color-mix(in srgb, var(--strip-color) 24%, #ffffff));
+  background: color-mix(in srgb, var(--strip-color) 28%, #ffffff);
   color: var(--text);
   font-weight: 600;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), inset 0 -3px 0 var(--strip-color), 0 1px 2px rgba(23, 26, 32, .12);

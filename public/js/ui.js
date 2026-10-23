@@ -22,18 +22,29 @@ const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 const meterRegistry = new Set();
 
 export function startMeterLoop(mixer) {
+  // Il mixer manda i meter ~20 volte al secondo: si scrive nel DOM solo ciò che è cambiato davvero
+  // (posizioni arrotondate a 1/200), così i fotogrammi restano liberi per i fader.
   const frame = () => {
     const now = performance.now();
     for (const m of meterRegistry) {
       if (!m.el.isConnected) continue;
       const db = mixer.meters[m.index];
-      const pos = clamp((db - METER_FLOOR) / -METER_FLOOR);
-      m.cover.style.transform = `scaleY(${1 - pos})`;
+      const pos = Math.round(clamp((db - METER_FLOOR) / -METER_FLOOR) * 200) / 200;
+      if (pos !== m.pos) {
+        m.pos = pos;
+        m.cover.style.transform = `scaleY(${1 - pos})`;
+      }
       if (pos >= m.peak || now - m.peakTime > PEAK_HOLD_MS) {
-        m.peak = pos;
         m.peakTime = now;
-        m.peakEl.style.bottom = `${pos * 100}%`;
-        m.peakEl.classList.toggle('clip', db >= -0.5);
+        if (pos !== m.peak) {
+          m.peak = pos;
+          m.peakEl.style.transform = `translateY(${(1 - pos) * 100}%)`;
+        }
+        const clip = db >= -0.5;
+        if (clip !== m.clip) {
+          m.clip = clip;
+          m.peakEl.classList.toggle('clip', clip);
+        }
       }
     }
     requestAnimationFrame(frame);
@@ -47,8 +58,10 @@ function registerMeter(el, index) {
     index,
     cover: el.querySelector('.meter-cover'),
     peakEl: el.querySelector('.meter-peak'),
-    peak: 0,
+    pos: -1,
+    peak: -1,
     peakTime: 0,
+    clip: false,
   });
 }
 
@@ -63,23 +76,39 @@ export function createMeter(index) {
 
 // --- trascinamento generico (fader e pan) --------------------------------------
 
-function draggable(el, { getValue, setValue, axis, length, reset }) {
+function draggable(el, { getValue, setValue, axis, length, reset, onGrab = () => {}, onRelease = () => {} }) {
   let start = null;
+  // i movimenti arrivano anche a 120-240 al secondo: si applica solo l'ultimo di ogni fotogramma
+  let next = null;
+  let raf = 0;
+  const apply = () => {
+    raf = 0;
+    if (next !== null) setValue(next);
+    next = null;
+  };
   el.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     el.setPointerCapture(e.pointerId);
-    start = { x: e.clientX, y: e.clientY, v: getValue() };
+    start = { x: e.clientX, y: e.clientY, v: getValue(), len: length() };
     el.classList.add('dragging');
+    onGrab();
   });
   el.addEventListener('pointermove', e => {
     if (!start) return;
     const delta = axis === 'y' ? start.y - e.clientY : e.clientX - start.x;
     const fine = e.shiftKey ? 0.2 : 1;
-    setValue(clamp(start.v + (delta / length()) * fine));
+    next = clamp(start.v + (delta / start.len) * fine);
+    raf ||= requestAnimationFrame(apply);
   });
   const end = () => {
+    if (!start) return;
+    if (raf) {
+      cancelAnimationFrame(raf);
+      apply();
+    }
     start = null;
     el.classList.remove('dragging');
+    onRelease();
   };
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
@@ -142,7 +171,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
         <div class="fader-cap"></div>
       </div>
     </div>
-    <div class="db">-∞</div>
+    <div class="db"><span class="db-val">-∞</span></div>
     <div class="buttons">
       ${strip.solo ? '<button class="solo" type="button" aria-label="Solo" title="Solo">S</button>' : ''}
       <button class="mute" type="button" aria-label="Mute" title="Mute">M</button>
@@ -177,14 +206,17 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
 
   // Fader
   const fader = $('.fader');
-  const dbText = $('.db');
+  const cap = $('.fader-cap');
+  const dbText = $('.db-val');
   let faderAddr = null;
   let offFader = null;
   const showFader = v => {
-    fader.style.setProperty('--v', v);
+    cap.style.setProperty('--v', v);
     const db = formatDb(faderToDb(v));
-    dbText.textContent = db;
-    fader.setAttribute('aria-valuetext', `${db} dB`);
+    if (dbText.textContent !== db) {
+      dbText.textContent = db;
+      fader.setAttribute('aria-valuetext', `${db} dB`);
+    }
   };
   const bindFader = address => {
     offFader?.();
@@ -204,9 +236,12 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   draggable(fader, {
     axis: 'y',
     reset: ZERO_DB,
-    length: () => fader.clientHeight - fader.querySelector('.fader-cap').offsetHeight,
+    length: () => fader.clientHeight - cap.offsetHeight,
     getValue: () => mixer.get(faderAddr, 0),
     setValue: v => faderAddr && mixer.set(faderAddr, v),
+    // mentre il dito è sul fader, i valori in arrivo dal mixer (in ritardo) non lo fanno saltare indietro
+    onGrab: () => faderAddr && mixer.hold(faderAddr),
+    onRelease: () => faderAddr && mixer.release(faderAddr),
   });
 
   // Pan (in link stereo diventa il bilanciamento della coppia)

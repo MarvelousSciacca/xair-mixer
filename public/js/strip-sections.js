@@ -70,8 +70,9 @@ export function createStripSections(mixer, strip, { onProcess }) {
     b.title = `${def.label}: tocca per aprire`;
     b.addEventListener('click', () => onProcess(strip, def.tab));
     const head = el('span', 'sec-head');
-    const name = el('span', 'sec-name', def.label);
-    name.dataset.short = { gate: 'G', dyn: 'C' }[def.id] ?? def.label;
+    // nome intero e sigla per le strip strette (il gain resta solo come numero)
+    const name = el('span', 'sec-name');
+    name.append(el('span', 'sn-long', def.label), el('span', 'sn-short', { gate: 'G', dyn: 'C', preamp: '' }[def.id] ?? def.label));
     const value = el('span', 'sec-value');
     head.append(name, value);
     b.append(head);

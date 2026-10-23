@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node ui.mjs" },
+  "dependencies": { "jsdom": "26.1.0", "ws": "8.18.3" }
+}

@@ -5,3 +5,4 @@ keystore/
 *.keystore
 *.jks
 tools/qa/out/
+.taste-skill/

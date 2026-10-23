@@ -155,6 +155,8 @@ mixer.onStatus((status, info) => {
   statusEl.title = `${STATUS_TEXT[status]}${name && status !== 'disconnected' ? ` · ${name}` : ''}`;
   statusEl.querySelector('.status-name').textContent = status === 'disconnected' ? '' : name;
   document.body.classList.toggle('offline', status !== 'online');
+  // pulsante pieno solo quando c'è da collegarsi: da connessi diventa un tasto come gli altri
+  document.getElementById('connect-btn').classList.toggle('ghost', status === 'online');
 });
 let bridgeWasDown = false;
 transport.onStatus = s => {
@@ -278,6 +280,8 @@ document.getElementById('settings-btn').addEventListener('click', () => settings
 
 // --- avvio ------------------------------------------------------------------------
 
-const lastIp = storage.get(LAST_IP_KEY);
+// ?ip=192.168.1.9 nell'indirizzo collega subito a quel mixer (link salvati, prove automatiche)
+const urlIp = new URLSearchParams(location.search).get('ip');
+const lastIp = /^[\d.]+$/.test(urlIp ?? '') ? urlIp : storage.get(LAST_IP_KEY);
 if (lastIp) mixer.connect(lastIp, allAddresses);
 else document.getElementById('connect-btn').click();

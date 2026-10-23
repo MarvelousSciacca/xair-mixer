@@ -71,6 +71,7 @@ export class Mixer {
     this.meterSubs = new Map([['/meters/1', 1]]); // percorso -> numero di richieste attive
     this.meterListeners = new Map();
     this.setHooks = [];
+    this.held = new Map(); // indirizzi che l'utente sta muovendo -> quante prese attive
     transport.onMessage = m => this._receive(m);
   }
 
@@ -99,6 +100,19 @@ export class Mixer {
     for (const hook of this.setHooks) {
       for (const extra of hook(address, value, type) ?? []) this.set(extra.address, extra.value, extra.type ?? type, seen);
     }
+  }
+
+  /** Mentre un controllo è tenuto, i valori ricevuti dal mixer per quell'indirizzo vengono ignorati. */
+  hold(address) {
+    this.held.set(address, (this.held.get(address) ?? 0) + 1);
+  }
+
+  /** Rilascia il controllo; poco dopo si rilegge il valore per essere certi di essere allineati. */
+  release(address) {
+    const n = (this.held.get(address) ?? 1) - 1;
+    if (n > 0) this.held.set(address, n);
+    else this.held.delete(address);
+    if (!n && this.ip) setTimeout(() => !this.held.has(address) && this.t.send(address, []), 300);
   }
 
   /**
@@ -289,6 +303,7 @@ export class Mixer {
       return;
     }
     this.awaiting?.delete(address);
+    if (this.held.has(address)) return; // l'utente lo sta muovendo: vale il suo valore
     const parts = MULTI_VALUE[address];
     if (parts && args.length === parts.length) {
       parts.forEach((k, i) => {
