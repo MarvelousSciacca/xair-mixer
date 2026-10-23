@@ -19,6 +19,7 @@ import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
 import { createFeedbackUI } from './feedback-ui.js';
+import { createLayers } from './layers.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 
 const LAST_IP_KEY = 'xair.lastIp';
@@ -123,21 +124,31 @@ faderTarget.addEventListener('change', () => selectFaderTarget(faderTarget.value
 
 const tabs = document.querySelectorAll('.topbar .tab');
 let meterPage = null; // la pagina Meter chiede l'RTA al mixer solo quando è visibile
-function showTab(group) {
+/** group: scheda fissa, oppure 'layer' con l'id del layer personalizzato. */
+function showTab(group, layerId = null) {
+  if (group === 'layer' && !layers.show(layerId)) group = 'input';
   stripsEl.dataset.group = group;
   document.body.dataset.tab = group;
-  tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.group === group)));
-  storage.set(TAB_KEY, group);
+  document.querySelectorAll('.topbar .tab[data-group]').forEach(t => t.setAttribute('aria-selected',
+    String(t.dataset.group === group && (group !== 'layer' || t.dataset.layer === layerId))));
+  storage.set(TAB_KEY, group === 'layer' ? `layer:${layerId}` : group);
   meterPage?.setVisible(group === 'meters');
   requestAnimationFrame(() => alignFaders());
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
+const layers = createLayers({
+  mixer, strips, stripEls, stripsEl, links,
+  tabsEl: document.querySelector('.topbar .tabs'),
+  onSelect: id => showTab(id ? 'layer' : 'input', id),
+});
 createRouting({ mixer, strips, container: document.querySelector('.mixer') });
 meterPage = createMeterPage({ mixer, strips, rta, container: document.querySelector('.mixer') });
 const view = createView({ mixerEl: document.querySelector('.mixer'), stripsEl });
 const viewPanel = createViewPanel(view, { channels: strips.filter(s => s.group === 'input'), mixer, links });
 document.getElementById('view-btn').addEventListener('click', () => viewPanel.open({ channels: true }));
-showTab(['bus', 'dca', 'fx', 'routing', 'meters'].includes(storage.get(TAB_KEY)) ? storage.get(TAB_KEY) : 'input');
+const savedTab = storage.get(TAB_KEY) ?? '';
+if (savedTab.startsWith('layer:')) showTab('layer', savedTab.slice(6));
+else showTab(['bus', 'dca', 'fx', 'routing', 'meters'].includes(savedTab) ? savedTab : 'input');
 
 // --- annulla, blocco ------------------------------------------------------------
 
@@ -285,7 +296,7 @@ document.getElementById('monitor-btn').addEventListener('click', () => monitorVi
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------
 
-const scenes = createScenes({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe() });
+const scenes = createScenes({ mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe() });
 document.getElementById('scenes-btn').addEventListener('click', () => scenes.open());
 const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe() });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());

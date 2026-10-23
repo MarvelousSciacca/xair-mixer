@@ -127,7 +127,7 @@ await test('schede senza errori', async () => {
 await test('Vista: nascondere e rimostrare canali', async () => {
   $('#view-btn').click();
   assert(!$('.view-channels').hidden, 'sezione Canali nascosta nel mixer principale');
-  $$('.view-picks .toggle')[2].click();
+  $$('.view-dialog .view-picks .toggle')[2].click();
   assert($('.strip[data-id=ch3]').classList.contains('user-hidden'), 'ch3 non nascosto');
   $('.view-all').click();
   assert(!$$('#strips .strip.user-hidden').length, 'canali ancora nascosti');
@@ -217,6 +217,80 @@ await test('blocco: ferma la tastiera e si sblocca tenendo premuto', async () =>
   pointer(pill, 'pointerdown', 10);
   await sleep(950);
   assert($('#lock-overlay').hidden && !w.document.body.classList.contains('locked'), 'non sbloccato tenendo premuto');
+});
+
+// messaggi diretti al simulatore, come da un altro dispositivo
+const { encode: oscEncode } = await import(`${ROOT}/server/osc.js`);
+const udp = (await import('node:dgram')).default.createSocket('udp4');
+const simSend = (address, type, value) => udp.send(oscEncode(address, value === undefined ? [] : [{ type, value }]), SIM_PORT, '127.0.0.1');
+const confirmAsk = () => $('dialog.ask-dialog[open] button[type=submit]').click();
+
+await test('copia/incolla: gate ed EQ da un canale all\'altro, mai la +48V', async () => {
+  simSend('/ch/09/gate/thr', 'f', 0.31);
+  simSend('/ch/09/eq/2/g', 'f', 0.8);
+  simSend('/headamp/09/phantom', 'i', 1);
+  simSend('/headamp/10/phantom', 'i', 0);
+  await sleep(400);
+  $('.strip[data-id=ch9] .label').click();
+  $('.editor .ed-copy').click();
+  assert($('.editor .ed-paste').disabled, 'Incolla attivo sullo stesso canale');
+  $('.editor .next').click();
+  assert(!$('.editor .ed-paste').disabled, 'Incolla disattivato sul canale successivo');
+  $('.editor .ed-paste').click();
+  assert($('dialog.paste-dialog[open]'), 'finestra Incolla non aperta');
+  confirmAsk();
+  await until(() => near(simValue('/ch/10/gate/thr'), 0.31) && near(simValue('/ch/10/eq/2/g'), 0.8), 3000, 'gate ed EQ incollati');
+  assert(simValue('/headamp/10/phantom') === 0, '+48V incollata');
+  $('#undo-btn').click(); // un solo passo annulla tutto l'incolla
+  await until(() => !near(simValue('/ch/10/gate/thr'), 0.31) && !near(simValue('/ch/10/eq/2/g'), 0.8), 3000, 'incolla annullato');
+  $('.editor .close').click();
+});
+
+await test('canali protetti: lo snapshot non tocca il canale protetto', async () => {
+  simSend('/-snap/save', 'i', 1);
+  await sleep(200);
+  simSend('/-snap/01/name', 's', 'Prova');
+  await sleep(200);
+  const f7 = $('.strip[data-id=ch7] .fader'), f8 = $('.strip[data-id=ch8] .fader');
+  [f7, f8].forEach(f => Object.defineProperty(f, 'clientHeight', { value: 300 }));
+  const snap7 = simValue('/ch/07/mix/fader'), snap8 = simValue('/ch/08/mix/fader');
+  await drag(f7, 250, 150);
+  await drag(f8, 250, 150);
+  await until(() => !near(simValue('/ch/07/mix/fader'), snap7) && !near(simValue('/ch/08/mix/fader'), snap8), 3000, 'fader spostati');
+  const moved7 = simValue('/ch/07/mix/fader');
+  $('#scenes-btn').click();
+  $('.scenes-dialog .tab[data-tab=safe]').click();
+  [...$$('.sc-safe-groups .toggle')].find(b => b.textContent === $('.strip[data-id=ch7] .scribble').textContent).click();
+  assert($('.sc-safe-note').textContent.includes($('.strip[data-id=ch7] .scribble').textContent), 'nota dei protetti mancante');
+  $('.scenes-dialog .tab[data-tab=snap]').click();
+  await until(() => !$$('.sc-row')[0].querySelector('.btn').disabled, 3000, 'snapshot 1 caricabile');
+  $$('.sc-row')[0].querySelector('.btn').click();
+  confirmAsk();
+  await until(() => near(simValue('/ch/08/mix/fader'), snap8), 3000, 'ch8 tornato allo snapshot');
+  await sleep(1200);
+  assert(near(simValue('/ch/07/mix/fader'), moved7), `ch7 protetto cambiato (${simValue('/ch/07/mix/fader')} invece di ${moved7})`);
+  $('.scenes-dialog .sc-close').click();
+  udp.close();
+});
+
+await test('layer: nuova pagina con i canali scelti, nell\'ordine scelto', async () => {
+  $('.tab-add').click();
+  assert($('dialog.layer-dialog[open]'), 'finestra del layer non aperta');
+  $('.ly-name').value = 'Voci';
+  const pick = id => [...$$('.ly-pick')].find(b => b.textContent === $(`.strip[data-id=${id}] .scribble`).textContent).click();
+  pick('ch13'); pick('ch2'); pick('bus1'); pick('dca1');
+  $('.layer-dialog .ly-save').click();
+  const tab = $('.tab-layer');
+  assert(tab && tab.textContent === 'Voci', 'scheda del layer mancante');
+  assert($('#strips').dataset.group === 'layer', 'layer non aperto');
+  const shown = $$('#strips .strip.in-layer').sort((a, b) => a.style.order - b.style.order).map(e => e.dataset.id);
+  assert(shown.join() === 'ch13,ch2,bus1,dca1', `ordine sbagliato: ${shown}`);
+  assert(w.localStorage.getItem('xair.layers').includes('Voci'), 'layer non salvato');
+  // secondo tocco sulla scheda aperta: modifica, poi elimina
+  tab.click();
+  assert($('dialog.layer-dialog[open]'), 'modifica non aperta');
+  $('.ly-delete').click();
+  assert(!$('.tab-layer') && $('#strips').dataset.group === 'input', 'layer non eliminato');
 });
 
 await test('nessun errore JavaScript', async () => {

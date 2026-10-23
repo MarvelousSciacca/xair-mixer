@@ -10,6 +10,7 @@ import { eqTypePicker, bandTitle } from './eq-ui.js';
 import { presetMenu } from './presets.js';
 import { isCut } from './dsp.js';
 import { applyColor } from './ui.js';
+import { copyStrip, pasteStrip, clipboardSource } from './clipboard.js';
 
 const TABS = [
   { id: 'input', label: 'Ingresso', has: s => s.headamp || s.preamp || s.insert || s.source },
@@ -54,6 +55,10 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
         <button class="icon-btn prev" type="button" aria-label="Canale precedente">‹</button>
         <div class="editor-title"><span class="chip"></span><strong class="name"></strong><span class="sub"></span></div>
         <button class="icon-btn next" type="button" aria-label="Canale successivo">›</button>
+        <div class="ed-clip">
+          <button class="btn ghost ed-copy" type="button" aria-label="Copia" title="Copia le impostazioni di questo canale"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span class="btn-text">Copia</span></button>
+          <button class="btn ghost ed-paste" type="button" aria-label="Incolla" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span class="btn-text">Incolla</span></button>
+        </div>
         <nav class="editor-tabs" role="tablist"></nav>
         <button class="icon-btn close" type="button" aria-label="Chiudi">✕</button>
       </header>
@@ -277,6 +282,8 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
     name.textContent = mixer.get(`${s.base}/config/name`) || s.label;
     scope.on(`${s.base}/config/color`, c => applyColor($('.editor-title'), c));
 
+    renderClip();
+
     const available = TABS.filter(t => t.has(s));
     if (!available.some(t => t.id === tab)) tab = available[0].id;
     tabsEl.innerHTML = '';
@@ -296,6 +303,19 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
     body.dataset.tab = tab;
     body.append(...builders[tab](scope, s, paramMap(s)));
   }
+
+  // Copia/Incolla: Incolla è attivo quando c'è un altro canale copiato.
+  const pasteBtn = $('.ed-paste');
+  function renderClip() {
+    const clip = clipboardSource();
+    pasteBtn.disabled = !clip || clip.from === current;
+    pasteBtn.title = clip ? `Incolla le impostazioni copiate da ${clip.name}` : 'Prima copia un canale';
+  }
+  $('.ed-copy').addEventListener('click', () => {
+    copyStrip(mixer, current);
+    renderClip();
+  });
+  pasteBtn.addEventListener('click', () => pasteStrip(mixer, current));
 
   function open(strip, wantTab) {
     current = strip;

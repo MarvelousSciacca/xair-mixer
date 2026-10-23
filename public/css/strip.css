@@ -295,7 +295,7 @@ body[data-tab="meters"] .strips { display: none; }
 }
 
 /* canali nascosti dalla Vista (solo mixer principale) */
-.strip.user-hidden { display: none !important; }
+.strips:not([data-group="layer"]) .strip.user-hidden { display: none !important; }
 .view-picks { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
 .view-picks .toggle[hidden] { display: none; }
 .view-picks-actions { display: flex; gap: 6px; margin-top: 8px; }

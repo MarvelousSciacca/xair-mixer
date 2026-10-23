@@ -3,6 +3,7 @@
 
 import { SNAPSHOTS } from './model.js';
 import { ask, notify } from './dialogs.js';
+import { createSafes, protectable } from './safes.js';
 
 const pad2 = n => String(n).padStart(2, '0');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -40,7 +41,8 @@ export function downloadScene(scene) {
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
 
-export function createScenes({ mixer, addresses, onReload }) {
+export function createScenes({ mixer, addresses, strips, onReload }) {
+  const safes = createSafes(protectable(strips));
   const dialog = h('dialog', 'scenes-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -50,7 +52,9 @@ export function createScenes({ mixer, addresses, onReload }) {
     <nav class="tabs sc-tabs">
       <button class="tab" type="button" data-tab="snap">Snapshot nel mixer</button>
       <button class="tab" type="button" data-tab="file">Scene su file</button>
+      <button class="tab" type="button" data-tab="safe">Canali protetti</button>
     </nav>
+    <p class="sc-safe-note" hidden></p>
     <section class="sc-pane" data-pane="snap">
       <p class="sc-current"></p>
       <ul class="sc-list"></ul>
@@ -64,6 +68,11 @@ export function createScenes({ mixer, addresses, onReload }) {
         <input class="sc-file" type="file" accept=".json,application/json" hidden>
       </div>
       <div class="sc-progress" hidden><div class="sc-bar"></div><span></span></div>
+    </section>
+    <section class="sc-pane" data-pane="safe" hidden>
+      <p class="fb-help">I canali protetti non cambiano quando carichi uno snapshot o una scena su file.
+        Proteggendo un bus o una mandata FX resta com'è anche quanto ogni canale gli manda: utile per i monitor.</p>
+      <div class="sc-safe-groups"></div>
     </section>`;
   document.body.append(dialog);
   const $ = sel => dialog.querySelector(sel);
@@ -75,6 +84,43 @@ export function createScenes({ mixer, addresses, onReload }) {
   };
   dialog.querySelectorAll('.sc-tabs .tab').forEach(t => t.addEventListener('click', () => showPane(t.dataset.tab)));
   $('.sc-close').addEventListener('click', () => dialog.close());
+
+  // --- canali protetti ---
+  const nameOf = st => mixer.get(`${st.base}/config/name`) || st.label;
+  const safeButtons = [];
+  const groups = [['Ingressi', 'input'], ['Bus e mandate FX', 'bus'], ['Main', 'main']];
+  for (const [title, group] of groups) {
+    const box = h('div', 'sc-safe-group');
+    box.append(h('h3', null, title));
+    const row = h('div', 'view-picks');
+    for (const st of protectable(strips).filter(x => x.group === group)) {
+      const b = h('button', 'toggle', st.label);
+      b.type = 'button';
+      b.addEventListener('click', () => safes.toggle(st.id));
+      mixer.on(`${st.base}/config/name`, () => { b.textContent = nameOf(st); renderSafes(); });
+      row.append(b);
+      safeButtons.push([st, b]);
+    }
+    box.append(row);
+    $('.sc-safe-groups').append(box);
+  }
+  function renderSafes() {
+    for (const [st, b] of safeButtons) b.setAttribute('aria-pressed', String(safes.has(st.id)));
+    const names = safeButtons.filter(([st]) => safes.has(st.id)).map(([st]) => nameOf(st));
+    const note = $('.sc-safe-note');
+    note.hidden = !names.length;
+    note.textContent = `Protetti: ${names.join(', ')}`;
+    dialog.querySelector('[data-tab="safe"]').textContent = names.length ? `Canali protetti (${names.length})` : 'Canali protetti';
+  }
+  safes.onChange(renderSafes);
+  renderSafes();
+
+  /** Parametri protetti con il loro valore attuale, da rimettere dopo uno snapshot. */
+  const protectedEntries = () => safes.filter(addresses)
+    .filter(a => !a.startsWith('/-') && mixer.get(a) !== undefined)
+    .map(address => ({ address, value: mixer.get(address), type: mixer.typeOf(address) ?? 'f' }))
+    // prima ciò che si sente di più: accensione, fader, mandate
+    .sort((a, b) => Number(!/\/mix\//.test(a.address)) - Number(!/\/mix\//.test(b.address)));
 
   // --- snapshot nel mixer ---
   const list = $('.sc-list');
@@ -130,10 +176,14 @@ export function createScenes({ mixer, addresses, onReload }) {
       danger: true,
     });
     if (!ok) return;
+    // lo snapshot lo carica il mixer per intero: i canali protetti si rimettono subito dopo
+    const keep = protectedEntries();
     mixer.command(SNAPSHOTS.load, [{ type: 'i', value: n }]);
     mixer.clearHistory(); // Annulla non deve mescolare la scena nuova con quella di prima
-    notify(`Caricamento di "${snapName(n)}"…`);
+    const restored = keep.length ? mixer.setMany(keep) : null;
+    notify(`Caricamento di "${snapName(n)}"…${keep.length ? ' I canali protetti restano com\'erano.' : ''}`);
     await sleep(800);
+    await restored;
     onReload(); // il mixer ha cambiato tutto: rilegge i parametri
     refreshSnapshots();
   }
@@ -213,8 +263,9 @@ export function createScenes({ mixer, addresses, onReload }) {
   });
 
   async function applyScene(scene, onProgress) {
+    const skip = new Set(safes.filter(Object.keys(scene.params))); // canali protetti: non si toccano
     const entries = Object.entries(scene.params)
-      .filter(([address]) => !address.startsWith('/-'))
+      .filter(([address]) => !address.startsWith('/-') && !skip.has(address))
       .map(([address, [type, value]]) => ({ address, type, value }));
     // Prima i tipi di effetto (il mixer reimposta i parametri dell'effetto quando cambia tipo).
     const isFxType = e => /^\/fx\/\d\/type$/.test(e.address);

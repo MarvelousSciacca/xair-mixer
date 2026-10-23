@@ -11,4 +11,4 @@ nei formati computer, iPad e telefono, e segnala testi che escono dal riquadro e
 
 `cd tools/test && npm install && npm test`: l'app vera in jsdom collegata al simulatore (porte 10031/8097):
 connessione, trascinamento del fader fino al mixer, fader che non salta mentre lo si tiene, schede, Vista,
-pannello canale, monitor, Annulla/Ripeti (anche da tastiera), movimento fine, doppio tocco, blocco.
+pannello canale, monitor, Annulla/Ripeti (anche da tastiera), movimento fine, doppio tocco, blocco, copia/incolla, canali protetti con uno snapshot, layer.

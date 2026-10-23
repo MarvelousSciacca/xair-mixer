@@ -28,6 +28,9 @@ I browser non possono usare UDP, quindi il ponte traduce i messaggi. Nelle futur
 | `server/bridge.js` | server web + ponte WebSocket ↔ UDP, ricerca mixer in rete |
 | `server/simulator.js` | simulatore XR18 su 127.0.0.1:10024 |
 | `public/js/mixer.js` | stato del mixer, keepalive `/xremote`, meter, legge del fader, cronologia Annulla/Ripeti |
+| `public/js/clipboard.js` | copia/incolla delle impostazioni tra canali, per sezioni (mai gain e +48V) |
+| `public/js/safes.js` | canali protetti: non cambiano caricando scene e snapshot |
+| `public/js/layers.js` | layer personalizzati: schede con i canali scelti, nell'ordine scelto |
 | `public/js/stage.js` | per il palco: pulsanti Annulla/Ripeti, blocco dei comandi, schermo sempre acceso |
 | `public/js/model.js` | canali, bus, indirizzi OSC, colori |
 | `public/js/ui.js` | channel strip, fader, pan, meter |
@@ -65,10 +68,12 @@ I browser non possono usare UDP, quindi il ponte traduce i messaggi. Nelle futur
 - [x] Grafica rifinita (strip, barra con icone e layout per telefono), EQ più intuitivo, EQ grafici a cursori
 - [x] App installabili (Android, iOS, macOS, Windows, Linux)
 - [x] Per il palco: Annulla/Ripeti di ogni modifica (⌘Z/Ctrl+Z), blocco dei comandi (si sblocca tenendo premuto), schermo sempre acceso da collegati, movimento fine allontanando il dito di lato da fader e manopole, doppio tocco = 0 dB / valore di riposo
+- [x] Copia/incolla tra canali per sezioni (fase e low cut, gate, EQ, compressore, mandate), canali protetti in scene e snapshot (un bus protetto protegge anche le mandate verso di lui), layer personalizzati
 
 Da verificare con un mixer reale:
 - range dei parametri degli effetti diversi da HALL, VRM, MODD, PLAT, D/CR;
 - estremi di `/ch/NN/preamp/rtntrim` (ipotesi ±18 dB; 0.5 = 0 dB verificato);
+- canali protetti con gli snapshot: il mixer carica lo snapshot intero e l'app rimette subito i canali protetti; da verificare sul mixer reale se si sente un salto;
 - RTA: verificati `/meters/4` (100 bande), `/-stat/rta/source`, sorgenti 0-16; da confermare 17-31 (ritorni, bus, mandate, main).
 
 Verificati il 14/10: snapshot `/-snap/save|load|delete ,i N` e rinomina (Diagnostica 3); sorgenti d'ingresso, trim USB, automix e scrittura di `/config/amixenable/X` (Diagnostica 4); parametri dei 4 effetti caricati (numero e tipo).

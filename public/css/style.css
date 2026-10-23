@@ -203,6 +203,7 @@ body.locked .topbar { opacity: .55; }
 }
 .strips[data-group="input"] .strip:not(.strip-input),
 .strips[data-group="bus"] .strip:not(.strip-bus) { display: none; }
+.strips[data-group="layer"] .strip:not(.in-layer) { display: none; }
 
 .main-strip { display: flex; border-left: 2px solid var(--line); background: var(--panel); }
 
@@ -511,6 +512,14 @@ button.label:disabled { cursor: default; }
 .editor-title .name { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .editor-title .sub { color: var(--muted); font-size: 12px; }
 .editor-tabs { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; }
+.ed-clip { display: flex; gap: 4px; flex: none; }
+.ed-clip .btn { height: 36px; padding: 0 12px; }
+@media (max-width: 700px) {
+  .ed-clip .btn { width: 36px; padding: 0; }
+  .ed-clip .btn-text { display: none; }
+}
+.paste-dialog .paste-option { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px; cursor: pointer; }
+.paste-dialog .paste-option input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
 .icon-btn {
   width: 36px;
   height: 36px;
@@ -768,7 +777,8 @@ button.label:disabled { cursor: default; }
 /* --- fase 3: DCA, mute group, sends on fader ----------------------------------------------- */
 
 .strips[data-group="dca"] .strip:not(.strip-dca) { display: none; }
-.strips:not([data-group="dca"]) .strip-dca { display: none; }
+.strips:not([data-group="dca"]):not([data-group="layer"]) .strip-dca { display: none; }
+.strips[data-group="layer"] .mute-groups { display: none; }
 
 .mute-groups { justify-content: flex-start; gap: 8px; flex-basis: 110px; }
 .mg-title { font-size: 11px; color: var(--muted); text-align: center; text-transform: uppercase; letter-spacing: .06em; }
@@ -1174,3 +1184,16 @@ body[data-tab="routing"] .strips { display: none; }
   background-position: right 10px center;
   background-size: 10px 7px;
 }
+
+/* --- canali protetti (pannello Scene) ---------------------------------------------------------- */
+.sc-safe-note { margin: 10px 0 0; font-size: 13px; font-weight: 600; color: var(--accent); }
+.sc-safe-group h3 { margin: 12px 0 8px; font-size: 13px; color: var(--muted); }
+
+/* --- layer personalizzati ------------------------------------------------------------------------ */
+.tab-add { color: var(--accent); }
+.layer-bar { display: none; align-items: center; gap: 10px; padding: 6px 16px; border-bottom: 1px solid var(--line); background: var(--panel); font-size: 13px; }
+body[data-tab="layer"] .layer-bar { display: flex; }
+.layer-bar .btn { height: 30px; padding: 0 12px; }
+.layer-dialog { width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); }
+.ly-label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.ly-group h3 { margin: 12px 0 8px; font-size: 13px; color: var(--muted); }

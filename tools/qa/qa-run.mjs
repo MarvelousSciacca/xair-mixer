@@ -14,6 +14,8 @@ const screens = {
   'ed-ingresso': open('ch13', 'Ingresso'), 'ed-gate': open('ch13', 'Gate'), 'ed-eq': open('ch13', 'EQ'), 'ed-comp': open('ch13', 'Compressore'),
   'ed-mandate': open('ch13', 'Mandate'), 'ed-gruppi': open('ch13', 'Gruppi'), 'ed-rtn-fx': open('rtn1', 'Effetto'),
   'dlg-connetti': `document.getElementById('connect-btn').click()`, 'dlg-scene': `document.getElementById('scenes-btn').click()`,
+  'dlg-layer': `document.querySelector('.tab-add').click()`,
+  'dlg-protetti': `document.getElementById('scenes-btn').click();document.querySelector('.scenes-dialog .tab[data-tab=safe]').click()`,
   'dlg-impostazioni': `document.getElementById('settings-btn').click()`, 'dlg-feedback': `document.getElementById('fb-btn').click()`,
   'dlg-vista': `document.getElementById('view-btn').click()`, 'dlg-libreria': `${tab('fx')};document.querySelector('.fx-toolbar .btn').click()`,
   monitor: `${tab('input')};document.getElementById('monitor-btn').click()`,
