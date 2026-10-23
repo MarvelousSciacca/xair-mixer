@@ -79,5 +79,6 @@
       "maintainer": "X Air Mixer <noreply@xairmixer.it>"
     },
     "afterSign": "build/adhoc-sign.cjs"
-  }
+  },
+  "homepage": "https://github.com/MarvelousSciacca/xair-mixer"
 }
