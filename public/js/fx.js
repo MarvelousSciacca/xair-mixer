@@ -264,6 +264,9 @@ export function fxParams(typeIndex) {
   return { mapped: false, params: Array.from({ length: GENERIC_COUNT }, (_, i) => pct(`Par ${i + 1}`)) };
 }
 
+/** Posizione del parametro "Tempo" dei delay (per il tap tempo), -1 se l'effetto non ce l'ha. */
+export const tapIndex = typeIndex => FX_TYPES[typeIndex]?.params?.indexOf(time) ?? -1;
+
 /** Tutti gli indirizzi FX da leggere alla connessione. */
 export function fxAddresses() {
   return FX_SLOTS.flatMap(slot => [

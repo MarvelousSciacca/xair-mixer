@@ -349,6 +349,26 @@ await test('layer: nuova pagina con i canali scelti, nell\'ordine scelto', async
   assert(!$('.tab-layer') && $('#strips').dataset.group === 'input', 'layer non eliminato');
 });
 
+await test('tap tempo: il delay segue il tempo battuto', async () => {
+  const { TapTempo } = await import(`${ROOT}/public/js/tap.js`);
+  const t = new TapTempo();
+  assert(t.tap(0) === null && t.tap(500) === 500 && t.tap(1000) === 500 && t.tap(1600) === 1600 / 3, 'media degli intervalli');
+  assert(t.tap(5000) === null, 'una pausa lunga deve ricominciare');
+  $('.topbar .tab[data-group=fx]').click();
+  const tap = await (async () => { await until(() => $('.fx-tap'), 3000, 'pulsante Tap'); return $('.fx-tap'); })();
+  const card = tap.closest('.fx-card');
+  assert(card && /Delay/i.test(card.textContent), 'Tap fuori da un delay');
+  const slot = $$('.fx-card').indexOf(card) + 1;
+  for (let i = 0; i < 4; i++) {
+    tap.dispatchEvent(new w.MouseEvent('pointerdown', { bubbles: true, button: 0 }));
+    if (i < 3) await sleep(500);
+  }
+  const expected = (500 - 1) / (3000 - 1); // Tempo: 1..3000 ms lineare
+  await until(() => Math.abs(simValue(`/fx/${slot}/par/02`) - expected) < 0.01, 3000, `tempo del delay (${simValue(`/fx/${slot}/par/02`)})`);
+  assert(/Tap · 1[12]\d BPM/.test(tap.textContent), `BPM mostrati: ${tap.textContent}`);
+  $('.topbar .tab[data-group=input]').click();
+});
+
 await test('nessun errore JavaScript', async () => {
   assert(!errors.length, errors.join(' | '));
 });

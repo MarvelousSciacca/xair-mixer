@@ -2,8 +2,9 @@
 // e dalla scheda Effetti.
 
 import { Scope, knob, choice, stepper } from './controls.js';
-import { FX_TYPE_SPEC, FX_PARAM_COUNT, FX_TYPES, FX_VERIFIED, fxTypeAddress, fxParamAddress, fxParams } from './fx.js';
-import { isContinuous } from './params.js';
+import { FX_TYPE_SPEC, FX_PARAM_COUNT, FX_TYPES, FX_VERIFIED, fxTypeAddress, fxParamAddress, fxParams, tapIndex } from './fx.js';
+import { isContinuous, toNorm } from './params.js';
+import { TapTempo, bpm } from './tap.js';
 import { geqControls, GEQ_CODES } from './geq-ui.js';
 
 const GENERIC = (i, label = `Par ${i + 1}`) => ({ kind: 'lin', label, min: 0, max: 100, unit: '%', def: 50 });
@@ -60,7 +61,28 @@ export function fxControls(mixer, sc, slot) {
       if (sent === 'i' && isContinuous(spec)) grid.append(stepper(inner, address, { label: spec.label }));
       else if (sent === 'f' && !isContinuous(spec)) grid.append(knob(inner, address, GENERIC(i, spec.label)));
       else grid.append(knob(inner, address, spec));
+      if (i === tapIndex(type) && sent !== 'i') grid.append(tapButton(address, spec));
     }
+  };
+
+  /** Pulsante del tap tempo accanto al parametro Tempo dei delay. */
+  const tapButton = (address, spec) => {
+    const tapper = new TapTempo();
+    const b = h('button', 'btn ghost fx-tap', 'Tap');
+    b.type = 'button';
+    b.title = 'Batti il tempo: il delay lo segue';
+    b.addEventListener('pointerdown', e => {
+      e.preventDefault(); // risponde al tocco, senza aspettare il clic
+      const ms = tapper.tap(e.timeStamp || performance.now());
+      b.classList.remove('flash');
+      void b.offsetWidth;
+      b.classList.add('flash');
+      if (ms === null) return;
+      const clamped = Math.min(spec.max, Math.max(spec.min, Math.round(ms)));
+      mixer.set(address, toNorm(spec, clamped));
+      b.textContent = `Tap · ${bpm(clamped)} BPM`;
+    });
+    return b;
   };
   build(current);
 

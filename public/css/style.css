@@ -1251,3 +1251,8 @@ dialog.tour.centered .tour-card { left: 50% !important; top: 50% !important; tra
 .sl-options { margin-top: 10px; }
 @media (max-width: 520px) { .setlist-bar { padding: 6px 8px; } .setlist-bar .btn { padding: 0 10px; } }
 .sl-list .hint { color: var(--muted); font-size: 13px; padding: 6px 0; }
+
+/* --- tap tempo dei delay -------------------------------------------------------------------------- */
+.fx-tap { align-self: center; min-width: 84px; height: 44px; padding: 0 10px; font-weight: 600; touch-action: manipulation; }
+.fx-tap.flash { animation: tap-flash .18s ease-out; }
+@keyframes tap-flash { from { background: var(--accent); color: var(--on-accent, #fff); } }
