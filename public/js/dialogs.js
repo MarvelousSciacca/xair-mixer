@@ -6,7 +6,7 @@
  * input: valore iniziale di un campo di testo (se presente restituisce il testo).
  * requireText: parola da digitare per abilitare la conferma (azioni pericolose).
  */
-export function ask({ title, message = '', input = null, confirmText = 'OK', danger = false, requireText = null, maxLength = 32 }) {
+export function ask({ title, message = '', input = null, confirmText = 'OK', danger = false, requireText = null, maxLength = 32, secret = false }) {
   return new Promise(resolve => {
     const dialog = document.createElement('dialog');
     dialog.className = 'ask-dialog';
@@ -30,6 +30,11 @@ export function ask({ title, message = '', input = null, confirmText = 'OK', dan
       field.hidden = false;
       field.maxLength = maxLength;
       field.value = input ?? '';
+      if (secret) { // PIN: cifre nascoste, tastierino numerico sui telefoni
+        field.type = 'password';
+        field.inputMode = 'numeric';
+        field.autocomplete = 'off';
+      }
       if (requireText) {
         field.placeholder = requireText;
         ok.disabled = true;

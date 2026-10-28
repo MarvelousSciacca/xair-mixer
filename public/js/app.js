@@ -16,6 +16,7 @@ import { Links } from './link.js';
 import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
 import { createSetlist } from './setlist.js';
+import { createPin } from './pin.js';
 import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
@@ -294,7 +295,8 @@ createFeedbackUI({ mixer, monitor: feedback, editor, storage });
 
 // --- modalità monitor (in-ear) -------------------------------------------------------------
 
-const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel });
+const pin = createPin(storage);
+const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel, pin });
 document.getElementById('monitor-btn').addEventListener('click', () => monitorView.enter());
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------
@@ -302,7 +304,7 @@ document.getElementById('monitor-btn').addEventListener('click', () => monitorVi
 const scenes = createScenes({ mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe() });
 document.getElementById('scenes-btn').addEventListener('click', () => scenes.open());
 const setlist = createSetlist({ mixer, scenes, storage, mixerEl: document.querySelector('.mixer') });
-const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }) });
+const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());
 
 // --- avvio ------------------------------------------------------------------------

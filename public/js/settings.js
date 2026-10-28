@@ -28,7 +28,7 @@ function section(title, ...children) {
   return sec;
 }
 
-export function createSettings({ mixer, addresses, onReload, onTour }) {
+export function createSettings({ mixer, addresses, onReload, onTour, pin }) {
   const dialog = h('dialog', 'settings-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -53,6 +53,39 @@ export function createSettings({ mixer, addresses, onReload, onTour }) {
   };
   mixer.onStatus(renderInfo);
 
+
+  // PIN del monitor: chiesto per sbloccare o lasciare la schermata monitor bloccata
+  const pinNote = h('p', 'fx-note');
+  const pinSet = h('button', 'btn ghost');
+  const pinClear = h('button', 'btn ghost', 'Togli il PIN');
+  pinSet.type = pinClear.type = 'button';
+  const renderPin = () => {
+    const has = !!pin?.has();
+    pinNote.textContent = has
+      ? 'Su questo dispositivo, per sbloccare o lasciare la schermata monitor bloccata serve il PIN.'
+      : 'Dai il telefono a un musicista con la schermata monitor bloccata: col PIN non può uscirne e muove solo il suo mix. Protegge dagli errori: chi conosce l\'OSC può comunque comandare il mixer dalla rete.';
+    pinSet.textContent = has ? 'Cambia PIN' : 'Imposta PIN';
+    pinClear.hidden = !has;
+  };
+  pinSet.addEventListener('click', async () => {
+    if (pin.has() && !(await pin.request('PIN attuale'))) return;
+    const first = await ask({ title: 'Nuovo PIN', message: 'Da 4 a 8 cifre.', input: '', secret: true, maxLength: 8, confirmText: 'Avanti' });
+    if (first === null) return;
+    if (!/^\d{4,8}$/.test(first)) return notify('Il PIN deve avere da 4 a 8 cifre', { error: true });
+    const again = await ask({ title: 'Ripeti il PIN', input: '', secret: true, maxLength: 8, confirmText: 'Salva' });
+    if (again === null) return;
+    if (again !== first) return notify('I due PIN non coincidono', { error: true });
+    await pin.set(first);
+    renderPin();
+    notify('PIN salvato su questo dispositivo');
+  });
+  pinClear.addEventListener('click', async () => {
+    if (!(await pin.request('Togli il PIN'))) return;
+    pin.clear();
+    renderPin();
+    notify('PIN tolto');
+  });
+  renderPin();
 
   const tour = h('button', 'btn ghost', 'Rivedi il tutorial');
   tour.type = 'button';
@@ -96,6 +129,7 @@ export function createSettings({ mixer, addresses, onReload, onTour }) {
       toggle(sc, SETTINGS.linkDyn, bool('Dinamiche')),
       toggle(sc, SETTINGS.linkFader, bool('Fader e mute'))),
     section('Routing', h('p', 'fx-note', 'Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.')),
+    ...(pin ? [section('PIN del monitor', pinNote, pinSet, pinClear)] : []),
     section('Tutorial', tour),
     section('Manutenzione', reload, init),
     section('Informazioni e note legali', aboutSection()),

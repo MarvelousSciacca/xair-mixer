@@ -369,6 +369,41 @@ await test('tap tempo: il delay segue il tempo battuto', async () => {
   $('.topbar .tab[data-group=input]').click();
 });
 
+await test('PIN: la schermata monitor bloccata si lascia solo col PIN giusto', async () => {
+  const answer = async value => {
+    await until(() => $('dialog.ask-dialog[open] .ask-input'), 3000, 'richiesta del PIN');
+    const field = $('dialog.ask-dialog[open] .ask-input');
+    assert(field.type === 'password', 'PIN visibile mentre si scrive');
+    field.value = value;
+    confirmAsk();
+    await sleep(100);
+  };
+  $('#settings-btn').click();
+  [...$$('.settings-dialog button')].find(b => b.textContent === 'Imposta PIN').click();
+  await answer('1234');
+  await answer('1234');
+  await until(() => [...$$('.settings-dialog button')].some(b => b.textContent === 'Cambia PIN'), 3000, 'PIN salvato');
+  assert(!w.localStorage.getItem('xair.pin').includes('1234'), 'PIN salvato in chiaro');
+  $('.settings-dialog .st-close').click();
+  $('#monitor-btn').click();
+  await until(() => !$('.monitor-view').hidden, 3000, 'monitor aperto');
+  $('.mon-lock').click();
+  assert($('.monitor-view').classList.contains('locked'), 'monitor non bloccato');
+  assert($('.mon-hint').textContent.includes('PIN'), `avviso: ${$('.mon-hint').textContent}`);
+  $('.mon-exit').click();
+  await answer('0000');
+  assert(!$('.monitor-view').hidden, 'uscito con il PIN sbagliato');
+  $('.mon-exit').click();
+  await answer('1234');
+  await until(() => $('.monitor-view').hidden, 3000, 'uscita col PIN giusto');
+  // pulizia: togli il PIN
+  $('#settings-btn').click();
+  [...$$('.settings-dialog button')].find(b => b.textContent === 'Togli il PIN').click();
+  await answer('1234');
+  await until(() => [...$$('.settings-dialog button')].some(b => b.textContent === 'Imposta PIN'), 3000, 'PIN tolto');
+  $('.settings-dialog .st-close').click();
+});
+
 await test('nessun errore JavaScript', async () => {
   assert(!errors.length, errors.join(' | '));
 });

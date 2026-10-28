@@ -39,7 +39,7 @@ function holdable(btn, needsHold, action) {
   });
 }
 
-export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null }) {
+export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null, pin = null }) {
   const inputs = strips.filter(s => s.group === 'input' && s.sends);
   const buses = strips.filter(s => s.id.startsWith('bus'));
 
@@ -110,7 +110,7 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
 
   function renderHint() {
     hint.textContent = settings.locked
-      ? `Mix di ${busName(settings.bus)} · schermata bloccata (tieni premuto per sbloccare)`
+      ? `Mix di ${busName(settings.bus)} · schermata bloccata (${pin?.has() ? 'serve il PIN per sbloccare' : 'tieni premuto per sbloccare'})`
       : `I fader regolano solo il mix di ${busName(settings.bus)}: l'audio in sala non cambia.`;
   }
 
@@ -175,12 +175,18 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
     render();
   });
   $('.mon-pick').addEventListener('click', openPicker);
-  holdable($('.mon-lock'), () => settings.locked, () => {
+  // A schermata bloccata: senza PIN si tiene premuto; con il PIN di questo dispositivo lo si chiede.
+  const needsHold = () => settings.locked && !pin?.has();
+  const guarded = action => async () => {
+    if (settings.locked && pin?.has() && !(await pin.request('Sblocca il monitor'))) return;
+    action();
+  };
+  holdable($('.mon-lock'), needsHold, guarded(() => {
     settings.locked = !settings.locked;
     save();
     render();
-  });
-  holdable($('.mon-exit'), () => settings.locked, () => exit());
+  }));
+  holdable($('.mon-exit'), needsHold, guarded(() => exit()));
 
   function enter(bus = settings.bus) {
     settings.active = true;
