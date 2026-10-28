@@ -82,9 +82,9 @@ export class UdpTransport {
     this.discovery = found;
     const { addresses } = await this.udp.broadcastAddresses();
     for (const host of addresses) this._sendTo(host, '/xinfo', []);
-    // interrogazione indirizzo per indirizzo della rete Wi-Fi (disponibile sul plugin iOS)
+    // interrogazione indirizzo per indirizzo della rete Wi-Fi o via cavo (en* su iOS, wlan*/eth* su Android)
     const ifaces = await this.udp.interfaces?.().then(r => r.interfaces, () => []) ?? [];
-    for (const ni of ifaces.filter(n => /^en\d/.test(n.name ?? ''))) {
+    for (const ni of ifaces.filter(n => /^(en|wlan|eth)\d/.test(n.name ?? ''))) {
       const hosts = sweepAddresses(ni);
       for (let i = 0; i < hosts.length; i++) {
         this._sendTo(hosts[i], '/xinfo', []);

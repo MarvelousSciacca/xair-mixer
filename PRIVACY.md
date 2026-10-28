@@ -34,6 +34,8 @@ Android il backup automatico dei dati è disattivato.
 
 - **Rete locale** (iOS) e **Internet** (Android): servono per parlare con il mixer sulla rete locale.
   Su Android il permesso si chiama "Internet" anche quando la comunicazione resta nella rete locale.
+- **Stato della rete** (Android): serve a riconoscere la rete Wi-Fi del mixer e a usarla anche se non ha
+  accesso a internet. Non legge il contenuto del traffico né i nomi delle reti.
 - **Schermo sempre acceso**: mentre sei collegato al mixer lo schermo non si spegne da solo.
 
 L'app non usa microfono, fotocamera, posizione, contatti, foto o notifiche.
@@ -69,7 +71,8 @@ the app.
   address) and the scene files you save yourself. They never leave your device; uninstalling the app or
   clearing its data removes them. Android automatic backup is disabled.
 - **Permissions:** local network (iOS) and Internet (Android, required even for local-network traffic), to
-  reach the mixer; keeping the screen awake while connected. No microphone, camera, location, contacts,
+  reach the mixer; network state (Android), to find the mixer's Wi-Fi network and use it even without
+  Internet access; keeping the screen awake while connected. No microphone, camera, location, contacts,
   photos or notifications.
 - **Children:** no data is collected from anyone, including children.
 - **Changes and contact:** changes will be published in this file with an updated date. Questions: open an

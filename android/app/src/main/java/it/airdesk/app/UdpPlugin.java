@@ -1,5 +1,10 @@
 package it.airdesk.app;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.util.Base64;
 import android.view.WindowManager;
 
@@ -10,8 +15,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -26,6 +33,9 @@ import java.util.concurrent.Executors;
  * UDP per l'app Android: fa quello che nel browser fa il ponte Node (server/bridge.js).
  * Un solo socket su porta casuale; i pacchetti ricevuti arrivano al JavaScript come evento
  * "packet" { host, data (base64) }. La codifica OSC resta in JavaScript (public/js/osc.js).
+ *
+ * Il socket è legato alla rete Wi-Fi (o via cavo): la rete del mixer di solito non ha internet,
+ * e in quel caso Android manda il traffico delle app sui dati mobili, dove il mixer non c'è.
  */
 @CapacitorPlugin(name = "XAirUdp")
 public class UdpPlugin extends Plugin {
@@ -33,6 +43,48 @@ public class UdpPlugin extends Plugin {
     private DatagramSocket socket;
     private Thread receiver;
     private final ExecutorService sender = Executors.newSingleThreadExecutor();
+    private Network localNetwork;
+    private ConnectivityManager.NetworkCallback networkCallback;
+
+    @Override
+    public void load() {
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) return;
+        NetworkRequest req = new NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+            .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) // la rete del mixer può non avere internet
+            .build();
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                setLocalNetwork(network);
+            }
+
+            @Override
+            public void onLost(Network network) {
+                if (network.equals(localNetwork)) setLocalNetwork(null);
+            }
+        };
+        try {
+            cm.registerNetworkCallback(req, networkCallback);
+        } catch (RuntimeException e) {
+            networkCallback = null;
+        }
+    }
+
+    /** Cambio di rete locale: il socket va ricreato sulla rete nuova (la porta cambia, il mixer si riallinea con /xremote). */
+    private synchronized void setLocalNetwork(Network network) {
+        localNetwork = network;
+        if (socket != null) {
+            closeSocket();
+            try {
+                ensureOpen();
+            } catch (SocketException ignored) {
+                // verrà riaperto al prossimo invio
+            }
+        }
+    }
 
     @PluginMethod
     public void open(PluginCall call) {
@@ -114,6 +166,35 @@ public class UdpPlugin extends Plugin {
         call.resolve(ret);
     }
 
+    /**
+     * Interfacce IPv4 attive { name, ip, netmask }: se il broadcast non arriva al mixer
+     * (alcuni router o reti lo filtrano), l'app interroga gli indirizzi della rete uno per uno.
+     */
+    @PluginMethod
+    public void interfaces(PluginCall call) {
+        JSArray list = new JSArray();
+        try {
+            for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                for (InterfaceAddress ia : ni.getInterfaceAddresses()) {
+                    if (!(ia.getAddress() instanceof Inet4Address)) continue;
+                    int prefix = ia.getNetworkPrefixLength();
+                    long mask = prefix == 0 ? 0 : (0xFFFFFFFFL << (32 - prefix)) & 0xFFFFFFFFL;
+                    JSObject item = new JSObject();
+                    item.put("name", ni.getName());
+                    item.put("ip", ia.getAddress().getHostAddress());
+                    item.put("netmask", ((mask >> 24) & 255) + "." + ((mask >> 16) & 255) + "." + ((mask >> 8) & 255) + "." + (mask & 255));
+                    list.put(item);
+                }
+            }
+        } catch (SocketException ignored) {
+            // nessuna interfaccia: resta il broadcast
+        }
+        JSObject ret = new JSObject();
+        ret.put("interfaces", list);
+        call.resolve(ret);
+    }
+
     /** Schermo sempre acceso mentre si è collegati al mixer (on: true/false). */
     @PluginMethod
     public void keepAwake(PluginCall call) {
@@ -135,6 +216,13 @@ public class UdpPlugin extends Plugin {
         if (socket != null && !socket.isClosed()) return;
         socket = new DatagramSocket();
         socket.setBroadcast(true);
+        if (localNetwork != null) {
+            try {
+                localNetwork.bindSocket(socket);
+            } catch (IOException ignored) {
+                // resta sulla rete predefinita
+            }
+        }
         final DatagramSocket s = socket;
         receiver = new Thread(() -> {
             byte[] buf = new byte[65535];
@@ -164,5 +252,13 @@ public class UdpPlugin extends Plugin {
     protected void handleOnDestroy() {
         closeSocket();
         sender.shutdownNow();
+        if (networkCallback != null) {
+            ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            try {
+                if (cm != null) cm.unregisterNetworkCallback(networkCallback);
+            } catch (RuntimeException ignored) {
+                // già rimosso
+            }
+        }
     }
 }
