@@ -52,7 +52,7 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
     <div class="fb-settings">
       <button class="toggle big fb-enable" type="button">Monitoraggio</button>
       <div class="choice"><div class="choice-label">Sensibilità</div><div class="segmented fb-sens"></div></div>
-      <button class="toggle fb-auto" type="button" title="Mette da solo un notch sull'EQ dell'uscita">Notch automatico</button>
+      <button class="toggle fb-auto" type="button" title="Mette da solo un notch sull'EQ dell'uscita, solo per i picchi certi (al massimo 4 per uscita)">Notch automatico</button>
     </div>
     <div class="choice-label">Uscite controllate</div>
     <div class="fb-outputs"></div>

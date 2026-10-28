@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node ui.mjs && node security.mjs"
+    "test": "node ui.mjs && node security.mjs && node feedback.mjs"
   },
   "dependencies": {
     "jsdom": "26.1.0",
