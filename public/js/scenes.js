@@ -75,6 +75,7 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
     <nav class="tabs sc-tabs">
       <button class="tab" type="button" data-tab="snap">Snapshot nel mixer</button>
       <button class="tab" type="button" data-tab="file">Scene su file</button>
+      <button class="tab" type="button" data-tab="setlist">Scaletta</button>
       <button class="tab" type="button" data-tab="safe">Canali protetti</button>
     </nav>
     <p class="sc-safe-note" hidden></p>
@@ -92,6 +93,7 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
       </div>
       <div class="sc-progress" hidden><div class="sc-bar"></div><span></span></div>
     </section>
+    <section class="sc-pane sc-setlist" data-pane="setlist" hidden></section>
     <section class="sc-pane" data-pane="safe" hidden>
       <p class="fb-help">I canali protetti non cambiano quando carichi uno snapshot o una scena su file.
         Proteggendo un bus o una mandata FX resta com'è anche quanto ogni canale gli manda: utile per i monitor.</p>
@@ -191,8 +193,9 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
   const refreshSnapshots = () => mixer.query([SNAPSHOTS.index, SNAPSHOTS.current,
     ...Array.from({ length: SNAPSHOTS.count }, (_, i) => SNAPSHOTS.name(i + 1))], { priority: true });
 
-  async function loadSnapshot(n) {
-    const ok = await ask({
+  /** Carica uno snapshot; confirm: false per la scaletta dal vivo (nessuna domanda, subito). */
+  async function loadSnapshot(n, { confirm = true } = {}) {
+    const ok = !confirm || await ask({
       title: `Caricare lo snapshot ${pad2(n)}?`,
       message: `"${snapName(n)}" sostituirà il mix attuale. Se vuoi conservarlo, salvalo prima in uno snapshot o su file.`,
       confirmText: 'Carica',
@@ -309,5 +312,9 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
       dialog.showModal();
     },
     applyScene,
+    loadSnapshot,
+    snapName,
+    isEmpty,
+    setlistPane: $('.sc-setlist'),
   };
 }

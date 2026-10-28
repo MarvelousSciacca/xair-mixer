@@ -59,7 +59,8 @@ export function createLock({ lockBtn, overlay, unlockBtn }) {
   // il velo non lascia passare menu contestuali e tasti verso i comandi sotto
   overlay.addEventListener('contextmenu', e => e.preventDefault());
   window.addEventListener('keydown', e => {
-    if (overlay.hidden || e.target === unlockBtn) return;
+    // PagSu/PagGiù passano: sono i pedali della scaletta, che devono funzionare anche a schermo bloccato
+    if (overlay.hidden || e.target === unlockBtn || e.key === 'PageDown' || e.key === 'PageUp') return;
     e.preventDefault();
     e.stopImmediatePropagation();
   }, true);

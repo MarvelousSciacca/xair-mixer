@@ -291,7 +291,42 @@ await test('canali protetti: lo snapshot non tocca il canale protetto', async ()
   await sleep(1200);
   assert(near(simValue('/ch/07/mix/fader'), moved7), `ch7 protetto cambiato (${simValue('/ch/07/mix/fader')} invece di ${moved7})`);
   $('.scenes-dialog .sc-close').click();
-  udp.close();
+});
+
+await test('scaletta: brani in ordine, Successivo e pedale (anche a schermo bloccato)', async () => {
+  for (const [slot, value, name] of [[2, 0.3, 'Brano B'], [3, 0.6, 'Brano C']]) {
+    simSend('/ch/03/mix/fader', 'f', value);
+    await sleep(150);
+    simSend('/-snap/save', 'i', slot);
+    await sleep(150);
+    simSend(`/-snap/${String(slot).padStart(2, '0')}/name`, 's', name);
+    await sleep(150);
+  }
+  $('#scenes-btn').click();
+  $('.scenes-dialog .tab[data-tab=setlist]').click();
+  const pick = $('.sl-pick');
+  await until(() => [...pick.options].some(o => o.value === '3'), 3000, 'snapshot nella scelta');
+  for (const v of ['2', '3']) {
+    pick.value = v;
+    $('.sl-add .btn').click();
+  }
+  assert($$('.sl-item').length === 2, `brani in scaletta: ${$$('.sl-item').length}`);
+  $('.scenes-dialog .sc-close').click();
+  const bar = $('.setlist-bar');
+  assert(!bar.hidden && $('.sl-now').textContent === 'Scaletta: 2 brani', `barra: ${$('.sl-now').textContent}`);
+  simSend('/ch/03/mix/fader', 'f', 0.9);
+  await sleep(200);
+  $('.sl-go').click();
+  await until(() => near(simValue('/ch/03/mix/fader'), 0.3), 3000, 'primo brano caricato senza domande');
+  assert(!$('dialog.ask-dialog[open]'), 'la scaletta non deve chiedere conferma');
+  assert($('.sl-now').textContent === '1/2 · Brano B' && $('.sl-next').textContent === 'Poi: Brano C', `barra: ${$('.sl-now').textContent} / ${$('.sl-next').textContent}`);
+  await sleep(1300);
+  $('#lock-btn').click();
+  w.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
+  await until(() => near(simValue('/ch/03/mix/fader'), 0.6), 3000, 'pedale a schermo bloccato');
+  assert($('.sl-go').disabled && $('.sl-next').textContent === 'Ultimo brano', 'ultimo brano non riconosciuto');
+  $('#unlock-btn').click();
+  assert($('#lock-overlay').hidden, 'non sbloccato');
 });
 
 await test('layer: nuova pagina con i canali scelti, nell\'ordine scelto', async () => {
@@ -318,6 +353,7 @@ await test('nessun errore JavaScript', async () => {
   assert(!errors.length, errors.join(' | '));
 });
 
+udp.close();
 console.log(failed ? `\n${failed} prove fallite` : '\ntutte le prove passate');
 bridge.close();
 sim.close();

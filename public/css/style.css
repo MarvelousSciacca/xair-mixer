@@ -1232,3 +1232,22 @@ dialog.tour.centered .tour-card { left: 50% !important; top: 50% !important; tra
 .tour-text { margin: 0 0 14px; font-size: 14px; line-height: 1.45; }
 .tour-actions { display: flex; align-items: center; gap: 8px; }
 .tour-actions .btn[hidden] { display: none; }
+
+/* --- scaletta ------------------------------------------------------------------------------------ */
+.setlist-bar { display: flex; align-items: center; gap: 10px; padding: 6px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.setlist-bar[hidden] { display: none; }
+.setlist-bar .btn { height: 40px; padding: 0 16px; font-size: 15px; }
+.setlist-bar .sl-prev { min-width: 48px; }
+.sl-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sl-now { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sl-next { color: var(--muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sl-list { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.sl-item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; }
+.sl-item.current { border-color: var(--accent); }
+.sl-pos { width: 22px; color: var(--muted); text-align: right; }
+.sl-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl-item .btn { height: 30px; min-width: 34px; padding: 0 8px; }
+.sl-pick { flex: 1; min-width: 0; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font: inherit; }
+.sl-options { margin-top: 10px; }
+@media (max-width: 520px) { .setlist-bar { padding: 6px 8px; } .setlist-bar .btn { padding: 0 10px; } }
+.sl-list .hint { color: var(--muted); font-size: 13px; padding: 6px 0; }
