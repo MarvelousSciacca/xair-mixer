@@ -69,7 +69,8 @@ app.on('second-instance', () => {
 app.whenReady().then(() => {
   // dei permessi del browser serve solo lo schermo acceso; microfono, fotocamera, posizione,
   // notifiche e il resto vengono sempre negati
-  const allowed = permission => permission === 'screen-wake-lock';
+  // schermo acceso e controller MIDI (senza sysex: solo note e controlli); tutto il resto negato
+  const allowed = permission => permission === 'screen-wake-lock' || permission === 'midi';
   session.defaultSession.setPermissionRequestHandler((_wc, permission, callback) => callback(allowed(permission)));
   session.defaultSession.setPermissionCheckHandler((_wc, permission) => allowed(permission));
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);

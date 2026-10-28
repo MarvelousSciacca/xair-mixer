@@ -35,6 +35,12 @@ for (const k of ['window', 'document', 'location', 'localStorage', 'requestAnima
 globalThis.WebSocket = WS;
 w.localStorage.setItem('xair.lastIp', '127.0.0.1');
 
+// controller MIDI finto (Web MIDI non esiste in jsdom)
+const midiInput = { name: 'Controller di prova', onmidimessage: null };
+Object.defineProperty(w.navigator, 'requestMIDIAccess', { value: async () => ({ inputs: new Map([['1', midiInput]]), onstatechange: null }), configurable: true });
+let midiClock = 0;
+const midiSend = (...data) => midiInput.onmidimessage?.({ data: Uint8Array.from(data), timeStamp: (midiClock += 1000) });
+
 await import(`${ROOT}/public/js/app.js`);
 
 // --- strumenti ---------------------------------------------------------------------------------
@@ -401,6 +407,53 @@ await test('PIN: la schermata monitor bloccata si lascia solo col PIN giusto', a
   [...$$('.settings-dialog button')].find(b => b.textContent === 'Togli il PIN').click();
   await answer('1234');
   await until(() => [...$$('.settings-dialog button')].some(b => b.textContent === 'Imposta PIN'), 3000, 'PIN tolto');
+  $('.settings-dialog .st-close').click();
+});
+
+await test('MIDI: impara fader, mute e brano precedente della scaletta', async () => {
+  $('#settings-btn').click();
+  [...$$('.settings-dialog button')].find(b => b.textContent === 'Controller MIDI attivo').click();
+  await until(() => $('.settings-dialog').textContent.includes('Collegati: Controller di prova'), 3000, 'controller visto');
+  const learn = () => {
+    if (!$('dialog.settings-dialog').open) $('#settings-btn').click();
+    [...$$('.settings-dialog button')].find(b => b.textContent === 'Impara').click();
+    assert(!$('.midi-learn').hidden && !$('dialog.settings-dialog').open, 'modalità Impara non partita');
+  };
+  // fader
+  learn();
+  const f5 = $('.strip[data-id=ch5] .fader');
+  Object.defineProperty(f5, 'clientHeight', { value: 300 });
+  await drag(f5, 250, 200);
+  assert($('.midi-learn').textContent.includes('fader'), `avviso: ${$('.midi-learn').textContent}`);
+  midiSend(0xb0, 7, 100);
+  assert($('.midi-learn').hidden, 'collegamento non salvato');
+  midiSend(0xb0, 7, 64);
+  await until(() => near(simValue('/ch/05/mix/fader'), 64 / 127, 0.01), 3000, 'fader mosso dal MIDI');
+  // mute con una nota (si inverte a ogni pressione, il rilascio non conta)
+  learn();
+  $('.strip[data-id=ch5] .mute').click();
+  const before = simValue('/ch/05/mix/on');
+  await until(() => simValue('/ch/05/mix/on') !== before, 3000, 'mute dal tocco');
+  midiSend(0x90, 36, 100);
+  assert($('.midi-learn').hidden, 'nota non collegata');
+  const muted = simValue('/ch/05/mix/on');
+  midiSend(0x90, 36, 100);
+  midiSend(0x80, 36, 0);
+  await until(() => simValue('/ch/05/mix/on') === 1 - muted, 3000, 'mute invertito dalla nota');
+  midiSend(0x90, 36, 100);
+  await until(() => simValue('/ch/05/mix/on') === muted, 3000, 'mute rimesso dalla nota');
+  // azione della scaletta: mentre si impara il pulsante non deve cambiare brano
+  learn();
+  const now = $('.sl-now').textContent;
+  $('.sl-prev').click();
+  assert($('.sl-now').textContent === now, 'il pulsante ha cambiato brano durante Impara');
+  midiSend(0xc0, 5);
+  assert($('.midi-learn').hidden, 'program change non collegato');
+  midiSend(0xc0, 5);
+  await until(() => near(simValue('/ch/03/mix/fader'), 0.3), 3000, 'brano precedente dal MIDI');
+  $('#settings-btn').click();
+  const items = $$('.midi-list li').map(li => li.textContent);
+  assert(items.length === 3 && items.some(t => t.includes('Program 5') && t.includes('precedente')), `collegamenti: ${items.join(' | ')}`);
   $('.settings-dialog .st-close').click();
 });
 

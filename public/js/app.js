@@ -17,6 +17,7 @@ import { createMonitor } from './monitor.js';
 import { createScenes } from './scenes.js';
 import { createSetlist } from './setlist.js';
 import { createPin } from './pin.js';
+import { createMidi } from './midi.js';
 import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
@@ -304,7 +305,27 @@ document.getElementById('monitor-btn').addEventListener('click', () => monitorVi
 const scenes = createScenes({ mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe() });
 document.getElementById('scenes-btn').addEventListener('click', () => scenes.open());
 const setlist = createSetlist({ mixer, scenes, storage, mixerEl: document.querySelector('.mixer') });
-const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin });
+// Nome leggibile di un parametro per il MIDI: "Voce 1 · fader", "Kick · mute", "Snare · mandata Monitor 2"…
+function describeAddress(address) {
+  const strip = strips.filter(s => address.startsWith(`${s.base}/`)).sort((a, b) => b.base.length - a.base.length)[0];
+  if (!strip) return address;
+  const name = mixer.get(`${strip.base}/config/name`) || strip.label;
+  const tail = address.slice(strip.base.length + 1);
+  const send = tail.match(/^mix\/(\d\d)\/level$/);
+  const what = send ? `mandata ${Number(send[1]) <= 6 ? `Bus ${Number(send[1])}` : `FX ${Number(send[1]) - 6}`}`
+    : { 'mix/fader': 'fader', fader: 'fader', 'mix/on': 'mute', on: 'mute', 'mix/pan': 'pan' }[tail] ?? tail;
+  return `${name} · ${what}`;
+}
+const midi = createMidi({
+  mixer,
+  storage,
+  describe: describeAddress,
+  actions: {
+    'setlist-next': { label: 'Scaletta: brano successivo', run: () => setlist.next() },
+    'setlist-prev': { label: 'Scaletta: brano precedente', run: () => setlist.prev() },
+  },
+});
+const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin, midi });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());
 
 // --- avvio ------------------------------------------------------------------------

@@ -48,6 +48,8 @@ export function createSetlist({ mixer, scenes, storage, mixerEl }) {
   const upcoming = h('span', 'sl-next');
   info.append(now, upcoming);
   const nextBtn = button('Successivo ▶', 'btn sl-go', () => next(), 'Brano successivo');
+  prevBtn.dataset.midiAction = 'setlist-prev'; // assegnabili a un controllo MIDI
+  nextBtn.dataset.midiAction = 'setlist-next';
   bar.append(prevBtn, info, nextBtn);
   mixerEl.before(bar);
 

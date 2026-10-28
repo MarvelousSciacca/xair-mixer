@@ -28,7 +28,7 @@ function section(title, ...children) {
   return sec;
 }
 
-export function createSettings({ mixer, addresses, onReload, onTour, pin }) {
+export function createSettings({ mixer, addresses, onReload, onTour, pin, midi }) {
   const dialog = h('dialog', 'settings-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -87,6 +87,52 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin }) {
   });
   renderPin();
 
+  // Controller MIDI
+  const midiBox = h('div', 'midi-box');
+  const renderMidi = () => {
+    midiBox.innerHTML = '';
+    if (!midi?.supported) {
+      midiBox.append(h('p', 'fx-note', 'Il MIDI funziona nell\'app per computer e nei browser Chrome ed Edge; su iPhone, iPad e nell\'app Android non è disponibile.'));
+      return;
+    }
+    const on = h('button', 'toggle', 'Controller MIDI attivo');
+    on.type = 'button';
+    on.setAttribute('aria-pressed', String(midi.enabled));
+    on.addEventListener('click', () => midi.enable(!midi.enabled));
+    const learn = h('button', 'btn', 'Impara');
+    learn.type = 'button';
+    learn.disabled = !midi.enabled;
+    learn.addEventListener('click', () => {
+      dialog.close();
+      midi.startLearn();
+    });
+    const row = h('div', 'ed-row');
+    row.append(on, learn);
+    midiBox.append(row);
+    if (midi.enabled) midiBox.append(h('p', 'fx-note', midi.inputs.length ? `Collegati: ${midi.inputs.join(', ')}` : 'Nessun controller collegato.'));
+    const list = h('ul', 'midi-list');
+    for (const m of midi.mappings) {
+      const li = h('li', null);
+      li.append(h('span', null, m.text));
+      const x = h('button', 'btn ghost', '✕');
+      x.type = 'button';
+      x.setAttribute('aria-label', 'Togli il collegamento');
+      x.addEventListener('click', () => midi.remove(m.key));
+      li.append(x);
+      list.append(li);
+    }
+    if (midi.mappings.length) {
+      const clear = h('button', 'btn ghost', 'Togli tutti i collegamenti');
+      clear.type = 'button';
+      clear.addEventListener('click', () => midi.clear());
+      midiBox.append(list, clear);
+    } else if (midi.enabled) {
+      midiBox.append(h('p', 'fx-note', 'Tocca "Impara", muovi un comando nell\'app e poi il controllo sul controller.'));
+    }
+  };
+  midi?.onChange(renderMidi);
+  renderMidi();
+
   const tour = h('button', 'btn ghost', 'Rivedi il tutorial');
   tour.type = 'button';
   tour.addEventListener('click', () => {
@@ -130,6 +176,7 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin }) {
       toggle(sc, SETTINGS.linkFader, bool('Fader e mute'))),
     section('Routing', h('p', 'fx-note', 'Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.')),
     ...(pin ? [section('PIN del monitor', pinNote, pinSet, pinClear)] : []),
+    section('Controller MIDI', midiBox),
     section('Tutorial', tour),
     section('Manutenzione', reload, init),
     section('Informazioni e note legali', aboutSection()),

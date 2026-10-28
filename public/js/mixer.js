@@ -99,7 +99,10 @@ export class Mixer {
   /** Imposta un parametro: aggiorna subito l'interfaccia e invia al mixer (raggruppando i movimenti rapidi). */
   set(address, value, type = 'f', seen = new Set()) {
     if (seen.has(address)) return;
-    if (!seen.size) this._record(address, value, type);
+    if (!seen.size) {
+      this._record(address, value, type);
+      if (!address.startsWith('/-')) this.userSetListeners?.forEach(cb => cb(address, value, type));
+    }
     seen.add(address);
     this._store(address, value);
     this.pending.set(address, { type, value });
@@ -108,6 +111,12 @@ export class Mixer {
     for (const hook of this.setHooks) {
       for (const extra of hook(address, value, type) ?? []) this.set(extra.address, extra.value, extra.type ?? type, seen);
     }
+  }
+
+  /** cb(address, value, type) per ogni modifica fatta dall'utente (non i collegamenti stereo). */
+  onUserSet(cb) {
+    (this.userSetListeners ??= new Set()).add(cb);
+    return () => this.userSetListeners.delete(cb);
   }
 
   // --- annulla / ripeti --------------------------------------------------------

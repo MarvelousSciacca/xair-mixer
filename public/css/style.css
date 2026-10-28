@@ -1256,3 +1256,13 @@ dialog.tour.centered .tour-card { left: 50% !important; top: 50% !important; tra
 .fx-tap { align-self: center; min-width: 84px; height: 44px; padding: 0 10px; font-weight: 600; touch-action: manipulation; }
 .fx-tap.flash { animation: tap-flash .18s ease-out; }
 @keyframes tap-flash { from { background: var(--accent); color: var(--on-accent, #fff); } }
+
+/* --- MIDI -------------------------------------------------------------------------------------------- */
+.midi-box { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.midi-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.midi-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.midi-list .btn { height: 28px; min-width: 32px; padding: 0 8px; }
+.midi-learn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px;
+  max-width: calc(100vw - 24px); padding: 10px 14px; border-radius: 12px; background: var(--accent); color: var(--on-accent, #fff); box-shadow: 0 8px 30px rgba(0, 0, 0, .3); font-size: 14px; }
+.midi-learn[hidden] { display: none; }
+.midi-learn .btn { background: rgba(255, 255, 255, .2); color: inherit; border-color: transparent; }
