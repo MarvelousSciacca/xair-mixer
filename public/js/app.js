@@ -18,6 +18,7 @@ import { createScenes } from './scenes.js';
 import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
+import { startTour, tourDone } from './tour.js';
 import { createFeedbackUI } from './feedback-ui.js';
 import { createLayers } from './layers.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
@@ -299,7 +300,7 @@ document.getElementById('monitor-btn').addEventListener('click', () => monitorVi
 
 const scenes = createScenes({ mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe() });
 document.getElementById('scenes-btn').addEventListener('click', () => scenes.open());
-const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe() });
+const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }) });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());
 
 // --- avvio ------------------------------------------------------------------------
@@ -308,4 +309,9 @@ document.getElementById('settings-btn').addEventListener('click', () => settings
 const urlIp = new URLSearchParams(location.search).get('ip');
 const lastIp = /^[\d.]+$/.test(urlIp ?? '') ? urlIp : storage.get(LAST_IP_KEY);
 if (lastIp) mixer.connect(lastIp, allAddresses);
-else document.getElementById('connect-btn').click();
+const askConnection = () => {
+  if (!lastIp && mixer.status === 'disconnected') document.getElementById('connect-btn').click();
+};
+// al primo avvio prima il tutorial, poi (se serve) la ricerca del mixer; ?ip= (link e prove) lo salta
+if (!tourDone(storage) && !urlIp) startTour({ storage, onClose: askConnection });
+else askConnection();

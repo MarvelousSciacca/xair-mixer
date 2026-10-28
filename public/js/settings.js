@@ -28,7 +28,7 @@ function section(title, ...children) {
   return sec;
 }
 
-export function createSettings({ mixer, addresses, onReload }) {
+export function createSettings({ mixer, addresses, onReload, onTour }) {
   const dialog = h('dialog', 'settings-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -53,6 +53,13 @@ export function createSettings({ mixer, addresses, onReload }) {
   };
   mixer.onStatus(renderInfo);
 
+
+  const tour = h('button', 'btn ghost', 'Rivedi il tutorial');
+  tour.type = 'button';
+  tour.addEventListener('click', () => {
+    dialog.close();
+    onTour?.();
+  });
 
   const reload = h('button', 'btn ghost', 'Rileggi tutti i parametri');
   reload.type = 'button';
@@ -89,6 +96,7 @@ export function createSettings({ mixer, addresses, onReload }) {
       toggle(sc, SETTINGS.linkDyn, bool('Dinamiche')),
       toggle(sc, SETTINGS.linkFader, bool('Fader e mute'))),
     section('Routing', h('p', 'fx-note', 'Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.')),
+    section('Tutorial', tour),
     section('Manutenzione', reload, init),
     section('Informazioni e note legali', aboutSection()),
   );

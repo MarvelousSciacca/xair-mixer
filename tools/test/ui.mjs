@@ -79,6 +79,35 @@ await test('connessione al simulatore', async () => {
   await until(() => $('.strip[data-id=ch1] .scribble').textContent !== 'Ch 1', 8000, 'nomi dei canali');
 });
 
+await test('tutorial: al primo avvio, si scorre fino alla fine e non riappare', async () => {
+  const tour = $('dialog.tour');
+  assert(tour?.open, 'tutorial non aperto al primo avvio');
+  const title = () => $('#tour-title').textContent;
+  assert(title() === 'Benvenuto in AirDesk', `primo passo: ${title()}`);
+  assert($('.tour-back').hidden, 'Indietro visibile al primo passo');
+  $('.tour-next').click();
+  assert(title() === 'Collegati al mixer', `secondo passo: ${title()}`);
+  $('.tour-back').click();
+  assert(title() === 'Benvenuto in AirDesk', 'Indietro non torna al passo precedente');
+  const seen = [];
+  for (let i = 0; i < 20 && $('dialog.tour'); i++) {
+    seen.push(title());
+    $('.tour-next').click();
+  }
+  assert(!$('dialog.tour'), 'il tutorial non si chiude alla fine');
+  assert(seen.length === 10 && seen.at(-1) === 'Tutto pronto', `passi: ${seen.join(' / ')}`);
+  assert(w.localStorage.getItem('xair.tour') === 'done', 'tutorial non segnato come visto');
+  assert(!$('#connect-dialog').open, 'finestra di connessione aperta anche se c\'è già un mixer');
+});
+
+await test('tutorial: si rivede da Impostazioni e si salta', async () => {
+  $('#settings-btn').click();
+  [...$$('.settings-dialog button')].find(b => b.textContent === 'Rivedi il tutorial').click();
+  assert($('dialog.tour')?.open && !$('dialog.settings-dialog').open, 'tutorial non riaperto');
+  $('.tour-skip').click();
+  assert(!$('dialog.tour'), 'Salta non chiude il tutorial');
+});
+
 await test('fader: trascinamento arriva al mixer', async () => {
   const fader = $('.strip[data-id=ch1] .fader');
   Object.defineProperty(fader, 'clientHeight', { value: 300 });

@@ -4,7 +4,7 @@ const S = new URL('.', import.meta.url).pathname.replace(/\/$/, ''); // cartella
 const QA = fs.readFileSync(`${S}/qa.js`, 'utf8');
 const theme = process.argv[2] || 'light';
 const only = process.argv[3];
-const C = `localStorage.setItem('xair.theme','${theme}');localStorage.removeItem('xair.view');document.getElementById('ip-input').value='127.0.0.1';document.getElementById('ip-form').requestSubmit()`;
+const C = `localStorage.setItem('xair.theme','${theme}');localStorage.setItem('xair.tour','done');localStorage.removeItem('xair.view');document.getElementById('ip-input').value='127.0.0.1';document.getElementById('ip-form').requestSubmit()`;
 const EX = `document.querySelector('.monitor-view')&&!document.querySelector('.monitor-view').hidden&&document.querySelector('.mon-exit').click()`;
 const tab = g => `document.querySelector('.topbar .tab[data-group=${g}]').click()`;
 const open = (id, t) => `${tab('input')};document.querySelector('.strip[data-id=${id}] .label').click();[...document.querySelectorAll('.editor-tabs .tab')].find(x=>x.textContent==='${t}')?.click()`;
