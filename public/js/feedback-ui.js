@@ -1,6 +1,6 @@
 // Interfaccia del rilevatore di feedback: pulsante in alto, pannello impostazioni/avvisi, notifiche.
 
-import { SENSITIVITY } from './feedback.js';
+import { SENSITIVITY, MODES } from './feedback.js';
 
 const PREF_KEY = 'xair.feedback';
 const TOAST_MS = 8000;
@@ -51,9 +51,11 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
       Un picco stretto che resta alla stessa frequenza viene segnalato come feedback.</p>
     <div class="fb-settings">
       <button class="toggle big fb-enable" type="button">Monitoraggio</button>
+      <div class="choice"><div class="choice-label">Modalità</div><div class="segmented fb-mode"></div></div>
       <div class="choice"><div class="choice-label">Sensibilità</div><div class="segmented fb-sens"></div></div>
-      <button class="toggle fb-auto" type="button" title="Mette da solo un notch sull'EQ dell'uscita, solo per i picchi certi (al massimo 4 per uscita)">Notch automatico</button>
+      <button class="toggle fb-auto" type="button" title="Mette da solo un notch sull'EQ dell'uscita">Notch automatico</button>
     </div>
+    <p class="fb-mode-help"></p>
     <div class="choice-label">Uscite controllate</div>
     <div class="fb-outputs"></div>
     <div class="fb-sim" hidden>
@@ -76,6 +78,19 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
     monitor.configure({ autoNotch: !monitor.settings.autoNotch });
     save();
   });
+
+  const MODE_HELP = {
+    show: 'Concerto: con la musica. Note e armoniche non contano; il notch automatico interviene solo su picchi che durano, fermi e dominanti (al massimo 4 per uscita).',
+    soundcheck: 'Soundcheck: per cercare il feedback a microfoni aperti, senza musica. Ogni picco che resta viene tagliato subito. Torna su Concerto prima di suonare.',
+  };
+  const modeEl = $('.fb-mode');
+  for (const [key, { label }] of Object.entries(MODES)) {
+    modeEl.append(button(label, '', () => {
+      monitor.configure({ mode: key });
+      save();
+    }));
+    modeEl.lastChild.dataset.key = key;
+  }
 
   const sens = $('.fb-sens');
   for (const [key, { label }] of Object.entries(SENSITIVITY)) {
@@ -146,6 +161,8 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
     enableBtn.setAttribute('aria-pressed', String(s.enabled));
     autoBtn.setAttribute('aria-pressed', String(s.autoNotch));
     sens.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.key === s.sensitivity)));
+    modeEl.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.key === s.mode)));
+    $('.fb-mode-help').textContent = MODE_HELP[s.mode] ?? MODE_HELP.show;
     outputsEl.querySelectorAll('button').forEach(b => {
       b.textContent = outputName(b.dataset.id);
       b.setAttribute('aria-pressed', String(s.outputs.includes(b.dataset.id)));
@@ -163,6 +180,9 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
   function renderHeader() {
     const active = monitor.activeAlerts().filter(a => Date.now() - a.last < 5000);
     headerBtn.dataset.state = !monitor.settings.enabled ? 'off' : active.length ? 'alert' : 'on';
+    // promemoria visibile: in soundcheck il notch automatico taglia tutto quello che resta
+    headerBtn.classList.toggle('soundcheck', monitor.settings.enabled && monitor.settings.mode === 'soundcheck');
+    headerBtn.title = monitor.settings.mode === 'soundcheck' ? 'Rilevatore feedback (Soundcheck)' : 'Rilevatore feedback';
     count.textContent = active.length ? String(active.length) : '';
   }
 

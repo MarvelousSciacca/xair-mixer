@@ -48,11 +48,11 @@ function note(spec, bin, level) {
 }
 
 /** Esegue `ms` millisecondi di simulazione; `draw(spec, t)` aggiunge i picchi della scena. */
-function run(name, ms, draw, { sensitivity = 'medium', setup } = {}) {
+function run(name, ms, draw, { sensitivity = 'medium', mode = 'show', setup } = {}) {
   const mixer = new FakeMixer();
   const strips = buildStrips();
   const monitor = new FeedbackMonitor(mixer, { request: () => () => {} }, strips);
-  monitor.settings = { enabled: true, sensitivity, autoNotch: true, outputs: ['lr'] };
+  monitor.settings = { enabled: true, mode, sensitivity, autoNotch: true, outputs: ['lr'] };
   const out = monitor.outputStrip('lr');
   const notches = [];
   monitor.onChange(e => {
@@ -172,6 +172,19 @@ function run(name, ms, draw, { sensitivity = 'medium', setup } = {}) {
   }
   const preso = 1 - persi.length / 73;
   check(`feedback sopra la musica preso nel ${Math.round(preso * 100)}% delle frequenze (minimo 95%)`, preso >= 0.95, `persi: ${persi.join(', ')}`);
+}
+
+// 10. Soundcheck (si cerca il feedback a microfoni aperti, senza musica): taglio istantaneo.
+{
+  const r = run('soundcheck', 3000, spec => peak(spec, 62, -12), { mode: 'soundcheck' });
+  check('soundcheck: notch entro mezzo secondo', r.notches.length > 0 && r.notches[0].t <= 500, JSON.stringify(r.notches.slice(0, 1)));
+  check('soundcheck: approfondito finché il picco resta', r.notches.length >= 2 && r.notches.at(-1).gain < -6, JSON.stringify(r.notches.map(n => n.gain)));
+  // feedback forte che distorce: ha armoniche, ma al soundcheck va tagliato lo stesso
+  const d = run('soundcheck distorto', 3000, spec => note(spec, 50, -6), { mode: 'soundcheck' });
+  check('soundcheck: preso anche il feedback distorto (con armoniche)', d.notches.some(n => Math.abs(Math.log2(n.freq / (20 * 1000 ** (50 / 99)))) < 1 / 6), JSON.stringify(d.notches));
+  // la stessa scena in Concerto non deve tagliare in mezzo secondo
+  const c = run('concerto', 3000, spec => peak(spec, 62, -12));
+  check('concerto: nessun notch nel primo secondo', !c.notches.some(n => n.t < 1000), JSON.stringify(c.notches.slice(0, 1)));
 }
 
 console.log(failures ? `\n${failures} prove fallite` : '\ntutte le prove del rilevatore di feedback passate');

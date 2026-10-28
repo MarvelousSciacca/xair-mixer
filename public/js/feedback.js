@@ -7,12 +7,21 @@
 //    nota più grave, il feedback è un tono quasi puro.
 // 4. Un picco diventa feedback se resta alla stessa frequenza per più letture e non sta calando
 //    (una nota musicale di solito decade, il feedback resta o cresce): allora avvisa.
-// 5. Il notch automatico è più prudente dell'avviso: il picco deve durare di più, restare fermo in
-//    frequenza (niente vibrato), dominare lo spettro; poche bande per uscita e mai tante insieme.
+// 5. Due modalità:
+//    - "Concerto" (predefinita): il notch automatico è più prudente dell'avviso, perché c'è musica.
+//      Il picco deve durare di più, restare fermo in frequenza (niente vibrato), dominare lo spettro;
+//      poche bande per uscita e mai tante insieme.
+//    - "Soundcheck": si cerca il feedback a microfoni aperti senza musica. Ogni picco che resta
+//      viene tagliato subito (anche se distorce e ha armoniche) e approfondito finché non sparisce.
 
 import { SPEC, toNorm, fromNorm, paramMap, defaultValue, EQ_TYPES } from './params.js';
 import { RTA_BINS, binFreq } from './dsp.js';
 import { rtaSource } from './model.js';
+
+export const MODES = {
+  show: { label: 'Concerto' },
+  soundcheck: { label: 'Soundcheck' },
+};
 
 export const SENSITIVITY = {
   low: { label: 'Bassa', prominence: 18, minDb: -30, hits: 7, minMs: 500, autoMs: 3000 },
@@ -100,7 +109,7 @@ export class FeedbackMonitor {
     this.mixer = mixer;
     this.rta = rta;
     this.outputs = strips.filter(s => s.group === 'main' || (s.group === 'bus' && s.eqBands));
-    this.settings = { enabled: false, sensitivity: 'medium', autoNotch: false, outputs: this.outputs.map(o => o.id) };
+    this.settings = { enabled: false, mode: 'show', sensitivity: 'medium', autoNotch: false, outputs: this.outputs.map(o => o.id) };
     this.tracks = new Map(); // id uscita -> picchi in osservazione
     this.levels = new Map(); // id uscita -> storico livelli
     this.alerts = [];
@@ -223,19 +232,22 @@ export class FeedbackMonitor {
     tracks = tracks.filter(t => t.misses <= 4);
     this.tracks.set(o.id, tracks);
 
+    const show = this.settings.mode !== 'soundcheck';
     for (const t of tracks) {
-      if (t.misses || musical(t)) continue;
+      if (t.misses || (show && musical(t))) continue;
       if (!t.alert) {
         if (t.hits < cfg.hits || now - t.first < cfg.minMs) continue;
         const L = t.levels;
         const slope = (L.at(-1) - L[0]) / Math.max(1, L.length - 1);
         if (slope < -0.7) continue; // sta calando: probabilmente una nota musicale
-        if (drift(t) > ALERT_DRIFT_BINS) continue; // la frequenza si muove: voce o strumento
+        if (show && drift(t) > ALERT_DRIFT_BINS) continue; // la frequenza si muove: voce o strumento
         t.alert = this._raise(o, t);
       } else {
         this._refresh(t.alert, t);
       }
-      if (this.settings.autoNotch && this._confirmed(t, cfg, now)) this._autoNotch(t.alert, t);
+      if (!this.settings.autoNotch) continue;
+      if (!show) this._ringOut(t.alert, t);
+      else if (this._confirmed(t, cfg, now)) this._autoNotch(t.alert, t);
     }
   }
 
@@ -273,6 +285,17 @@ export class FeedbackMonitor {
     if (drift(t) > AUTO_DRIFT_BINS) return false;
     const L = t.levels;
     return (L.at(-1) - L[0]) / Math.max(1, L.length - 1) >= -0.2;
+  }
+
+  /** Soundcheck: taglio subito, poi più profondo ogni 1,5 s finché il picco resta. */
+  _ringOut(alert, t) {
+    if (alert.notch && (Date.now() - alert.notch.time < AUTO_REPEAT_MS || alert.notch.gain <= NOTCH_MAX_DB)) return;
+    try {
+      this.applyNotch(alert);
+      alert.notch.level = t.levels.at(-1);
+    } catch {
+      /* nessuna banda libera: resta l'avviso */
+    }
   }
 
   _autoNotch(alert, t) {

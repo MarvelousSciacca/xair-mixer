@@ -712,6 +712,7 @@ button.label:disabled { cursor: default; }
 .fb-dialog { width: min(620px, calc(100vw - 32px)); }
 .fb-help { margin: 10px 0 14px; color: var(--muted); font-size: 13px; }
 .fb-settings { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+.fb-mode-help { margin: -4px 0 14px; color: var(--muted); font-size: 12.5px; }
 .fb-outputs { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 14px; }
 .fb-outputs .toggle { min-width: 0; height: 30px; padding: 0 10px; }
 .fb-sim { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 10px; margin-bottom: 14px; border: 1px dashed var(--line); border-radius: 8px; font-size: 13px; color: var(--muted); }
