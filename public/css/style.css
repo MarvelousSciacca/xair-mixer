@@ -1266,3 +1266,11 @@ dialog.tour.centered .tour-card { left: 50% !important; top: 50% !important; tra
   max-width: calc(100vw - 24px); padding: 10px 14px; border-radius: 12px; background: var(--accent); color: var(--on-accent, #fff); box-shadow: 0 8px 30px rgba(0, 0, 0, .3); font-size: 14px; }
 .midi-learn[hidden] { display: none; }
 .midi-learn .btn { background: rgba(255, 255, 255, .2); color: inherit; border-color: transparent; }
+
+/* --- lavoro senza mixer ------------------------------------------------------------------------------ */
+.offline-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 4px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.offline-row .btn { flex: none; }
+.sc-offline { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sc-offline[hidden] { display: none; }
+.sc-offline h3 { margin: 0 0 4px; font-size: 14px; }
+body.no-mixer #status .status-dot, body.no-mixer #status[data-status] { --ok: var(--accent); }

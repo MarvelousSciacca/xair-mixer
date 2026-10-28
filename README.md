@@ -73,6 +73,13 @@ I browser non possono usare UDP, quindi il ponte traduce i messaggi. Nelle futur
 - [x] App installabili (Android, iOS, macOS, Windows, Linux)
 - [x] Per il palco: Annulla/Ripeti di ogni modifica (⌘Z/Ctrl+Z), blocco dei comandi (si sblocca tenendo premuto), schermo sempre acceso da collegati, movimento fine allontanando il dito di lato da fader e manopole, doppio tocco = 0 dB / valore di riposo
 - [x] Copia/incolla tra canali per sezioni (fase e low cut, gate, EQ, compressore, mandate), canali protetti in scene e snapshot (un bus protetto protegge anche le mandate verso di lui), layer personalizzati
+- [x] Rilevatore feedback con modalità Soundcheck (taglio istantaneo) e Concerto (ignora note e armoniche, notch automatico prudente)
+- [x] Tutorial al primo avvio (rivedibile da Impostazioni)
+- [x] Scaletta: snapshot dei brani in ordine, barra sopra il mixer, pedali Bluetooth (PagGiù/PagSu) anche a schermo bloccato
+- [x] Tap tempo sul tempo dei delay
+- [x] PIN del monitor: la schermata monitor bloccata si lascia solo col PIN
+- [x] Controller MIDI con "Impara" (app per computer e Chrome/Edge)
+- [x] Lavoro senza mixer: mixer virtuale che parte dall'ultimo mix visto, poi "Invia al mixer"
 
 Da verificare con un mixer reale:
 - range dei parametri degli effetti diversi da HALL, VRM, MODD, PLAT, D/CR;

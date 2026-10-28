@@ -64,7 +64,7 @@ export function downloadScene(scene) {
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
 
-export function createScenes({ mixer, addresses, strips, onReload }) {
+export function createScenes({ mixer, addresses, strips, onReload, offline = null }) {
   const safes = createSafes(protectable(strips));
   const dialog = h('dialog', 'scenes-dialog');
   dialog.innerHTML = `
@@ -92,6 +92,15 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
         <input class="sc-file" type="file" accept=".json,application/json" hidden>
       </div>
       <div class="sc-progress" hidden><div class="sc-bar"></div><span></span></div>
+      <div class="sc-offline" hidden>
+        <h3>Lavoro senza mixer</h3>
+        <p class="fb-help sc-offline-help"></p>
+        <div class="ed-row">
+          <button class="btn sc-send-work" type="button">Invia al mixer</button>
+          <button class="btn ghost sc-save-work" type="button">Salva su file</button>
+          <button class="btn ghost sc-reset-work" type="button">Ricomincia</button>
+        </div>
+      </div>
     </section>
     <section class="sc-pane sc-setlist" data-pane="setlist" hidden></section>
     <section class="sc-pane" data-pane="safe" hidden>
@@ -274,6 +283,11 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
       notify('Il file non è una scena di AirDesk', { error: true });
       return;
     }
+    await confirmAndApply(scene);
+  });
+
+  /** Chiede conferma (avvisando se la scena accende la +48V) e carica la scena. */
+  async function confirmAndApply(scene) {
     const count = Object.keys(scene.params).length;
     const otherModel = scene.mixer?.model && mixer.info?.model && scene.mixer.model !== mixer.info.model;
     // la +48V accesa per sbaglio può danneggiare microfoni a nastro e alcune sorgenti di linea
@@ -287,11 +301,44 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
       confirmText: 'Carica',
       danger: true,
     });
-    if (!ok) return;
+    if (!ok) return false;
     await applyScene(scene, setProgress);
     progress.hidden = true;
     notify(`Scena "${scene.name}" caricata`);
-  });
+    return true;
+  }
+
+  // --- lavoro senza mixer ---
+  const workScene = () => sanitizeScene({ format: SCENE_FORMAT, version: 1, name: 'Lavoro senza mixer', params: offline.work() }, addresses);
+  function renderOffline() {
+    const box = $('.sc-offline');
+    box.hidden = !offline || (!offline.active() && !offline.hasWork);
+    if (box.hidden) return;
+    $('.sc-offline-help').textContent = offline.active()
+      ? 'Stai lavorando senza mixer: le modifiche restano su questo dispositivo. Quando ti colleghi al mixer, torna qui e tocca "Invia al mixer".'
+      : 'Il mix preparato senza mixer è salvato su questo dispositivo. "Invia al mixer" lo carica nel mixer collegato, come una scena (i canali protetti non cambiano).';
+    $('.sc-send-work').disabled = offline.active() || mixer.status !== 'online';
+  }
+  if (offline) {
+    mixer.onStatus(renderOffline);
+    $('.sc-send-work').addEventListener('click', async () => {
+      const scene = workScene();
+      if (scene && await confirmAndApply(scene)) renderOffline();
+    });
+    $('.sc-save-work').addEventListener('click', () => downloadScene(workScene()));
+    $('.sc-reset-work').addEventListener('click', async () => {
+      const ok = await ask({
+        title: 'Ricominciare il lavoro senza mixer?',
+        message: 'Il mix preparato senza mixer verrà sostituito dall\'ultimo mix visto sul mixer. Se vuoi conservarlo, salvalo prima su file.',
+        confirmText: 'Ricomincia',
+        danger: true,
+      });
+      if (!ok) return;
+      offline.reset();
+      if (offline.active()) onReload();
+      renderOffline();
+    });
+  }
 
   async function applyScene(scene, onProgress) {
     const skip = new Set(safes.filter(Object.keys(scene.params))); // canali protetti: non si toccano
@@ -308,6 +355,7 @@ export function createScenes({ mixer, addresses, strips, onReload }) {
   return {
     open(tab = 'snap') {
       refreshSnapshots();
+      renderOffline();
       showPane(tab);
       dialog.showModal();
     },

@@ -16,6 +16,8 @@ const { startBridge } = await import(`${ROOT}/server/bridge.js`);
 const sim = startSimulator({ port: SIM_PORT });
 const bridge = startBridge({ port: BRIDGE_PORT, host: '127.0.0.1', quiet: true, mixerPort: SIM_PORT });
 const simValue = a => sim.state.get(a)?.value;
+// valore del fader di un canale come lo mostra l'app (posizione del cursore)
+const mixerValue = a => Number(w.document.querySelector(`.strip[data-id=ch${Number(a.match(/^\/ch\/(\d\d)\/mix\/fader$/)[1])}] .fader-cap`).style.getPropertyValue('--v'));
 
 // --- finestra jsdom con quello che manca rispetto a un browser ---------------------------------
 const html = fs.readFileSync(`${ROOT}/public/index.html`, 'utf8').replace(/<script type="module"[^>]*><\/script>/, '');
@@ -455,6 +457,51 @@ await test('MIDI: impara fader, mute e brano precedente della scaletta', async (
   const items = $$('.midi-list li').map(li => li.textContent);
   assert(items.length === 3 && items.some(t => t.includes('Program 5') && t.includes('precedente')), `collegamenti: ${items.join(' | ')}`);
   $('.settings-dialog .st-close').click();
+});
+
+await test('senza mixer: si lavora sul mixer virtuale e poi si invia il lavoro al mixer', async () => {
+  const simName = simValue('/ch/01/config/name');
+  const simFader = simValue('/ch/04/mix/fader');
+  $('#connect-btn').click();
+  $('#offline-btn').click();
+  await until(() => $('#status .status-text').textContent === 'Senza mixer' && $('#status').dataset.status === 'online', 5000, 'mixer virtuale collegato');
+  assert(!$('#connect-dialog').open, 'finestra di connessione rimasta aperta');
+  await until(() => $('.strip[data-id=ch1] .scribble').textContent === simName, 5000, 'parte dall\'ultimo mix del mixer');
+  const f4 = $('.strip[data-id=ch4] .fader');
+  Object.defineProperty(f4, 'clientHeight', { value: 300 });
+  await drag(f4, 250, 120);
+  const work = mixerValue('/ch/04/mix/fader');
+  await sleep(800);
+  assert(near(simValue('/ch/04/mix/fader'), simFader), 'il mixer vero è cambiato lavorando senza mixer');
+  assert(JSON.parse(w.localStorage.getItem('xair.offline')).params['/ch/04/mix/fader'][1] === work, 'lavoro non salvato sul dispositivo');
+  // effetto: cambiando tipo, i parametri diventano quelli del nuovo effetto (come sul mixer)
+  const { OfflineTransport } = await import(`${ROOT}/public/js/offline.js`);
+  const { fxParams } = await import(`${ROOT}/public/js/fx.js`);
+  const store = new Map();
+  const vt = new OfflineTransport({ storage: { get: k => store.get(k) ?? null, set: (k, v) => store.set(k, v) }, addresses: ['/fx/1/type', ...Array.from({ length: 64 }, (_, i) => `/fx/1/par/${String(i + 1).padStart(2, '0')}`)], strips: [] });
+  const got = new Map();
+  vt.onMessage = m => got.set(m.address, m.args[0]?.value);
+  await vt.connect();
+  vt.send('/fx/1/type', [{ type: 'i', value: 10 }]);
+  for (let i = 1; i <= 64; i++) vt.send(`/fx/1/par/${String(i).padStart(2, '0')}`);
+  await sleep(10);
+  const used = [...got.values()].filter(v => typeof v === 'number' && !Number.isNaN(v)).length;
+  assert(used === fxParams(10).params.length, `parametri del delay virtuale: ${used} invece di ${fxParams(10).params.length}`);
+  // torna al mixer vero
+  $('#connect-btn').click();
+  $('#ip-input').value = '127.0.0.1';
+  $('#ip-form').requestSubmit();
+  await until(() => $('#status .status-text').textContent !== 'Senza mixer' && $('#status').dataset.status === 'online', 5000, 'di nuovo sul mixer');
+  await until(() => near(mixerValue('/ch/04/mix/fader'), simFader), 5000, 'valori del mixer vero');
+  $('.topbar .tab[data-group=input]').click();
+  $('#scenes-btn').click();
+  $('.scenes-dialog .tab[data-tab=file]').click();
+  assert(!$('.sc-offline').hidden && !$('.sc-send-work').disabled, 'Invia al mixer non disponibile');
+  $('.sc-send-work').click();
+  await until(() => $('dialog.ask-dialog[open]'), 3000, 'conferma');
+  confirmAsk();
+  await until(() => near(simValue('/ch/04/mix/fader'), work), 8000, 'lavoro arrivato al mixer');
+  $('.scenes-dialog .sc-close').click();
 });
 
 await test('nessun errore JavaScript', async () => {

@@ -18,6 +18,8 @@ import { createScenes } from './scenes.js';
 import { createSetlist } from './setlist.js';
 import { createPin } from './pin.js';
 import { createMidi } from './midi.js';
+import { OfflineTransport, SwitchTransport, OFFLINE_IP, LAST_MIX_KEY } from './offline.js';
+import { captureScene } from './scenes.js';
 import { createSettings } from './settings.js';
 import { Rta } from './rta.js';
 import { FeedbackMonitor } from './feedback.js';
@@ -43,7 +45,10 @@ applyTheme();
 const native = Capacitor.isNativePlatform();
 document.body.classList.toggle('native-app', native);
 const udpPlugin = native ? registerPlugin('XAirUdp') : null;
-const transport = native ? new UdpTransport(udpPlugin) : new WebSocketTransport();
+const realTransport = native ? new UdpTransport(udpPlugin) : new WebSocketTransport();
+// "Lavora senza mixer": un mixer virtuale al posto di quello vero (gli indirizzi si danno più sotto)
+const offline = new OfflineTransport({ storage, addresses: [], strips: [] });
+const transport = new SwitchTransport(realTransport, offline);
 const mixer = new Mixer(transport);
 keepScreenAwake(mixer, udpPlugin);
 const strips = buildStrips();
@@ -56,6 +61,8 @@ const allAddresses = [
 ];
 const links = new Links(mixer, strips);
 allAddresses.push(...links.addresses(), ...settingsAddresses(), ...FX_SLOTS.map(fxInsertAddress));
+offline.addresses = allAddresses;
+offline.strips = strips;
 const rta = new Rta(mixer);
 const feedback = new FeedbackMonitor(mixer, rta, strips);
 const editor = createEditor(mixer, strips, { rta, feedback, links });
@@ -174,11 +181,17 @@ const STATUS_TEXT = {
 };
 // versione breve per i telefoni in verticale (la barra non ha posto per la frase intera)
 const STATUS_SHORT = { disconnected: 'Offline', connecting: 'Attendi…', online: 'Online', lost: 'Perso' };
+let wasOnline = false;
 mixer.onStatus((status, info) => {
+  const virtual = transport.isOffline && status !== 'disconnected';
+  // l'ultimo mix visto sul mixer vero: da lì parte il lavoro senza mixer
+  if (wasOnline && status !== 'online') saveLastMix();
+  wasOnline = status === 'online' && !transport.isOffline;
   statusEl.dataset.status = status;
-  const name = info ? `${info.name} · ${info.model}` : mixer.ip ?? '';
-  statusEl.querySelector('.status-text').textContent = STATUS_TEXT[status];
-  statusEl.querySelector('.status-short').textContent = STATUS_SHORT[status];
+  const name = virtual ? '' : info ? `${info.name} · ${info.model}` : mixer.ip ?? '';
+  statusEl.querySelector('.status-text').textContent = virtual ? 'Senza mixer' : STATUS_TEXT[status];
+  statusEl.querySelector('.status-short').textContent = virtual ? 'Virtuale' : STATUS_SHORT[status];
+  document.body.classList.toggle('no-mixer', virtual);
   statusEl.title = `${STATUS_TEXT[status]}${name && status !== 'disconnected' ? ` · ${name}` : ''}`;
   statusEl.querySelector('.status-name').textContent = status === 'disconnected' ? '' : name;
   document.body.classList.toggle('offline', status !== 'online');
@@ -199,8 +212,15 @@ const connectDialog = document.getElementById('connect-dialog');
 const foundList = document.getElementById('found-list');
 const ipInput = document.getElementById('ip-input');
 
+function saveLastMix() {
+  if (transport.isOffline) return;
+  const scene = captureScene(mixer, allAddresses, 'Ultimo mix');
+  if (Object.keys(scene.params).length > 100) storage.set(LAST_MIX_KEY, JSON.stringify(scene));
+}
+setInterval(() => { if (mixer.status === 'online') saveLastMix(); }, 60_000);
+
 async function connectTo(ip) {
-  storage.set(LAST_IP_KEY, ip);
+  if (ip !== OFFLINE_IP) storage.set(LAST_IP_KEY, ip); // il mixer virtuale non riparte da solo
   connectDialog.close();
   await mixer.connect(ip, allAddresses);
 }
@@ -252,6 +272,7 @@ document.getElementById('ip-form').addEventListener('submit', e => {
   ipInput.reportValidity();
 });
 ipInput.addEventListener('input', () => ipInput.setCustomValidity(''));
+document.getElementById('offline-btn').addEventListener('click', () => connectTo(OFFLINE_IP));
 
 // --- editor nome/colore ---------------------------------------------------------------
 
@@ -302,7 +323,10 @@ document.getElementById('monitor-btn').addEventListener('click', () => monitorVi
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------
 
-const scenes = createScenes({ mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe() });
+const scenes = createScenes({
+  mixer, addresses: allAddresses, strips, onReload: () => mixer.resubscribe(),
+  offline: { active: () => transport.isOffline, get hasWork() { return offline.hasWork; }, work: () => offline.work(), reset: () => offline.reset() },
+});
 document.getElementById('scenes-btn').addEventListener('click', () => scenes.open());
 const setlist = createSetlist({ mixer, scenes, storage, mixerEl: document.querySelector('.mixer') });
 // Nome leggibile di un parametro per il MIDI: "Voce 1 · fader", "Kick · mute", "Snare · mandata Monitor 2"…

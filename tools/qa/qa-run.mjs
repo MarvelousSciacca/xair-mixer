@@ -4,7 +4,7 @@ const S = new URL('.', import.meta.url).pathname.replace(/\/$/, ''); // cartella
 const QA = fs.readFileSync(`${S}/qa.js`, 'utf8');
 const theme = process.argv[2] || 'light';
 const only = process.argv[3];
-const C = `localStorage.setItem('xair.theme','${theme}');localStorage.setItem('xair.tour','done');localStorage.removeItem('xair.view');document.getElementById('ip-input').value='127.0.0.1';document.getElementById('ip-form').requestSubmit()`;
+const C = `localStorage.setItem('xair.theme','${theme}');localStorage.setItem('xair.tour','done');localStorage.removeItem('xair.setlist');localStorage.removeItem('xair.offline');localStorage.removeItem('xair.view');document.getElementById('ip-input').value='127.0.0.1';document.getElementById('ip-form').requestSubmit()`;
 const EX = `document.querySelector('.monitor-view')&&!document.querySelector('.monitor-view').hidden&&document.querySelector('.mon-exit').click()`;
 const tab = g => `document.querySelector('.topbar .tab[data-group=${g}]').click()`;
 const open = (id, t) => `${tab('input')};document.querySelector('.strip[data-id=${id}] .label').click();[...document.querySelectorAll('.editor-tabs .tab')].find(x=>x.textContent==='${t}')?.click()`;
@@ -16,6 +16,7 @@ const screens = {
   'dlg-connetti': `document.getElementById('connect-btn').click()`, 'dlg-scene': `document.getElementById('scenes-btn').click()`,
   'dlg-layer': `document.querySelector('.tab-add').click()`,
   'dlg-protetti': `document.getElementById('scenes-btn').click();document.querySelector('.scenes-dialog .tab[data-tab=safe]').click()`,
+  'dlg-scaletta': `document.getElementById('scenes-btn').click();document.querySelector('.scenes-dialog .tab[data-tab=setlist]').click()`,
   'dlg-impostazioni': `document.getElementById('settings-btn').click()`, 'dlg-feedback': `document.getElementById('fb-btn').click()`,
   'dlg-vista': `document.getElementById('view-btn').click()`, 'dlg-libreria': `${tab('fx')};document.querySelector('.fx-toolbar .btn').click()`,
   monitor: `${tab('input')};document.getElementById('monitor-btn').click()`,
