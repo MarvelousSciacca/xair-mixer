@@ -11,6 +11,7 @@ import { presetMenu } from './presets.js';
 import { isCut } from './dsp.js';
 import { applyColor } from './ui.js';
 import { copyStrip, pasteStrip, clipboardSource } from './clipboard.js';
+import { announce } from './a11y.js';
 
 const TABS = [
   { id: 'input', label: 'Ingresso', has: s => s.headamp || s.preamp || s.insert || s.source },
@@ -50,16 +51,16 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
   const root = h('div', 'editor');
   root.hidden = true;
   root.innerHTML = `
-    <div class="editor-panel" role="dialog" aria-modal="true">
+    <div class="editor-panel" role="dialog" aria-modal="true" aria-labelledby="editor-name">
       <header class="editor-head">
         <button class="icon-btn prev" type="button" aria-label="Canale precedente">‹</button>
-        <div class="editor-title"><span class="chip"></span><strong class="name"></strong><span class="sub"></span></div>
+        <div class="editor-title"><span class="chip" aria-hidden="true"></span><strong class="name" id="editor-name"></strong><span class="sub"></span></div>
         <button class="icon-btn next" type="button" aria-label="Canale successivo">›</button>
         <div class="ed-clip">
           <button class="btn ghost ed-copy" type="button" aria-label="Copia" title="Copia le impostazioni di questo canale"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span class="btn-text">Copia</span></button>
           <button class="btn ghost ed-paste" type="button" aria-label="Incolla" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 11h6M9 15h4"/></svg><span class="btn-text">Incolla</span></button>
         </div>
-        <nav class="editor-tabs" role="tablist"></nav>
+        <nav class="editor-tabs" role="tablist" aria-label="Pagine del canale"></nav>
         <button class="icon-btn close" type="button" aria-label="Chiudi">✕</button>
       </header>
       <div class="editor-body"></div>
@@ -149,8 +150,8 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
           sc.on(target.address, name => { title.textContent = name || target.label; });
           const tap = `${s.base}/mix/${String(n).padStart(2, '0')}/tap`;
           card.append(title,
-            knob(sc, sendAddress(s, n), SPEC.send, { label: 'Livello', reset: ZERO_DB }),
-            choice(sc, tap, params.get(tap), { label: 'Prelievo' }));
+            knob(sc, sendAddress(s, n), SPEC.send, { label: 'Livello', reset: ZERO_DB, context: `mandata ${target.label}` }),
+            choice(sc, tap, params.get(tap), { label: `Prelievo ${target.label}` }));
           grid.append(card);
         }
         const sec = h('section', 'ed-section');
@@ -212,9 +213,9 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
         col.append(
           bandTitle(sc, `${b}/f`, params.get(`${b}/f`), i + 1),
           eqTypePicker(sc, `${b}/type`, typeSpec),
-          knob(sc, `${b}/f`, params.get(`${b}/f`), { label: 'Freq.' }),
-          Object.assign(knob(sc, `${b}/g`, SPEC.eqG, { label: 'Guadagno' }), { className: 'knob eq-gain' }),
-          knob(sc, `${b}/q`, SPEC.eqQ, { label: 'Q' }));
+          knob(sc, `${b}/f`, params.get(`${b}/f`), { label: 'Freq.', context: `banda ${i + 1}` }),
+          Object.assign(knob(sc, `${b}/g`, SPEC.eqG, { label: 'Guadagno', context: `banda ${i + 1}` }), { className: 'knob eq-gain' }),
+          knob(sc, `${b}/q`, SPEC.eqQ, { label: 'Q', context: `banda ${i + 1}` }));
         // i filtri di taglio non hanno guadagno
         sc.on(`${b}/type`, t => col.classList.toggle('cut', isCut(typeSpec.options[t])));
         col.classList.toggle('cut', isCut(typeSpec.options[sc.get(`${b}/type`, typeSpec)]));
@@ -291,10 +292,12 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
       const b = h('button', 'tab', t.label);
       b.type = 'button';
       b.setAttribute('role', 'tab');
+      b.dataset.tab = t.id;
       b.setAttribute('aria-selected', String(t.id === tab));
       b.addEventListener('click', () => {
         tab = t.id;
         render();
+        tabsEl.querySelector('[aria-selected="true"]')?.focus({ preventScroll: true });
       });
       tabsEl.append(b);
     }
@@ -317,15 +320,25 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
   });
   pasteBtn.addEventListener('click', () => pasteStrip(mixer, current));
 
+  let opener = null; // chi ha aperto il pannello: alla chiusura il focus torna lì
   function open(strip, wantTab) {
+    const wasHidden = root.hidden;
     current = strip;
     if (wantTab) tab = wantTab;
     root.hidden = false;
     render();
+    if (wasHidden) {
+      opener = document.activeElement;
+      // il focus entra nel pannello: lo screen reader legge il nome del canale
+      $('.close').focus({ preventScroll: true });
+    }
   }
 
   function close() {
+    if (root.hidden) return;
     root.hidden = true;
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+    opener = null;
     scope?.dispose();
     scope = null;
     body.innerHTML = '';
@@ -335,7 +348,9 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
     // salta i canali nascosti perché secondi di una coppia in link stereo
     const visible = editable.filter(s => !(links?.isLinked(s) && !links.isPrimary(s)) || s === current);
     const i = visible.indexOf(current);
-    open(visible[(i + dir + visible.length) % visible.length]);
+    const next = visible[(i + dir + visible.length) % visible.length];
+    open(next);
+    announce(mixer.get(`${next.base}/config/name`) || next.label);
   }
 
   $('.close').addEventListener('click', close);
@@ -345,6 +360,13 @@ export function createEditor(mixer, strips, { rta = null, feedback = null, links
   document.addEventListener('keydown', e => {
     if (root.hidden) return;
     if (e.key === 'Escape') close();
+    // Tab resta dentro il pannello
+    if (e.key === 'Tab') {
+      const items = [...root.querySelectorAll('button:not([disabled]), select, input, [tabindex="0"]')].filter(x => x.offsetParent !== null || x.classList.contains('sr-range'));
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   });
 
   return { open, close };

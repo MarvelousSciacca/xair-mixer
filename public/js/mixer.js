@@ -372,6 +372,8 @@ export class Mixer {
   _tick() {
     const now = Date.now();
     if (now - this.lastPing >= KEEPALIVE_MS) this._ping();
+    // il mixer virtuale ("senza mixer") non manda meter di continuo: non va mai dato per perso
+    if (this.t.isOffline) return;
     if (this.status === 'online' && now - this.lastRx > TIMEOUT_MS) {
       this.meters.fill(-128);
       this._setStatus('lost');
@@ -390,8 +392,9 @@ export class Mixer {
 
     if (address === '/xinfo') {
       const [ip, name, model, version] = args.map(a => a.value);
+      const same = this.info && this.info.ip === ip && this.info.name === name && this.info.model === model && this.info.version === version;
       this.info = { ip, name, model, version };
-      this._setStatus(this.status);
+      if (!same) this._setStatus(this.status); // a ogni controllo di presenza: avvisa solo se è cambiato qualcosa
       return;
     }
     if (address.startsWith('/meters/')) {

@@ -1,14 +1,18 @@
 // Strumenti per il palco: Annulla/Ripeti, blocco dei comandi contro i tocchi per sbaglio e schermo
 // sempre acceso mentre si è collegati al mixer.
 
+import { announce } from './a11y.js';
+
 const UNLOCK_HOLD_MS = 800;
 
 const isTyping = el => el?.closest?.('input, textarea, select, [contenteditable="true"]');
 
 /** Pulsanti Annulla/Ripeti e scorciatoie Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z (o Ctrl+Y). */
 export function createHistoryButtons(mixer, { undoBtn, redoBtn }) {
-  undoBtn.addEventListener('click', () => mixer.undo());
-  redoBtn.addEventListener('click', () => mixer.redo());
+  const undo = () => { mixer.undo(); announce('Annullato'); };
+  const redo = () => { mixer.redo(); announce('Ripetuto'); };
+  undoBtn.addEventListener('click', undo);
+  redoBtn.addEventListener('click', redo);
   mixer.onHistory(({ canUndo, canRedo }) => {
     undoBtn.disabled = !canUndo;
     redoBtn.disabled = !canRedo;
@@ -16,8 +20,8 @@ export function createHistoryButtons(mixer, { undoBtn, redoBtn }) {
   window.addEventListener('keydown', e => {
     if (!(e.metaKey || e.ctrlKey) || e.altKey || isTyping(e.target)) return;
     const key = e.key.toLowerCase();
-    if (key === 'z' && !e.shiftKey) mixer.undo();
-    else if ((key === 'z' && e.shiftKey) || (key === 'y' && e.ctrlKey)) mixer.redo();
+    if (key === 'z' && !e.shiftKey) undo();
+    else if ((key === 'z' && e.shiftKey) || (key === 'y' && e.ctrlKey)) redo();
     else return;
     e.preventDefault();
   });
@@ -33,6 +37,7 @@ export function createLock({ lockBtn, overlay, unlockBtn }) {
     overlay.hidden = !on;
     document.body.classList.toggle('locked', on);
     lockBtn.setAttribute('aria-pressed', String(on));
+    announce(on ? 'Comandi bloccati. Per sbloccare tieni premuto il pulsante in basso' : 'Comandi sbloccati');
     if (on) unlockBtn.focus({ preventScroll: true });
     else lockBtn.focus({ preventScroll: true });
   };

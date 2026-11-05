@@ -2,6 +2,7 @@
 // (tutto il mix salvato sul dispositivo e ricaricabile anche su un altro mixer X Air).
 
 import { SNAPSHOTS } from './model.js';
+import { t } from './i18n.js';
 import { ask, notify } from './dialogs.js';
 import { createSafes, protectable } from './safes.js';
 
@@ -296,8 +297,9 @@ export function createScenes({ mixer, addresses, strips, onReload, offline = nul
       .map(([a]) => `In ${Number(a.split('/')[2])}`);
     const ok = await ask({
       title: `Caricare "${scene.name}"?`,
-      message: `${count} parametri sostituiranno il mix attuale.${otherModel ? ` Attenzione: la scena è stata salvata da un ${scene.mixer.model}.` : ''}`
-        + (phantomOn.length ? `\n\nAttenzione: la scena accende la +48V su ${phantomOn.join(', ')}. Controlla che lì non ci siano microfoni a nastro o sorgenti che la phantom può danneggiare.` : ''),
+      message: t('{0} parametri sostituiranno il mix attuale.', count)
+        + (otherModel ? ` ${t('Attenzione: la scena è stata salvata da un {0}.', scene.mixer.model)}` : '')
+        + (phantomOn.length ? `\n\n${t('Attenzione: la scena accende la +48V su {0}. Controlla che lì non ci siano microfoni a nastro o sorgenti che la phantom può danneggiare.', phantomOn.join(', '))}` : ''),
       confirmText: 'Carica',
       danger: true,
     });

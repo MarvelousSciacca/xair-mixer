@@ -13,13 +13,14 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/theme-light.css">
   <link rel="stylesheet" href="css/strip.css">
+  <link rel="stylesheet" href="css/a11y.css">
   <script src="js/theme-boot.js"></script>
 </head>
 <body class="offline">
   <header class="topbar">
     <div class="topbar-row topbar-nav">
       <h1 class="brand">Air<span>Desk</span></h1>
-      <nav class="tabs" role="tablist">
+      <nav class="tabs" role="tablist" aria-label="Sezioni del mixer">
         <button class="tab" role="tab" data-group="input">Ingressi</button>
         <button class="tab" role="tab" data-group="bus">Bus &amp; FX</button>
         <button class="tab" role="tab" data-group="dca">DCA</button>
@@ -52,11 +53,11 @@
     </div>
   </header>
 
-  <div class="bridge-banner">Ponte non raggiungibile: avvia <code>npm start</code> sul computer.</div>
+  <div class="bridge-banner" role="alert">Ponte non raggiungibile: avvia <code>npm start</code> sul computer.</div>
 
   <div class="send-banner" id="send-banner"></div>
 
-  <main class="mixer">
+  <main class="mixer" aria-label="Mixer">
     <div class="strips" id="strips"></div>
     <div class="main-strip" id="main-strip"></div>
   </main>

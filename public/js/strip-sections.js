@@ -39,6 +39,7 @@ function svg(viewBox, className) {
   s.setAttribute('viewBox', viewBox);
   s.setAttribute('preserveAspectRatio', 'none');
   s.setAttribute('class', className);
+  s.setAttribute('aria-hidden', 'true');
   return s;
 }
 function path(parent, className) {

@@ -5,15 +5,16 @@ import { COLORS, soloAddress } from './model.js';
 import { sendAddress } from './params.js';
 import { createStripSections } from './strip-sections.js';
 import { fineFactor, doubleTap, TAP_SLOP_PX } from './controls.js';
+import { srRange, FADER_STEPS_DB, nearestStep } from './a11y.js';
 
 const FADER_MARKS = [10, 5, 0, -5, -10, -20, -30, -50, -Infinity];
 const METER_FLOOR = -60;
 const PEAK_HOLD_MS = 1200;
-const METER_HTML = '<div class="meter"><div class="meter-cover"></div><div class="meter-peak"></div></div>';
+const METER_HTML = '<div class="meter" aria-hidden="true"><div class="meter-cover"></div><div class="meter-peak"></div></div>';
 const PROC = [
-  { key: 'gate', tab: 'gate', addr: 'gate/on', text: 'G' },
-  { key: 'dyn', tab: 'dyn', addr: 'dyn/on', text: 'C' },
-  { key: 'eqBands', tab: 'eq', addr: 'eq/on', text: 'EQ' },
+  { key: 'gate', tab: 'gate', addr: 'gate/on', text: 'G', name: 'Gate' },
+  { key: 'dyn', tab: 'dyn', addr: 'dyn/on', text: 'C', name: 'Compressore' },
+  { key: 'eqBands', tab: 'eq', addr: 'eq/on', text: 'EQ', name: 'EQ' },
 ];
 
 const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
@@ -159,6 +160,8 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   const el = document.createElement('div');
   el.className = `strip strip-${strip.group}`;
   el.dataset.id = strip.id;
+  // per gli screen reader ogni strip è un gruppo col nome del canale
+  el.setAttribute('role', 'group');
 
   const marks = FADER_MARKS.map(db => {
     const pos = dbToFader(db);
@@ -169,24 +172,24 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   el.innerHTML = `
     <button class="scribble" type="button" title="Modifica nome e colore"></button>
     <div class="proc">${PROC.filter(p => strip[p.key]).map(p =>
-      `<button class="proc-btn" type="button" data-tab="${p.tab}" data-addr="${p.addr}">${p.text}</button>`).join('')}</div>
+      `<button class="proc-btn" type="button" data-tab="${p.tab}" data-addr="${p.addr}" data-name="${p.name}">${p.text}</button>`).join('')}</div>
     ${strip.pan
-      ? `<div class="pan" tabindex="0" role="slider" aria-label="Pan ${strip.label}">
-           <div class="pan-track"><div class="pan-fill"></div></div><span class="pan-val">C</span>
+      ? `<div class="pan">
+           <div class="pan-track"><div class="pan-fill"></div></div><span class="pan-val" aria-hidden="true">C</span>
          </div>`
       : '<div class="pan pan-none"></div>'}
     <div class="fader-area">
       <div class="meters">${strip.meters.map(() => METER_HTML).join('')}${strip.linkMeter !== undefined ? METER_HTML.replace('"meter"', '"meter link-only"') : ''}</div>
-      <div class="fader" tabindex="0" role="slider" aria-label="Fader ${strip.label}">
-        <div class="fader-scale">${marks}</div>
+      <div class="fader">
+        <div class="fader-scale" aria-hidden="true">${marks}</div>
         <div class="fader-slot"></div>
         <div class="fader-cap"></div>
       </div>
     </div>
-    <div class="db"><span class="db-val">-∞</span></div>
+    <div class="db" aria-hidden="true"><span class="db-val">-∞</span></div>
     <div class="buttons">
-      ${strip.solo ? '<button class="solo" type="button" aria-label="Solo" title="Solo">S</button>' : ''}
-      <button class="mute" type="button" aria-label="Mute" title="Mute">M</button>
+      ${strip.solo ? '<button class="solo" type="button" aria-pressed="false" title="Solo">S</button>' : ''}
+      <button class="mute" type="button" aria-pressed="false" title="Mute">M</button>
     </div>
     <button class="label" type="button" title="Elaborazione del canale">${strip.label}</button>`;
 
@@ -195,10 +198,23 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   // sezioni in miniatura (preamp, gate, compressore, EQ, mandate): visibili secondo la "Vista"
   $('.proc').after(createStripSections(mixer, strip, { onProcess }));
 
-  // Nome e colore
+  // Nome e colore. Il nome va anche nelle etichette lette dagli screen reader ("Mute Voce 1"…).
   const scribble = $('.scribble');
+  const nameFor = [];
+  const channelName = () => {
+    const name = mixer.get(`${base}/config/name`);
+    const label = links?.isLinked(strip) ? links.pairLabel(strip) : strip.label;
+    return name && name !== strip.label ? `${name} (${label})` : label;
+  };
+  const renderNames = () => {
+    const n = channelName();
+    el.setAttribute('aria-label', n);
+    scribble.setAttribute('aria-label', `Nome e colore: ${n}`);
+    nameFor.forEach(f => f(n));
+  };
   mixer.on(`${base}/config/name`, name => {
     scribble.textContent = name || strip.label;
+    renderNames();
   });
   scribble.textContent = strip.label;
   mixer.on(`${base}/config/color`, c => applyColor(el, c));
@@ -209,12 +225,24 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
 
   // Pulsanti Gate / Comp / EQ: accesi se attivi, aprono il pannello di elaborazione.
   el.querySelectorAll('.proc-btn').forEach(btn => {
-    mixer.on(`${base}/${btn.dataset.addr}`, on => btn.classList.toggle('active', !!on));
+    const addr = `${base}/${btn.dataset.addr}`;
+    const describe = n => btn.setAttribute('aria-label',
+      `${btn.dataset.name} ${mixer.get(addr) ? 'attivo' : 'spento'}, ${n}: apri`);
+    nameFor.push(describe);
+    mixer.on(addr, on => {
+      btn.classList.toggle('active', !!on);
+      describe(channelName());
+    });
     btn.addEventListener('click', () => onProcess(strip, btn.dataset.tab));
   });
   const label = $('.label');
-  if (editable) label.addEventListener('click', () => onProcess(strip));
-  else label.disabled = true;
+  if (editable) {
+    label.addEventListener('click', () => onProcess(strip));
+    nameFor.push(n => label.setAttribute('aria-label', `Elaborazione di ${n}`));
+  } else {
+    label.disabled = true;
+    label.setAttribute('aria-hidden', 'true'); // il nome è già quello del gruppo
+  }
 
   // Fader
   const fader = $('.fader');
@@ -222,17 +250,27 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   const dbText = $('.db-val');
   let faderAddr = null;
   let offFader = null;
+  let faderWhat = 'Fader';
+  const faderSr = srRange(fader, {
+    label: `Fader ${strip.label}`,
+    steps: FADER_STEPS_DB.length - 1,
+    index: () => nearestStep(FADER_STEPS_DB, faderToDb(mixer.get(faderAddr, 0))),
+    pick: i => faderAddr && mixer.set(faderAddr, dbToFader(FADER_STEPS_DB[i])),
+    text: () => (faderAddr ? `${formatDb(faderToDb(mixer.get(faderAddr, 0)))} dB` : 'non disponibile'),
+  });
+  const faderLabel = n => faderSr.setLabel(`${faderWhat}, ${n}`);
+  nameFor.push(faderLabel);
   const showFader = v => {
     cap.style.setProperty('--v', v);
     const db = formatDb(faderToDb(v));
-    if (dbText.textContent !== db) {
-      dbText.textContent = db;
-      fader.setAttribute('aria-valuetext', `${db} dB`);
-    }
+    if (dbText.textContent !== db) dbText.textContent = db;
+    faderSr.sync();
   };
-  const bindFader = address => {
+  const bindFader = (address, what = 'Fader') => {
     offFader?.();
     faderAddr = address;
+    faderWhat = what;
+    faderLabel(channelName());
     offFader = address ? mixer.on(address, showFader) : null;
     if (!address) showFader(0);
   };
@@ -242,13 +280,15 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
       const available = n === null || n <= strip.sends;
       el.classList.toggle('send-mode', n !== null && available);
       el.classList.toggle('send-na', !available);
-      bindFader(n === null ? strip.fader : available ? sendAddress(strip, n) : null);
+      bindFader(n === null ? strip.fader : available ? sendAddress(strip, n) : null,
+        n === null ? 'Fader' : `Mandata ${n <= 6 ? `Bus ${n}` : `FX ${n - 6}`}`);
     };
   }
   draggable(fader, {
     axis: 'y',
     reset: ZERO_DB,
-    length: () => fader.clientHeight - cap.offsetHeight,
+    // misure come le vede il dito (anche con l'interfaccia ingrandita)
+    length: () => fader.getBoundingClientRect().height - cap.getBoundingClientRect().height,
     getValue: () => mixer.get(faderAddr, 0),
     setValue: v => faderAddr && mixer.set(faderAddr, v),
     // mentre il dito è sul fader, i valori in arrivo dal mixer (in ritardo) non lo fanno saltare indietro
@@ -263,10 +303,23 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
     const pan = $('.pan');
     const panAddr = `${base}/mix/pan`;
     const getPan = () => (linked() ? links.balance(strip) : mixer.get(panAddr, 0.5));
+    const panSpeech = v => {
+      const p = Math.round((v - 0.5) * 200);
+      return p === 0 ? 'al centro' : `${Math.abs(p)} a ${p < 0 ? 'sinistra' : 'destra'}`;
+    };
+    const panSr = srRange(pan, {
+      label: `Pan ${strip.label}`,
+      steps: 40, // scatti del 5%
+      index: () => Math.round(getPan() * 40),
+      pick: i => (linked() ? links.setBalance(strip, i / 40) : mixer.set(panAddr, i / 40)),
+      text: () => panSpeech(getPan()),
+    });
+    nameFor.push(n => panSr.setLabel(`${linked() ? 'Bilanciamento' : 'Pan'}, ${n}`));
     renderPan = () => {
       const v = getPan();
       pan.style.setProperty('--pan', v);
       $('.pan-val').textContent = linked() ? `BAL ${panLabel(v)}` : panLabel(v);
+      panSr.sync();
     };
     mixer.on(panAddr, renderPan);
     const partner = links?.pair(strip);
@@ -275,7 +328,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
     draggable(pan, {
       axis: 'x',
       reset: 0.5,
-      length: () => pan.clientWidth * 1.5,
+      length: () => pan.getBoundingClientRect().width * 1.5,
       getValue: getPan,
       setValue: v => (linked() ? links.setBalance(strip, v) : mixer.set(panAddr, v)),
     });
@@ -289,6 +342,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
       el.classList.toggle('linked-hidden', on && !links.isPrimary(strip));
       label.textContent = on ? links.pairLabel(strip) : strip.label;
       renderPan();
+      renderNames();
     };
     links.onChange(updateLink);
     updateLink();
@@ -297,8 +351,10 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   // Mute (mix/on = 0 significa canale spento)
   const mute = $('.mute');
   const onAddr = strip.on;
+  nameFor.push(n => mute.setAttribute('aria-label', `Mute ${n}`));
   mixer.on(onAddr, on => {
     mute.classList.toggle('active', !on);
+    mute.setAttribute('aria-pressed', String(!on));
     el.classList.toggle('muted', !on);
   });
   mute.addEventListener('click', () => mixer.set(onAddr, mixer.get(onAddr, 1) ? 0 : 1, 'i'));
@@ -307,10 +363,15 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
   if (strip.solo) {
     const solo = $('.solo');
     const soloAddr = soloAddress(strip);
-    mixer.on(soloAddr, v => solo.classList.toggle('active', !!v));
+    nameFor.push(n => solo.setAttribute('aria-label', `Solo ${n}`));
+    mixer.on(soloAddr, v => {
+      solo.classList.toggle('active', !!v);
+      solo.setAttribute('aria-pressed', String(!!v));
+    });
     solo.addEventListener('click', () => mixer.set(soloAddr, mixer.get(soloAddr, 0) ? 0 : 1, 'i'));
   }
 
   el.querySelectorAll('.meter').forEach((m, i) => registerMeter(m, [...strip.meters, strip.linkMeter][i]));
+  renderNames();
   return el;
 }

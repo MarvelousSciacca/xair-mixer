@@ -44,6 +44,7 @@ export function createLayers({ mixer, strips, stripEls, stripsEl, tabsEl, links,
     tabsEl.querySelectorAll('.tab-layer').forEach(t => t.remove());
     for (const l of layers) {
       const t = h('button', 'tab tab-layer', l.name);
+      t.setAttribute('translate', 'no'); // nome scelto dall'utente
       t.type = 'button';
       t.setAttribute('role', 'tab');
       t.dataset.group = 'layer';

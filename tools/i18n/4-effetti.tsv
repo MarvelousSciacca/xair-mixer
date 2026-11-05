@@ -1,0 +1,99 @@
+# --- effetti: parametri (i nomi inglesi di X-AIR-Edit restano) ---
+Diffusione§Diffusion§Difusión§Diffusion§Diffusion
+Velocità§Speed§Velocidad§Vitesse§Geschwindigkeit
+Fase§Phase§Fase§Phase§Phase
+Tempo§Time§Tiempo§Temps§Zeit
+Rifl. L§Refl. L§Refl. L§Réfl. L§Refl. L
+Rifl. R§Refl. R§Refl. R§Réfl. R§Refl. R
+Livello rifl. L§Refl. level L§Nivel refl. L§Niveau réfl. L§Refl.-Pegel L
+Livello rifl. R§Refl. level R§Nivel refl. R§Niveau réfl. R§Refl.-Pegel R
+Posizione§Position§Posición§Position§Position
+Densità§Density§Densidad§Densité§Dichte
+Livello ER§ER level§Nivel ER§Niveau ER§ER-Pegel
+Modo§Mode§Modo§Mode§Modus
+Fattore§Factor§Factor§Facteur§Faktor
+Fattore {0}§Factor {0}§Factor {0}§Facteur {0}§Faktor {0}
+Forma onda§Waveform§Forma de onda§Forme d’onde§Wellenform
+Risonanza§Resonance§Resonancia§Résonance§Resonanz
+Stadi§Stages§Etapas§Étages§Stufen
+Tasto {#0}§Button {0}§Botón {0}§Touche {0}§Taste {0}
+Distanza§Distance§Distancia§Distance§Abstand
+Bilanciamento§Balance§Balance§Balance§Balance
+Tipo riverbero§Reverb type§Tipo de reverb§Type de réverbe§Hall-Typ
+Livello {0}§Level {0}§Nivel {0}§Niveau {0}§Pegel {0}
+Voce {0}§Voice {0}§Voz {0}§Voix {0}§Stimme {0}
+Trasformatore§Transformer§Transformador§Transformateur§Übertrager
+Solo banda§Band solo§Solo de banda§Solo de bande§Band-Solo
+Pendenza§Slope§Pendiente§Pente§Flankensteilheit
+Soglia {0}§Threshold {0}§Umbral {0}§Seuil {0}§Schwelle {0}
+Tempo {0}§Time {0}§Tiempo {0}§Temps {0}§Zeit {0}
+Bilanc. {0}§Bal. {0}§Bal. {0}§Bal. {0}§Bal. {0}
+Armoniche§Harmonics§Armónicos§Harmoniques§Obertöne
+Spread stereo§Stereo spread§Amplitud estéreo§Largeur stéréo§Stereobreite
+Distanza centro§Centre distance§Distancia del centro§Distance du centre§Abstand zur Mitte
+Pari§Even§Pares§Pairs§Gerade
+Dispari§Odd§Impares§Impairs§Ungerade
+Semitoni§Semitones§Semitonos§Demi-tons§Halbtöne
+Semitoni {#0}§Semitones {0}§Semitonos {0}§Demi-tons {0}§Halbtöne {0}
+# --- effetti: descrizioni nella libreria ---
+Riverbero di sala da concerto, ampio e morbido.§Concert hall reverb, wide and smooth.§Reverb de sala de conciertos, amplia y suave.§Réverbe de salle de concert, ample et douce.§Konzertsaal-Hall, weit und weich.
+Ambienza corta: dà spazio senza coda evidente.§Short ambience: adds space without an obvious tail.§Ambiente corto: da espacio sin cola evidente.§Ambiance courte : donne de l’espace sans queue apparente.§Kurze Ambience: gibt Raum ohne hörbare Fahne.
+Plate ricco e brillante, ottimo su voci e rullante.§Rich, bright plate, great on vocals and snare.§Plate rica y brillante, ideal para voces y caja.§Plate riche et brillante, idéale sur les voix et la caisse claire.§Reiche, brillante Plate, ideal für Gesang und Snare.
+Stanza naturale, dalla piccola alla grande.§Natural room, from small to large.§Sala natural, de pequeña a grande.§Pièce naturelle, de petite à grande.§Natürlicher Raum, von klein bis groß.
+Camera d'eco: denso e caldo.§Echo chamber: dense and warm.§Cámara de eco: densa y cálida.§Chambre d’écho : dense et chaude.§Hallkammer: dicht und warm.
+Plate classico, liscio e definito.§Classic plate, smooth and defined.§Plate clásica, suave y definida.§Plate classique, lisse et définie.§Klassische Plate, glatt und definiert.
+Riverbero digitale anni '80, colore vintage.§1980s digital reverb, vintage colour.§Reverb digital de los 80, color vintage.§Réverbe numérique des années 80, couleur vintage.§Digitaler Hall der 80er, Vintage-Klang.
+Stanza vintage con prime riflessioni regolabili.§Vintage room with adjustable early reflections.§Sala vintage con primeras reflexiones ajustables.§Pièce vintage aux premières réflexions réglables.§Vintage-Raum mit einstellbaren Erstreflexionen.
+Riverbero tagliato di netto, effetto batteria anni '80.§Abruptly cut reverb, the 1980s drum effect.§Reverb cortada en seco, efecto de batería de los 80.§Réverbe coupée net, effet batterie des années 80.§Abrupt abgeschnittener Hall, der Drum-Effekt der 80er.
+Riverbero al contrario che cresce verso il suono.§Reversed reverb that swells into the sound.§Reverb al revés que crece hacia el sonido.§Réverbe inversée qui monte vers le son.§Rückwärtshall, der zum Klang hin anschwillt.
+Delay stereo con fattori L/R e feedback filtrato.§Stereo delay with L/R factors and filtered feedback.§Delay estéreo con factores L/R y realimentación filtrada.§Delay stéréo avec facteurs L/R et réinjection filtrée.§Stereo-Delay mit L/R-Faktoren und gefiltertem Feedback.
+Delay a tre ripetizioni con guadagno e pan per ciascuna.§Three-tap delay with gain and pan for each.§Delay de tres repeticiones con ganancia y panorama para cada una.§Delay à trois répétitions avec gain et panoramique pour chacune.§Delay mit drei Wiederholungen, jede mit eigenem Gain und Panorama.
+Delay ritmico a quattro ripetizioni.§Four-tap rhythmic delay.§Delay rítmico de cuatro repeticiones.§Delay rythmique à quatre répétitions.§Rhythmisches Delay mit vier Wiederholungen.
+Chorus stereo: allarga e ammorbidisce.§Stereo chorus: widens and softens.§Chorus estéreo: ensancha y suaviza.§Chorus stéréo : élargit et adoucit.§Stereo-Chorus: verbreitert und macht weicher.
+Flanger stereo con feedback filtrato.§Stereo flanger with filtered feedback.§Flanger estéreo con realimentación filtrada.§Flanger stéréo avec réinjection filtrée.§Stereo-Flanger mit gefiltertem Feedback.
+Phaser stereo con modulazione da inviluppo.§Stereo phaser with envelope modulation.§Phaser estéreo con modulación por envolvente.§Phaser stéréo avec modulation par enveloppe.§Stereo-Phaser mit Hüllkurvenmodulation.
+Chorus "Dimension" a pulsanti, molto naturale.§Button-style "Dimension" chorus, very natural.§Chorus "Dimension" de botones, muy natural.§Chorus « Dimension » à touches, très naturel.§„Dimension“-Chorus mit Tasten, sehr natürlich.
+Filtro risonante modulato (auto-wah).§Modulated resonant filter (auto-wah).§Filtro resonante modulado (auto-wah).§Filtre résonant modulé (auto-wah).§Modulierter Resonanzfilter (Auto-Wah).
+Simulazione di altoparlante rotante (Leslie).§Rotary speaker simulation (Leslie).§Simulación de altavoz rotatorio (Leslie).§Simulation de haut-parleur rotatif (Leslie).§Simulation eines Rotationslautsprechers (Leslie).
+Tremolo o autopan, anche guidato dall'inviluppo.§Tremolo or autopan, also driven by the envelope.§Trémolo o autopan, también guiado por la envolvente.§Trémolo ou autopan, aussi piloté par l’enveloppe.§Tremolo oder Autopan, auch hüllkurvengesteuert.
+Genera una e due ottave sotto (doppio).§Generates one and two octaves below (dual).§Genera una y dos octavas por debajo (doble).§Génère une et deux octaves en dessous (double).§Erzeugt eine und zwei Oktaven tiefer (doppelt).
+Delay seguito da camera riverberante.§Delay followed by a reverb chamber.§Delay seguido de una cámara de reverb.§Delay suivi d’une chambre de réverbération.§Delay gefolgt von einer Hallkammer.
+Chorus e camera riverberante insieme.§Chorus and reverb chamber together.§Chorus y cámara de reverb juntos.§Chorus et chambre de réverbération ensemble.§Chorus und Hallkammer zusammen.
+Flanger e camera riverberante insieme.§Flanger and reverb chamber together.§Flanger y cámara de reverb juntos.§Flanger et chambre de réverbération ensemble.§Flanger und Hallkammer zusammen.
+Delay seguito da chorus.§Delay followed by chorus.§Delay seguido de chorus.§Delay suivi d’un chorus.§Delay gefolgt von Chorus.
+Delay seguito da flanger.§Delay followed by flanger.§Delay seguido de flanger.§Delay suivi d’un flanger.§Delay gefolgt von Flanger.
+Delay con modulazione e riverbero, molto musicale.§Delay with modulation and reverb, very musical.§Delay con modulación y reverb, muy musical.§Delay avec modulation et réverbe, très musical.§Delay mit Modulation und Hall, sehr musikalisch.
+Due EQ grafici a 31 bande (es. due monitor).§Two 31-band graphic EQs (e.g. two monitors).§Dos EQ gráficos de 31 bandas (p. ej. dos monitores).§Deux EQ graphiques 31 bandes (par ex. deux retours).§Zwei grafische 31-Band-EQs (z. B. zwei Monitore).
+EQ grafico stereo a 31 bande.§31-band stereo graphic EQ.§EQ gráfico estéreo de 31 bandas.§EQ graphique stéréo 31 bandes.§Grafischer Stereo-EQ mit 31 Bändern.
+Due EQ grafici a 31 bande con risposta reale.§Two 31-band graphic EQs with true response.§Dos EQ gráficos de 31 bandas con respuesta real.§Deux EQ graphiques 31 bandes à réponse réelle.§Zwei grafische 31-Band-EQs mit echtem Frequenzgang.
+EQ grafico stereo a 31 bande con risposta reale.§31-band stereo graphic EQ with true response.§EQ gráfico estéreo de 31 bandas con respuesta real.§EQ graphique stéréo 31 bandes à réponse réelle.§Grafischer Stereo-EQ mit 31 Bändern und echtem Frequenzgang.
+Due de-esser per voci (riduce le sibilanti).§Two de-essers for vocals (reduce sibilance).§Dos de-esser para voces (reducen las sibilantes).§Deux de-esser pour les voix (réduisent les sifflantes).§Zwei De-Esser für Gesang (reduzieren Zischlaute).
+De-esser stereo o M/S per voci.§Stereo or M/S de-esser for vocals.§De-esser estéreo o M/S para voces.§De-esser stéréo ou M/S pour les voix.§Stereo- oder M/S-De-Esser für Gesang.
+EQ passivo stile Pultec, caldo e musicale.§Pultec-style passive EQ, warm and musical.§EQ pasivo estilo Pultec, cálido y musical.§EQ passif style Pultec, chaud et musical.§Passiver EQ im Pultec-Stil, warm und musikalisch.
+Due EQ passivi stile Pultec.§Two Pultec-style passive EQs.§Dos EQ pasivos estilo Pultec.§Deux EQ passifs style Pultec.§Zwei passive EQs im Pultec-Stil.
+EQ medi stile Pultec MEQ-5.§Pultec MEQ-5-style mid EQ.§EQ de medios estilo Pultec MEQ-5.§EQ médiums style Pultec MEQ-5.§Mitten-EQ im Stil des Pultec MEQ-5.
+Due EQ medi stile Pultec MEQ-5.§Two Pultec MEQ-5-style mid EQs.§Dos EQ de medios estilo Pultec MEQ-5.§Deux EQ médiums style Pultec MEQ-5.§Zwei Mitten-EQs im Stil des Pultec MEQ-5.
+Modella attacco e sustain dei transienti (doppio).§Shapes transient attack and sustain (dual).§Modela el ataque y el sustain de los transitorios (doble).§Façonne l’attaque et le sustain des transitoires (double).§Formt Attack und Sustain der Transienten (doppelt).
+Limiter trasparente per il master.§Transparent limiter for the master.§Limitador transparente para el máster.§Limiteur transparent pour le master.§Transparenter Limiter für die Summe.
+Compressore multibanda a 5 bande.§5-band multiband compressor.§Compresor multibanda de 5 bandas.§Compresseur multibande à 5 bandes.§Multiband-Kompressor mit 5 Bändern.
+Due compressori multibanda a 5 bande.§Two 5-band multiband compressors.§Dos compresores multibanda de 5 bandas.§Deux compresseurs multibandes à 5 bandes.§Zwei Multiband-Kompressoren mit 5 Bändern.
+Compressore valvolare stile Fairchild.§Fairchild-style tube compressor.§Compresor a válvulas estilo Fairchild.§Compresseur à lampes style Fairchild.§Röhrenkompressor im Fairchild-Stil.
+Fairchild in modalità Mid/Side.§Fairchild in Mid/Side mode.§Fairchild en modo Mid/Side.§Fairchild en mode Mid/Side.§Fairchild im Mid/Side-Modus.
+Due compressori stile Fairchild.§Two Fairchild-style compressors.§Dos compresores estilo Fairchild.§Deux compresseurs style Fairchild.§Zwei Kompressoren im Fairchild-Stil.
+Compressore ottico stile LA-2A, dolce sulle voci.§LA-2A-style optical compressor, gentle on vocals.§Compresor óptico estilo LA-2A, suave en las voces.§Compresseur optique style LA-2A, doux sur les voix.§Optischer Kompressor im LA-2A-Stil, sanft bei Gesang.
+Due compressori ottici stile LA-2A.§Two LA-2A-style optical compressors.§Dos compresores ópticos estilo LA-2A.§Deux compresseurs optiques style LA-2A.§Zwei optische Kompressoren im LA-2A-Stil.
+Compressore FET stile 1176, veloce e grintoso.§1176-style FET compressor, fast and punchy.§Compresor FET estilo 1176, rápido y con garra.§Compresseur FET style 1176, rapide et punchy.§FET-Kompressor im 1176-Stil, schnell und druckvoll.
+Due compressori FET stile 1176.§Two 1176-style FET compressors.§Dos compresores FET estilo 1176.§Deux compresseurs FET style 1176.§Zwei FET-Kompressoren im 1176-Stil.
+Due enhancer: più presenza su basse, medie e alte.§Two enhancers: more presence on lows, mids and highs.§Dos enhancer: más presencia en graves, medios y agudos.§Deux enhancers : plus de présence dans les graves, médiums et aigus.§Zwei Enhancer: mehr Präsenz in Bässen, Mitten und Höhen.
+Enhancer stereo: più presenza su basse, medie e alte.§Stereo enhancer: more presence on lows, mids and highs.§Enhancer estéreo: más presencia en graves, medios y agudos.§Enhancer stéréo : plus de présence dans les graves, médiums et aigus.§Stereo-Enhancer: mehr Präsenz in Bässen, Mitten und Höhen.
+Due exciter: aggiungono armoniche e brillantezza.§Two exciters: add harmonics and brilliance.§Dos exciter: añaden armónicos y brillo.§Deux exciters : ajoutent harmoniques et brillance.§Zwei Exciter: fügen Obertöne und Brillanz hinzu.
+Exciter stereo: aggiunge armoniche e brillantezza.§Stereo exciter: adds harmonics and brilliance.§Exciter estéreo: añade armónicos y brillo.§Exciter stéréo : ajoute harmoniques et brillance.§Stereo-Exciter: fügt Obertöne und Brillanz hinzu.
+Regola larghezza e posizione dell'immagine stereo.§Adjusts the width and position of the stereo image.§Ajusta el ancho y la posición de la imagen estéreo.§Règle la largeur et la position de l’image stéréo.§Regelt Breite und Lage des Stereobilds.
+Allargatore stereo e bilanciamento M/S.§Stereo widener and M/S balance.§Ensanchador estéreo y balance M/S.§Élargisseur stéréo et balance M/S.§Stereo-Verbreiterung und M/S-Balance.
+Ridà definizione a basse e alte (doppio).§Restores definition to lows and highs (dual).§Devuelve definición a graves y agudos (doble).§Redonne de la définition aux graves et aux aigus (double).§Gibt Bässen und Höhen Definition zurück (doppelt).
+Due simulazioni di amplificatore per chitarra.§Two guitar amp simulations.§Dos simulaciones de amplificador de guitarra.§Deux simulations d’ampli guitare.§Zwei Gitarrenverstärker-Simulationen.
+Simulazione di amplificatore per chitarra.§Guitar amp simulation.§Simulación de amplificador de guitarra.§Simulation d’ampli guitare.§Gitarrenverstärker-Simulation.
+Due stadi valvolari: saturazione calda.§Two tube stages: warm saturation.§Dos etapas a válvulas: saturación cálida.§Deux étages à lampes : saturation chaude.§Zwei Röhrenstufen: warme Sättigung.
+Stadio valvolare stereo: saturazione calda.§Stereo tube stage: warm saturation.§Etapa a válvulas estéreo: saturación cálida.§Étage à lampes stéréo : saturation chaude.§Stereo-Röhrenstufe: warme Sättigung.
+Due voci trasposte, per armonizzare o ispessire.§Two transposed voices, to harmonise or thicken.§Dos voces transpuestas, para armonizar o engordar.§Deux voix transposées, pour harmoniser ou épaissir.§Zwei transponierte Stimmen zum Harmonisieren oder Andicken.
+Traspone il suono di semitoni e cent.§Transposes the sound by semitones and cents.§Transpone el sonido en semitonos y cents.§Transpose le son en demi-tons et cents.§Transponiert den Klang um Halbtöne und Cent.

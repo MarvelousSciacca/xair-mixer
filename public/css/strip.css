@@ -159,7 +159,7 @@
 .monitor-view.locked .strip-sections { pointer-events: none; }
 
 /* --- pannello Vista ------------------------------------------------------------------------------ */
-.view-dialog { width: min(460px, calc(100vw - 32px)); }
+.view-dialog { width: min(460px, calc(calc(100vw / var(--vu, 1)) - 32px)); }
 .view-help { margin: 0 0 6px; color: var(--muted); font-size: 13px; }
 .view-group h3 { margin: 14px 0 8px; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .view-toggles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }

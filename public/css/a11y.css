@@ -1,0 +1,112 @@
+/* Accessibilità: testo solo per gli screen reader, cursori nativi nascosti sopra fader e manopole,
+   focus ben visibile da tastiera, contrasto alto e movimenti ridotti. */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* <input type="range"> trasparente grande quanto il controllo: lo screen reader lo trova anche
+   esplorando lo schermo col dito, ma si vede e si trascina il controllo disegnato sotto. */
+.fader, .pan, .knob-dial { position: relative; }
+.sr-range {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  margin: 0; padding: 0;
+  opacity: 0;
+  -webkit-appearance: none; appearance: none;
+  background: none; border: 0;
+  cursor: inherit;
+  touch-action: none;
+  z-index: 3;
+}
+
+/* focus da tastiera: anello spesso, sempre visibile */
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sr-range:focus-visible { outline: none; }
+.fader:has(.sr-range:focus-visible) .fader-cap,
+.pan:has(.sr-range:focus-visible) .pan-track { outline: 3px solid var(--accent); outline-offset: 2px; }
+.knob-dial:has(.sr-range:focus-visible) { box-shadow: 0 0 0 3px var(--accent); }
+
+/* --- contrasto alto (Impostazioni → Aspetto, oppure "Aumenta contrasto" del sistema) ------------ */
+:root:not([data-theme="light"])[data-contrast="more"] {
+  --text: #ffffff;
+  --muted: #dfe2e7;
+  --muted-2: #c9cdd4;
+  --line: #9aa1ab;
+  --grid: #3a404a;
+  --grid-strong: #8a919c;
+  --zone-name: #c9cdd4;
+  --accent: #ffc233;
+  --slot: #000000;
+  --cap-line-default: #ffffff;
+  --knob-track: #6b717c;
+  --knob-edge: #c9cdd4;
+  --key-shadow: inset 0 0 0 1px #c9cdd4;
+  --bg: #000000;
+  --panel: #0c0d10;
+  --strip-bg: #0a0b0d;
+  --strip-bg-alt: #0a0b0d;
+}
+:root[data-theme="light"][data-contrast="more"] {
+  --text: #000000;
+  --muted: #1f2126;
+  --muted-2: #2b2d32;
+  --line: #5c5e62;
+  --grid: #c4c4c4;
+  --grid-strong: #6e7075;
+  --zone-name: #3a3c40;
+  --accent: #1d47c2;
+  --mute: #c4001f;
+  --ok: #0b6b33;
+  --slot: #6e7075;
+  --cap-line-default: #000000;
+  --knob-track: #9a9a9a;
+  --knob-edge: #4a4c50;
+  --key-shadow: inset 0 0 0 1.5px #3a3c40;
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --strip-bg: #ffffff;
+  --strip-bg-alt: #ffffff;
+}
+[data-contrast="more"] .btn.ghost, [data-contrast="more"] .toggle, [data-contrast="more"] .proc-btn,
+[data-contrast="more"] .solo, [data-contrast="more"] .mute, [data-contrast="more"] .icon-btn,
+[data-contrast="more"] .chip-btn, [data-contrast="more"] .segmented button, [data-contrast="more"] .tab,
+[data-contrast="more"] .mg-btn, [data-contrast="more"] .sec {
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+  color: var(--text);
+}
+[data-contrast="more"] .toggle[aria-pressed="true"], [data-contrast="more"] .segmented button[aria-pressed="true"],
+[data-contrast="more"] .tab[aria-selected="true"], [data-contrast="more"] .proc-btn.active {
+  box-shadow: inset 0 0 0 3px var(--accent);
+}
+[data-contrast="more"] .mute.active { box-shadow: inset 0 0 0 3px var(--text); }
+[data-contrast="more"] .solo.active { box-shadow: inset 0 0 0 3px var(--text); color: #000; }
+[data-contrast="more"] .fader-cap { box-shadow: 0 0 0 2px var(--text); }
+[data-contrast="more"] .label, [data-contrast="more"] .pan-val, [data-contrast="more"] .mark { color: var(--text); }
+[data-contrast="more"] .strip { border-right: 1px solid var(--line); }
+
+/* Contrasto forzato di Windows: i colori li decide il sistema, servono bordi veri */
+@media (forced-colors: active) {
+  .fader-cap, .knob-body, .pan-fill { forced-color-adjust: none; background: CanvasText; }
+  .mute.active, .solo.active, .toggle[aria-pressed="true"], .proc-btn.active { outline: 3px solid Highlight; }
+}
+
+/* movimenti ridotti: niente animazioni decorative (i meter e i fader seguono comunque il mixer) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* interfaccia ingrandita: le etichette lunghe vanno a capo invece di uscire dal tasto */
+.view-toggle { white-space: normal; overflow-wrap: anywhere; hyphens: auto; line-height: 1.15; }
+
+/* lingue con parole lunghe (tedesco, francese): i titoli stretti vanno a capo */
+.mg-title { white-space: normal; overflow-wrap: anywhere; hyphens: auto; line-height: 1.15; }

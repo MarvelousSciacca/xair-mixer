@@ -3,6 +3,7 @@
 import { SPEC, RATIOS, GATE_MODES, fromNorm, toNorm, paramMap } from './params.js';
 import { RTA_BINS, binFreq, isCut, stripBands, stripFilters, responseDb } from './dsp.js';
 import { rtaSource } from './model.js';
+import { uiZoom } from './a11y.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 /** Zone dello spettro mostrate sul grafico EQ (Hz). */
@@ -39,7 +40,7 @@ const formatFreq = f => (f >= 1000 ? `${(f / 1000).toFixed(f >= 10000 ? 1 : 2)}k
  */
 export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedback = null } = {}) {
   // Su schermi stretti il grafico è meno largo in proporzione, quindi più alto e con scritte leggibili.
-  const W = typeof window !== 'undefined' && window.innerWidth < 700 ? 520 : 800;
+  const W = typeof window !== 'undefined' && window.innerWidth / uiZoom() < 700 ? 520 : 800;
   const H = 280, PL = 36, PR = 10, PT = 10, PB = 22, RANGE = 18;
   const X = f => PL + (Math.log(f / 20) / Math.log(1000)) * (W - PL - PR);
   const freqAt = x => 20 * 1000 ** ((x - PL) / (W - PL - PR));
@@ -55,7 +56,7 @@ export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedbac
 
   const wrap = document.createElement('div');
   wrap.className = 'eq-wrap';
-  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, class: 'eq-graph' });
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, class: 'eq-graph', 'aria-hidden': 'true' }); // con lo screen reader si usano le manopole delle bande
   wrap.append(svg);
 
   const grid = svgEl('g', { class: 'grid' }, svg);
@@ -397,7 +398,7 @@ export function dynGraph(scope, strip, kind) {
 
   const transfer = dynTransfer(kind, get, real);
 
-  const svg = svgEl('svg', { viewBox: `-24 -6 ${S + 30} ${S + 26}`, class: 'dyn-graph' });
+  const svg = svgEl('svg', { viewBox: `-24 -6 ${S + 30} ${S + 26}`, class: 'dyn-graph', 'aria-hidden': 'true' });
   const grid = svgEl('g', { class: 'grid' }, svg);
   for (let db = lo; db <= 0; db += kind === 'gate' ? 20 : 10) {
     svgEl('line', { x1: P(db), x2: P(db), y1: 0, y2: S }, grid);

@@ -1,0 +1,190 @@
+# --- pannello del canale ---
+Ingresso§Input§Entrada§Entrée§Eingang
+Canale precedente§Previous channel§Canal anterior§Voie précédente§Vorheriger Kanal
+Canale successivo§Next channel§Canal siguiente§Voie suivante§Nächster Kanal
+Copia§Copy§Copiar§Copier§Kopieren
+Incolla§Paste§Pegar§Coller§Einfügen
+Copia le impostazioni di questo canale§Copy this channel’s settings§Copiar los ajustes de este canal§Copier les réglages de cette voie§Einstellungen dieses Kanals kopieren
+Prima copia un canale§Copy a channel first§Primero copia un canal§Copiez d’abord une voie§Zuerst einen Kanal kopieren
+Incolla le impostazioni copiate da {0}§Paste the settings copied from {0}§Pegar los ajustes copiados de {0}§Coller les réglages copiés depuis {0}§Von {0} kopierte Einstellungen einfügen
+Pagine del canale§Channel pages§Páginas del canal§Pages de la voie§Kanalseiten
+Preset§Preset§Preset§Preset§Preset
+Un punto di partenza per mixare: imposta low cut, gate, compressore ed EQ. Poi rifinisci a orecchio con il segnale vero.§A starting point for mixing: sets low cut, gate, compressor and EQ. Then fine-tune by ear with the real signal.§Un punto de partida para mezclar: ajusta low cut, gate, compresor y EQ. Luego afina de oído con la señal real.§Un point de départ pour mixer : règle le coupe-bas, le gate, le compresseur et l’EQ. Affinez ensuite à l’oreille avec le vrai signal.§Ein Ausgangspunkt zum Mischen: stellt Low Cut, Gate, Kompressor und EQ ein. Danach mit dem echten Signal nach Gehör verfeinern.
+Preamp§Preamp§Previo§Préampli§Preamp
+Fase e Low Cut§Phase and Low Cut§Fase y Low Cut§Phase et coupe-bas§Phase und Low Cut
+Fase e low cut§Phase and low cut§Fase y low cut§Phase et coupe-bas§Phase und Low Cut
+Frequenza§Frequency§Frecuencia§Fréquence§Frequenz
+Insert FX§Insert FX§Insert FX§Insert FX§Insert-FX
+Parametri§Parameters§Parámetros§Paramètres§Parameter
+Filtro sidechain§Sidechain filter§Filtro sidechain§Filtre sidechain§Sidechain-Filter
+Filtro§Filter§Filtro§Filtre§Filter
+Tipo§Type§Tipo§Type§Typ
+Auto time§Auto time§Auto time§Auto time§Auto-Zeit
+Uscita§Output§Salida§Sortie§Ausgang
+Livello§Level§Nivel§Niveau§Pegel
+Attivando il link, le impostazioni del primo canale vengono copiate sul secondo e da lì in poi si muovono insieme. Il pan diventa bilanciamento.§When you turn on the link, the first channel’s settings are copied to the second and from then on they move together. Pan becomes balance.§Al activar el enlace, los ajustes del primer canal se copian en el segundo y desde entonces se mueven juntos. El panorama pasa a ser balance.§En activant le couplage, les réglages de la première voie sont copiés sur la seconde, puis elles bougent ensemble. Le panoramique devient balance.§Beim Aktivieren der Kopplung werden die Einstellungen des ersten Kanals auf den zweiten kopiert; danach bewegen sie sich gemeinsam. Panorama wird zu Balance.
+Stereo§Stereo§Estéreo§Stéréo§Stereo
+Link stereo {0}§Stereo link {0}§Enlace estéreo {0}§Couplage stéréo {0}§Stereo-Link {0}
+Link stereo§Stereo link§Enlace estéreo§Couplage stéréo§Stereo-Link
+DCA§DCA§DCA§DCA§DCA
+Mute {#0}§Mute {0}§Mute {0}§Mute {0}§Mute {0}
+Slot FX {#0}§FX slot {0}§Ranura FX {0}§Emplacement FX {0}§FX-Slot {0}
+Freq.§Freq.§Frec.§Fréq.§Freq.
+Guadagno§Gain§Ganancia§Gain§Verstärkung
+EQ attivo§EQ on§EQ activo§EQ actif§EQ an
+Trascina i punti sul grafico: in orizzontale la frequenza, in verticale il guadagno. Due dita o la rotella del mouse cambiano la larghezza della banda (Q). Doppio tocco: guadagno a zero.§Drag the points on the graph: horizontally for frequency, vertically for gain. Two fingers or the mouse wheel change the bandwidth (Q). Double tap: gain to zero.§Arrastra los puntos del gráfico: en horizontal la frecuencia, en vertical la ganancia. Dos dedos o la rueda del ratón cambian el ancho de banda (Q). Doble toque: ganancia a cero.§Faites glisser les points du graphique : horizontalement la fréquence, verticalement le gain. Deux doigts ou la molette changent la largeur de bande (Q). Double appui : gain à zéro.§Ziehe die Punkte im Diagramm: waagerecht die Frequenz, senkrecht die Verstärkung. Zwei Finger oder das Mausrad ändern die Bandbreite (Q). Doppeltippen: Verstärkung auf null.
+{0}, banda {#1}§{0}, band {1}§{0}, banda {1}§{0}, bande {1}§{0}, Band {1}
+Livello, mandata {0}§Level, send {0}§Nivel, envío {0}§Niveau, départ {0}§Pegel, Send {0}
+Prelievo {0}§Tap {0}§Punto de envío {0}§Point de départ {0}§Abgriff {0}
+Prelievo§Tap§Punto de envío§Point de départ§Abgriff
+Sorgente§Source§Fuente§Source§Quelle
+Con "Analogico" il canale riceve l'ingresso Aux In; con "USB" una coppia di ritorni dal computer.§With "Analogue" the channel gets the Aux In input; with "USB" a pair of returns from the computer.§Con "Analógico" el canal recibe la entrada Aux In; con "USB", un par de retornos del ordenador.§Avec « Analogique », la voie reçoit l’entrée Aux In ; avec « USB », une paire de retours de l’ordinateur.§Mit „Analog“ erhält der Kanal den Aux-In-Eingang, mit „USB“ ein Rückweg-Paar vom Computer.
+Automix§Automix§Automix§Automix§Automix
+Gruppo§Group§Grupo§Groupe§Gruppe
+Automix X attivo§Automix X on§Automix X activo§Automix X actif§Automix X an
+Automix Y attivo§Automix Y on§Automix Y activo§Automix Y actif§Automix Y an
+Metti nello stesso gruppo i microfoni parlati (conferenze, talk): il mixer abbassa quelli che non parlano. Il peso dà più o meno precedenza al canale. X e Y si attivano per tutto il mixer.§Put speech mics (conferences, talks) in the same group: the mixer lowers the ones not speaking. Weight gives the channel more or less priority. X and Y are switched on for the whole mixer.§Pon en el mismo grupo los micrófonos de voz hablada (conferencias, charlas): el mezclador baja los que no hablan. El peso da más o menos prioridad al canal. X e Y se activan para todo el mezclador.§Mettez dans le même groupe les micros de parole (conférences, débats) : la console baisse ceux qui ne parlent pas. Le poids donne plus ou moins de priorité à la voie. X et Y s’activent pour toute la console.§Lege Sprechermikrofone (Konferenzen, Talks) in dieselbe Gruppe: Der Mixer senkt die, die gerade nicht sprechen. Das Gewicht gibt dem Kanal mehr oder weniger Vorrang. X und Y werden für den ganzen Mixer aktiviert.
+Copiate le impostazioni di {0}§Copied the settings of {0}§Copiados los ajustes de {0}§Réglages de {0} copiés§Einstellungen von {0} kopiert
+Incolla su {0}§Paste to {0}§Pegar en {0}§Coller sur {0}§Einfügen in {0}
+{0} e {1} non hanno sezioni in comune da incollare.§{0} and {1} have no sections in common to paste.§{0} y {1} no tienen secciones en común que pegar.§{0} et {1} n’ont aucune section en commun à coller.§{0} und {1} haben keine gemeinsamen Bereiche zum Einfügen.
+Impostazioni copiate da {0}. Scegli cosa incollare (gain e +48V non vengono mai copiati).§Settings copied from {0}. Choose what to paste (gain and +48V are never copied).§Ajustes copiados de {0}. Elige qué pegar (la ganancia y +48V nunca se copian).§Réglages copiés depuis {0}. Choisissez quoi coller (le gain et le +48 V ne sont jamais copiés).§Einstellungen von {0} kopiert. Wähle, was eingefügt wird (Gain und +48V werden nie kopiert).
+{0} incollati su {1} ({2} parametri)§{0} pasted to {1} ({2} parameters)§{0} pegados en {1} ({2} parámetros)§{0} collés sur {1} ({2} paramètres)§{0} in {1} eingefügt ({2} Parameter)
+Mandate (livelli e prelievo)§Sends (levels and tap)§Envíos (niveles y punto)§Départs (niveaux et point)§Sends (Pegel und Abgriff)
+# --- EQ ---
+Taglio bassi§Low cut§Corte de graves§Coupe-bas§Tiefenfilter
+Shelf bassi§Low shelf§Shelf de graves§Shelf grave§Tiefen-Shelf
+Campana§Bell§Campana§Cloche§Glocke
+Campana vintage§Vintage bell§Campana vintage§Cloche vintage§Vintage-Glocke
+Shelf acuti§High shelf§Shelf de agudos§Shelf aigu§Höhen-Shelf
+Taglio acuti§High cut§Corte de agudos§Coupe-haut§Höhenfilter
+Banda {#0} · {1}§Band {0} · {1}§Banda {0} · {1}§Bande {0} · {1}§Band {0} · {1}
+Sub§Sub§Sub§Sub§Sub
+Bassi§Lows§Graves§Graves§Bässe
+Medi§Mids§Medios§Médiums§Mitten
+Presenza§Presence§Presencia§Présence§Präsenz
+Aria§Air§Aire§Air§Luft
+SUB§SUB§SUB§SUB§SUB
+BASSI§LOWS§GRAVES§GRAVES§BÄSSE
+MEDI§MIDS§MEDIOS§MÉDIUMS§MITTEN
+PRESENZA§PRESENCE§PRESENCIA§PRÉSENCE§PRÄSENZ
+ARIA§AIR§AIRE§AIR§LUFT
+Low cut · {0} Hz§Low cut · {0} Hz§Low cut · {0} Hz§Coupe-bas · {0} Hz§Low Cut · {0} Hz
+EQ grafico§Graphic EQ§EQ gráfico§EQ graphique§Grafik-EQ
+Azzera§Reset§Poner a cero§Remettre à zéro§Zurücksetzen
+Liv.§Lvl§Niv.§Niv.§Pegel
+Lato {0}§Side {0}§Lado {0}§Côté {0}§Seite {0}
+Trascina sopra i cursori per disegnare la curva. Doppio tocco su un cursore: 0 dB.§Drag across the sliders to draw the curve. Double tap a slider: 0 dB.§Arrastra sobre los cursores para dibujar la curva. Doble toque en un cursor: 0 dB.§Faites glisser sur les curseurs pour dessiner la courbe. Double appui sur un curseur : 0 dB.§Über die Regler ziehen, um die Kurve zu zeichnen. Doppeltippen auf einen Regler: 0 dB.
+# --- parametri ---
+Ø Fase§Ø Phase§Ø Fase§Ø Phase§Ø Phase
+Low Cut§Low Cut§Low Cut§Coupe-bas§Low Cut
+Attacco§Attack§Ataque§Attaque§Attack
+Rilascio§Release§Liberación§Relâchement§Release
+Filtro key§Key filter§Filtro key§Filtre key§Key-Filter
+Tipo filtro§Filter type§Tipo de filtro§Type de filtre§Filtertyp
+Freq. filtro§Filter freq.§Frec. filtro§Fréq. filtre§Filterfreq.
+Rilevamento§Detection§Detección§Détection§Erkennung
+Inviluppo§Envelope§Envolvente§Enveloppe§Hüllkurve
+Ritorno USB§USB return§Retorno USB§Retour USB§USB-Rückweg
+Trim USB§USB trim§Trim USB§Trim USB§USB-Trim
+Peso§Weight§Peso§Poids§Gewicht
+Soglia§Threshold§Umbral§Seuil§Schwelle
+Attivo§On§Activo§Actif§An
+Analogico§Analogue§Analógico§Analogique§Analog
+Analogico +M§Analogue +M§Analógico +M§Analogique +M§Analog +M
+Ingresso +M§Input +M§Entrada +M§Entrée +M§Eingang +M
+Prima EQ§Pre EQ§Antes del EQ§Avant EQ§Vor EQ
+Prima EQ +M§Pre EQ +M§Antes del EQ +M§Avant EQ +M§Vor EQ +M
+Dopo EQ§Post EQ§Después del EQ§Après EQ§Nach EQ
+Dopo EQ +M§Post EQ +M§Después del EQ +M§Après EQ +M§Nach EQ +M
+Pre fader§Pre fader§Pre fader§Pré-fader§Pre-Fader
+Pre fader +M§Pre fader +M§Pre fader +M§Pré-fader +M§Pre-Fader +M
+Post fader§Post fader§Post fader§Post-fader§Post-Fader
+Uscite§Outputs§Salidas§Sorties§Ausgänge
+Cuffie§Headphones§Auriculares§Casque§Kopfhörer
+Analizzatore (RTA)§Analyser (RTA)§Analizador (RTA)§Analyseur (RTA)§Analysator (RTA)
+# --- preset ---
+Voce§Vocal§Voz§Voix§Gesang
+Voci§Vocals§Voces§Voix§Gesang
+Parlato§Speech§Voz hablada§Parole§Sprache
+Parlato (conferenza)§Speech (conference)§Voz hablada (conferencia)§Parole (conférence)§Sprache (Konferenz)
+Cori§Backing vocals§Coros§Chœurs§Backing Vocals
+Chitarra acustica§Acoustic guitar§Guitarra acústica§Guitare acoustique§Akustikgitarre
+Chitarra elettrica§Electric guitar§Guitarra eléctrica§Guitare électrique§E-Gitarre
+Basso§Bass§Bajo§Basse§Bass
+Cassa§Kick§Bombo§Grosse caisse§Bassdrum
+Rullante§Snare§Caja§Caisse claire§Snare
+Overhead / piatti§Overheads / cymbals§Overheads / platos§Overheads / cymbales§Overheads / Becken
+Tastiere / piano§Keys / piano§Teclados / piano§Claviers / piano§Keys / Klavier
+Chitarre e basso§Guitars and bass§Guitarras y bajo§Guitares et basse§Gitarren und Bass
+Batteria§Drums§Batería§Batterie§Schlagzeug
+Tastiere§Keys§Teclados§Claviers§Keys
+Preset del canale§Channel preset§Preset del canal§Preset de la voie§Kanal-Preset
+Preset EQ§EQ preset§Preset de EQ§Preset d’EQ§EQ-Preset
+Scegli uno strumento…§Choose an instrument…§Elige un instrumento…§Choisissez un instrument…§Instrument wählen…
+Scegli una curva…§Choose a curve…§Elige una curva…§Choisissez une courbe…§Kurve wählen…
+Reset§Reset§Restablecer§Réinitialiser§Zurücksetzen
+Low cut, gate e compressore spenti, EQ piatto§Low cut, gate and compressor off, flat EQ§Low cut, gate y compresor apagados, EQ plano§Coupe-bas, gate et compresseur coupés, EQ à plat§Low Cut, Gate und Kompressor aus, EQ linear
+EQ piatto§Flat EQ§EQ plano§EQ à plat§EQ linear
+Imposta low cut, gate, compressore ed EQ di questo canale come punto di partenza. Il gain e il fader non cambiano. Puoi annullare subito dopo.§Sets this channel’s low cut, gate, compressor and EQ as a starting point. Gain and fader don’t change. You can undo right after.§Ajusta low cut, gate, compresor y EQ de este canal como punto de partida. La ganancia y el fader no cambian. Puedes deshacerlo justo después.§Règle le coupe-bas, le gate, le compresseur et l’EQ de cette voie comme point de départ. Le gain et le fader ne changent pas. Vous pouvez annuler juste après.§Stellt Low Cut, Gate, Kompressor und EQ dieses Kanals als Ausgangspunkt ein. Gain und Fader bleiben gleich. Du kannst es sofort rückgängig machen.
+Reset del canale?§Reset the channel?§¿Restablecer el canal?§Réinitialiser la voie ?§Kanal zurücksetzen?
+Reset dell'EQ?§Reset the EQ?§¿Restablecer el EQ?§Réinitialiser l’EQ ?§EQ zurücksetzen?
+Low cut, gate e compressore tornano spenti con i valori iniziali, l'EQ diventa piatto. Gain e fader non cambiano. Puoi annullare subito dopo.§Low cut, gate and compressor go back to off with their initial values; the EQ becomes flat. Gain and fader don’t change. You can undo right after.§Low cut, gate y compresor vuelven a apagarse con sus valores iniciales y el EQ queda plano. La ganancia y el fader no cambian. Puedes deshacerlo justo después.§Le coupe-bas, le gate et le compresseur repassent à l’arrêt avec leurs valeurs initiales, l’EQ revient à plat. Le gain et le fader ne changent pas. Vous pouvez annuler juste après.§Low Cut, Gate und Kompressor gehen mit ihren Anfangswerten wieder aus, der EQ wird linear. Gain und Fader bleiben gleich. Du kannst es sofort rückgängig machen.
+Tutte le bande tornano a 0 dB con frequenze e tipi iniziali. Puoi annullare subito dopo.§All bands go back to 0 dB with their initial frequencies and types. You can undo right after.§Todas las bandas vuelven a 0 dB con frecuencias y tipos iniciales. Puedes deshacerlo justo después.§Toutes les bandes reviennent à 0 dB avec leurs fréquences et types initiaux. Vous pouvez annuler juste après.§Alle Bänder gehen mit ihren Anfangsfrequenzen und -typen auf 0 dB zurück. Du kannst es sofort rückgängig machen.
+Caricare il preset "{0}"?§Load the preset "{0}"?§¿Cargar el preset "{0}"?§Charger le preset « {0} » ?§Preset „{0}“ laden?
+Preset "{0}" caricato§Preset "{0}" loaded§Preset "{0}" cargado§Preset « {0} » chargé§Preset „{0}“ geladen
+Applica§Apply§Aplicar§Appliquer§Anwenden
+# --- routing ---
+Routing§Routing§Ruteo§Routage§Routing
+Tutto analogico§All analogue§Todo analógico§Tout analogique§Alles analog
+Ogni canale prende il suo ingresso: la configurazione per suonare dal vivo.§Each channel takes its own input: the setup for playing live.§Cada canal toma su entrada: la configuración para tocar en directo.§Chaque voie prend son entrée : la configuration pour jouer en live.§Jeder Kanal nimmt seinen Eingang: die Einstellung für live.
+Ch 1-16 da USB§Ch 1-16 from USB§Ch 1-16 desde USB§Ch 1-16 depuis l’USB§Ch 1-16 von USB
+Ogni canale prende la traccia USB con lo stesso numero: per riascoltare una registrazione.§Each channel takes the USB track with the same number: to play back a recording.§Cada canal toma la pista USB con el mismo número: para escuchar una grabación.§Chaque voie prend la piste USB du même numéro : pour réécouter un enregistrement.§Jeder Kanal nimmt die USB-Spur mit derselben Nummer: zum Abhören einer Aufnahme.
+USB 1-2 all'Aux§USB 1-2 to Aux§USB 1-2 al Aux§USB 1-2 sur l’Aux§USB 1-2 auf Aux
+Il canale Aux prende le tracce USB 1-2 (musica dal computer).§The Aux channel takes USB tracks 1-2 (music from the computer).§El canal Aux toma las pistas USB 1-2 (música del ordenador).§La voie Aux prend les pistes USB 1-2 (musique de l’ordinateur).§Der Aux-Kanal nimmt die USB-Spuren 1-2 (Musik vom Computer).
+Registrazione multitraccia: Ch 1-16 e Aux L/R sulle tracce USB 1-18.§Multitrack recording: Ch 1-16 and Aux L/R on USB tracks 1-18.§Grabación multipista: Ch 1-16 y Aux L/R en las pistas USB 1-18.§Enregistrement multipiste : Ch 1-16 et Aux L/R sur les pistes USB 1-18.§Mehrspuraufnahme: Ch 1-16 und Aux L/R auf den USB-Spuren 1-18.
+Ch 1-16 e il mix principale sulle tracce 17-18.§Ch 1-16 and the main mix on tracks 17-18.§Ch 1-16 y la mezcla principal en las pistas 17-18.§Ch 1-16 et le mixage principal sur les pistes 17-18.§Ch 1-16 und der Hauptmix auf den Spuren 17-18.
+Ritorni effetti, bus 1-6, Main LR e Aux sulle tracce USB.§Effect returns, buses 1-6, Main LR and Aux on the USB tracks.§Retornos de efectos, bus 1-6, Main LR y Aux en las pistas USB.§Retours d’effets, bus 1-6, Main LR et Aux sur les pistes USB.§Effekt-Rückwege, Busse 1-6, Main LR und Aux auf den USB-Spuren.
+Ai monitor personali Ultranet arrivano i 16 canali.§The 16 channels go to the Ultranet personal monitors.§Los 16 canales llegan a los monitores personales Ultranet.§Les 16 voies arrivent aux retours personnels Ultranet.§Die 16 Kanäle gehen an die persönlichen Ultranet-Monitore.
+Canali 1-8, bus 1-6 e Main LR.§Channels 1-8, buses 1-6 and Main LR.§Canales 1-8, bus 1-6 y Main LR.§Voies 1-8, bus 1-6 et Main LR.§Kanäle 1-8, Busse 1-6 und Main LR.
+Canali 1-8 e i ritorni dei 4 effetti.§Channels 1-8 and the 4 effect returns.§Canales 1-8 y los retornos de los 4 efectos.§Voies 1-8 et les retours des 4 effets.§Kanäle 1-8 und die Rückwege der 4 Effekte.
+Annulla ultimo preset§Undo last preset§Deshacer último preset§Annuler le dernier preset§Letztes Preset rückgängig
+Traccia USB§USB track§Pista USB§Piste USB§USB-Spur
+Le uscite analogiche Aux 1-6 sul retro del mixer (di solito i monitor).§The analogue Aux 1-6 outputs on the back of the mixer (usually the monitors).§Las salidas analógicas Aux 1-6 en la parte trasera del mezclador (normalmente los monitores).§Les sorties analogiques Aux 1-6 à l’arrière de la console (en général les retours).§Die analogen Aux-Ausgänge 1-6 auf der Rückseite des Mixers (meist die Monitore).
+Le tracce che il computer riceve via USB per registrare.§The tracks the computer receives over USB for recording.§Las pistas que el ordenador recibe por USB para grabar.§Les pistes que l’ordinateur reçoit en USB pour enregistrer.§Die Spuren, die der Computer zum Aufnehmen über USB empfängt.
+Il connettore Ultranet per i monitor personali (es. Behringer P16).§The Ultranet connector for personal monitors (e.g. Behringer P16).§El conector Ultranet para monitores personales (p. ej. Behringer P16).§Le connecteur Ultranet pour les retours personnels (par ex. Behringer P16).§Der Ultranet-Anschluss für persönliche Monitore (z. B. Behringer P16).
+Un preset cambia solo le sorgenti; il punto di prelievo resta com'è.§A preset only changes the sources; the tap point stays as it is.§Un preset solo cambia las fuentes; el punto de envío se queda como está.§Un preset ne change que les sources ; le point de départ reste tel quel.§Ein Preset ändert nur die Quellen; der Abgriffspunkt bleibt, wie er ist.
+Un preset cambia solo le sorgenti; il punto di prelievo resta com'è. La numerazione dei punti di prelievo è ancora da verificare sul mixer.§A preset only changes the sources; the tap point stays as it is. The numbering of the tap points still has to be checked on the mixer.§Un preset solo cambia las fuentes; el punto de envío se queda como está. La numeración de los puntos de envío aún debe comprobarse en el mezclador.§Un preset ne change que les sources ; le point de départ reste tel quel. La numérotation des points de départ reste à vérifier sur la console.§Ein Preset ändert nur die Quellen; der Abgriffspunkt bleibt, wie er ist. Die Nummerierung der Abgriffspunkte muss am Mixer noch geprüft werden.
+Da dove arriva il segnale di ogni canale: ingresso analogico o traccia USB dal computer.§Where each channel’s signal comes from: analogue input or USB track from the computer.§De dónde llega la señal de cada canal: entrada analógica o pista USB del ordenador.§D’où vient le signal de chaque voie : entrée analogique ou piste USB de l’ordinateur.§Woher das Signal jedes Kanals kommt: analoger Eingang oder USB-Spur vom Computer.
+Applicare "{0}"?§Apply "{0}"?§¿Aplicar "{0}"?§Appliquer « {0} » ?§„{0}“ anwenden?
+{0} Puoi annullare subito dopo.§{0} You can undo right after.§{0} Puedes deshacerlo justo después.§{0} Vous pouvez annuler juste après.§{0} Du kannst es sofort rückgängig machen.
+Preset "{0}" applicato§Preset "{0}" applied§Preset "{0}" aplicado§Preset « {0} » appliqué§Preset „{0}“ angewendet
+# --- rack effetti e libreria ---
+Libreria effetti§Effects library§Biblioteca de efectos§Bibliothèque d’effets§Effektbibliothek
+Scegli un effetto dalla libreria e caricalo in uno dei 4 slot.§Choose an effect from the library and load it into one of the 4 slots.§Elige un efecto de la biblioteca y cárgalo en una de las 4 ranuras.§Choisissez un effet dans la bibliothèque et chargez-le dans l’un des 4 emplacements.§Wähle einen Effekt aus der Bibliothek und lade ihn in einen der 4 Slots.
+Cambia…§Change…§Cambiar…§Changer…§Ändern…
+Scegli dalla libreria effetti§Choose from the effects library§Elegir de la biblioteca de efectos§Choisir dans la bibliothèque d’effets§Aus der Effektbibliothek wählen
+Mandate dai canali§Sends from channels§Envíos desde los canales§Départs des voies§Sends von den Kanälen
+I fader dei canali regolano la mandata a questo effetto§The channel faders set the send to this effect§Los faders de los canales regulan el envío a este efecto§Les faders des voies règlent le départ vers cet effet§Die Kanalfader regeln den Send zu diesem Effekt
+EQ ritorno§Return EQ§EQ del retorno§EQ du retour§Rückweg-EQ
+Mandata§Send§Envío§Départ§Send
+Ritorno§Return§Retorno§Retour§Rückweg
+Ritorno ON§Return ON§Retorno ON§Retour ON§Rückweg AN
+Cerca effetto…§Search effect…§Buscar efecto…§Rechercher un effet…§Effekt suchen…
+Tutti§All§Todos§Tous§Alle
+Doppio§Dual§Doble§Double§Doppelt
+Carica§Load§Cargar§Charger§Laden
+Caricato in {0}§Loaded in {0}§Cargado en {0}§Chargé dans {0}§Geladen in {0}
+{0} è già nello slot FX {1}§{0} is already in FX slot {1}§{0} ya está en la ranura FX {1}§{0} est déjà dans l’emplacement FX {1}§{0} ist bereits im FX-Slot {1}
+Caricare {0} in FX {1}?§Load {0} into FX {1}?§¿Cargar {0} en FX {1}?§Charger {0} dans FX {1} ?§{0} in FX {1} laden?
+Sostituisce {0}: i parametri tornano ai valori predefiniti dell'effetto.§Replaces {0}: the parameters go back to the effect’s defaults.§Sustituye a {0}: los parámetros vuelven a los valores predeterminados del efecto.§Remplace {0} : les paramètres reviennent aux valeurs par défaut de l’effet.§Ersetzt {0}: Die Parameter gehen auf die Standardwerte des Effekts zurück.
+l'effetto attuale§the current effect§el efecto actual§l’effet actuel§den aktuellen Effekt
+{0} caricato in FX {1}§{0} loaded into FX {1}§{0} cargado en FX {1}§{0} chargé dans FX {1}§{0} in FX {1} geladen
+Attenzione: questo slot è usato come insert su un canale.§Warning: this slot is used as an insert on a channel.§Atención: esta ranura se usa como insert en un canal.§Attention : cet emplacement est utilisé en insert sur une voie.§Achtung: Dieser Slot wird als Insert auf einem Kanal verwendet.
+Effetto non riconosciuto: controlli generici.§Unrecognised effect: generic controls.§Efecto no reconocido: controles genéricos.§Effet non reconnu : commandes génériques.§Unbekannter Effekt: allgemeine Regler.
+Nomi dei parametri da X-AIR-Edit; alcuni range sono ancora da verificare sul mixer.§Parameter names from X-AIR-Edit; some ranges still have to be checked on the mixer.§Nombres de parámetros de X-AIR-Edit; algunos rangos aún deben comprobarse en el mezclador.§Noms des paramètres issus de X-AIR-Edit ; certaines plages restent à vérifier sur la console.§Parameternamen aus X-AIR-Edit; einige Bereiche müssen am Mixer noch geprüft werden.
+Batti il tempo: il delay lo segue§Tap the tempo: the delay follows it§Marca el tempo: el delay lo sigue§Tapez le tempo : le delay le suit§Tempo tippen: das Delay folgt
+Riverberi§Reverbs§Reverbs§Réverbes§Hall
+Combinati§Combined§Combinados§Combinés§Kombiniert
+Dinamiche§Dynamics§Dinámica§Dynamique§Dynamik
+Colore e saturazione§Colour and saturation§Color y saturación§Couleur et saturation§Klangfarbe und Sättigung
+Modulazione§Modulation§Modulación§Modulation§Modulation

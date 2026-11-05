@@ -6,3 +6,10 @@ try {
 } catch {
   document.documentElement.dataset.theme = 'light';
 }
+// Dimensione dell'interfaccia e contrasto alto (vedi js/a11y.js), anch'essi prima del primo disegno.
+try {
+  const z = Number(localStorage.getItem('xair.uiSize')) || 1;
+  if (z !== 1) document.documentElement.style.zoom = String(z);
+  const c = localStorage.getItem('xair.contrast') || 'auto';
+  document.documentElement.dataset.contrast = c === 'more' || (c === 'auto' && matchMedia('(prefers-contrast: more)').matches) ? 'more' : 'normal';
+} catch { /* non disponibile */ }

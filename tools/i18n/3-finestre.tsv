@@ -1,0 +1,258 @@
+# --- scene e snapshot ---
+Scena§Scene§Escena§Scène§Szene
+Snapshot nel mixer§Snapshots in the mixer§Snapshots en el mezclador§Snapshots dans la console§Snapshots im Mixer
+Scene su file§Scenes on file§Escenas en archivo§Scènes sur fichier§Szenen als Datei
+Scaletta§Setlist§Setlist§Setlist§Setlist
+Canali protetti§Safe channels§Canales protegidos§Voies protégées§Geschützte Kanäle
+Canali protetti ({#0})§Safe channels ({0})§Canales protegidos ({0})§Voies protégées ({0})§Geschützte Kanäle ({0})
+Protetti:§Safe:§Protegidos:§Protégées :§Geschützt:
+Ultimo snapshot caricato: {0}§Last snapshot loaded: {0}§Último snapshot cargado: {0}§Dernier snapshot chargé : {0}§Zuletzt geladener Snapshot: {0}
+— vuoto —§— empty —§— vacío —§— vide —§— leer —
+Salva qui§Save here§Guardar aquí§Enregistrer ici§Hier speichern
+Rinomina§Rename§Renombrar§Renommer§Umbenennen
+Elimina§Delete§Eliminar§Supprimer§Löschen
+Nome dello snapshot:§Snapshot name:§Nombre del snapshot:§Nom du snapshot :§Name des Snapshots:
+Sovrascrivi§Overwrite§Sobrescribir§Écraser§Überschreiben
+Salva scena su file§Save scene to file§Guardar escena en archivo§Enregistrer la scène dans un fichier§Szene als Datei speichern
+Nome della scena:§Scene name:§Nombre de la escena:§Nom de la scène :§Name der Szene:
+Il file non è una scena di AirDesk§The file is not an AirDesk scene§El archivo no es una escena de AirDesk§Le fichier n’est pas une scène AirDesk§Die Datei ist keine AirDesk-Szene
+Lavoro senza mixer§Work without a mixer§Trabajo sin mezclador§Travail sans console§Arbeit ohne Mixer
+Stai lavorando senza mixer: le modifiche restano su questo dispositivo. Quando ti colleghi al mixer, torna qui e tocca "Invia al mixer".§You are working without a mixer: changes stay on this device. When you connect to the mixer, come back here and tap "Send to mixer".§Estás trabajando sin mezclador: los cambios se quedan en este dispositivo. Cuando te conectes al mezclador, vuelve aquí y toca "Enviar al mezclador".§Vous travaillez sans console : les modifications restent sur cet appareil. Une fois connecté à la console, revenez ici et touchez « Envoyer à la console ».§Du arbeitest ohne Mixer: Die Änderungen bleiben auf diesem Gerät. Wenn du mit dem Mixer verbunden bist, komm hierher zurück und tippe auf „An Mixer senden“.
+Il mix preparato senza mixer è salvato su questo dispositivo. "Invia al mixer" lo carica nel mixer collegato, come una scena (i canali protetti non cambiano).§The mix prepared without a mixer is saved on this device. "Send to mixer" loads it into the connected mixer like a scene (safe channels don’t change).§La mezcla preparada sin mezclador está guardada en este dispositivo. "Enviar al mezclador" la carga en el mezclador conectado, como una escena (los canales protegidos no cambian).§Le mixage préparé sans console est enregistré sur cet appareil. « Envoyer à la console » le charge dans la console connectée, comme une scène (les voies protégées ne changent pas).§Der ohne Mixer vorbereitete Mix ist auf diesem Gerät gespeichert. „An Mixer senden“ lädt ihn wie eine Szene in den verbundenen Mixer (geschützte Kanäle ändern sich nicht).
+Ricominciare il lavoro senza mixer?§Start the offline work over?§¿Empezar de nuevo el trabajo sin mezclador?§Recommencer le travail sans console ?§Arbeit ohne Mixer neu beginnen?
+Il mix preparato senza mixer verrà sostituito dall'ultimo mix visto sul mixer. Se vuoi conservarlo, salvalo prima su file.§The mix prepared without a mixer will be replaced by the last mix seen on the mixer. To keep it, save it to a file first.§La mezcla preparada sin mezclador se sustituirá por la última mezcla vista en el mezclador. Si quieres conservarla, guárdala antes en un archivo.§Le mixage préparé sans console sera remplacé par le dernier mixage vu sur la console. Pour le garder, enregistrez-le d’abord dans un fichier.§Der ohne Mixer vorbereitete Mix wird durch den zuletzt am Mixer gesehenen Mix ersetzt. Um ihn zu behalten, speichere ihn vorher als Datei.
+Ricomincia§Start over§Empezar de nuevo§Recommencer§Neu beginnen
+Invia al mixer§Send to mixer§Enviar al mezclador§Envoyer à la console§An Mixer senden
+Salva su file§Save to file§Guardar en archivo§Enregistrer dans un fichier§Als Datei speichern
+Carica scena da file§Load scene from file§Cargar escena desde archivo§Charger une scène depuis un fichier§Szene aus Datei laden
+Una scena su file contiene tutto il mix (canali, EQ, dinamiche, mandate, effetti, DCA, patch). Si salva su questo dispositivo e si può ricaricare in qualsiasi momento, anche su un altro mixer X Air.§A scene file contains the whole mix (channels, EQ, dynamics, sends, effects, DCAs, patch). It is saved on this device and can be loaded again at any time, even on another X Air mixer.§Una escena en archivo contiene toda la mezcla (canales, EQ, dinámica, envíos, efectos, DCA, patch). Se guarda en este dispositivo y se puede volver a cargar en cualquier momento, incluso en otro mezclador X Air.§Une scène sur fichier contient tout le mixage (voies, EQ, dynamique, départs, effets, DCA, patch). Elle est enregistrée sur cet appareil et peut être rechargée à tout moment, même sur une autre console X Air.§Eine Szenendatei enthält den ganzen Mix (Kanäle, EQ, Dynamik, Sends, Effekte, DCAs, Patch). Sie wird auf diesem Gerät gespeichert und kann jederzeit wieder geladen werden, auch auf einem anderen X-Air-Mixer.
+I canali protetti non cambiano quando carichi uno snapshot o una scena su file. Proteggendo un bus o una mandata FX resta com'è anche quanto ogni canale gli manda: utile per i monitor.§Safe channels don’t change when you load a snapshot or a scene file. Protecting a bus or an FX send also keeps how much each channel sends to it: useful for monitors.§Los canales protegidos no cambian al cargar un snapshot o una escena en archivo. Al proteger un bus o un envío FX también se mantiene lo que cada canal le envía: útil para los monitores.§Les voies protégées ne changent pas quand vous chargez un snapshot ou une scène sur fichier. Protéger un bus ou un départ FX garde aussi ce que chaque voie lui envoie : utile pour les retours.§Geschützte Kanäle ändern sich nicht, wenn du einen Snapshot oder eine Szenendatei lädst. Wird ein Bus oder FX-Send geschützt, bleibt auch erhalten, wie viel jeder Kanal dorthin sendet: nützlich für Monitore.
+Caricare lo snapshot {#0}?§Load snapshot {0}?§¿Cargar el snapshot {0}?§Charger le snapshot {0} ?§Snapshot {0} laden?
+"{0}" sostituirà il mix attuale. Se vuoi conservarlo, salvalo prima in uno snapshot o su file.§"{0}" will replace the current mix. To keep it, save it first to a snapshot or a file.§"{0}" sustituirá la mezcla actual. Si quieres conservarla, guárdala antes en un snapshot o en un archivo.§« {0} » remplacera le mixage actuel. Pour le garder, enregistrez-le d’abord dans un snapshot ou un fichier.§„{0}“ ersetzt den aktuellen Mix. Um ihn zu behalten, speichere ihn vorher in einem Snapshot oder als Datei.
+Caricamento di "{0}"…§Loading "{0}"…§Cargando "{0}"…§Chargement de « {0} »…§„{0}“ wird geladen…
+Caricamento di "{0}"… I canali protetti restano com'erano.§Loading "{0}"… Safe channels stay as they were.§Cargando "{0}"… Los canales protegidos se quedan como estaban.§Chargement de « {0} »… Les voies protégées restent comme avant.§„{0}“ wird geladen… Geschützte Kanäle bleiben, wie sie waren.
+Salvare il mix nello snapshot {#0}§Save the mix to snapshot {0}§Guardar la mezcla en el snapshot {0}§Enregistrer le mixage dans le snapshot {0}§Mix in Snapshot {0} speichern
+Sovrascrive "{0}". Nome dello snapshot:§Overwrites "{0}". Snapshot name:§Sobrescribe "{0}". Nombre del snapshot:§Écrase « {0} ». Nom du snapshot :§Überschreibt „{0}“. Name des Snapshots:
+Snapshot {#0} salvato§Snapshot {0} saved§Snapshot {0} guardado§Snapshot {0} enregistré§Snapshot {0} gespeichert
+Rinomina snapshot {#0}§Rename snapshot {0}§Renombrar snapshot {0}§Renommer le snapshot {0}§Snapshot {0} umbenennen
+Eliminare lo snapshot {#0}?§Delete snapshot {0}?§¿Eliminar el snapshot {0}?§Supprimer le snapshot {0} ?§Snapshot {0} löschen?
+"{0}" verrà cancellato dal mixer.§"{0}" will be deleted from the mixer.§"{0}" se borrará del mezclador.§« {0} » sera supprimé de la console.§„{0}“ wird vom Mixer gelöscht.
+Scena "{0}" salvata ({#1} parametri)§Scene "{0}" saved ({1} parameters)§Escena "{0}" guardada ({1} parámetros)§Scène « {0} » enregistrée ({1} paramètres)§Szene „{0}“ gespeichert ({1} Parameter)
+Caricare "{0}"?§Load "{0}"?§¿Cargar "{0}"?§Charger « {0} » ?§„{0}“ laden?
+{0} parametri sostituiranno il mix attuale.§{0} parameters will replace the current mix.§{0} parámetros sustituirán la mezcla actual.§{0} paramètres remplaceront le mixage actuel.§{0} Parameter ersetzen den aktuellen Mix.
+Attenzione: la scena è stata salvata da un {0}.§Warning: the scene was saved from a {0}.§Atención: la escena se guardó desde un {0}.§Attention : la scène a été enregistrée depuis une {0}.§Achtung: Die Szene wurde von einem {0} gespeichert.
+Attenzione: la scena accende la +48V su {0}. Controlla che lì non ci siano microfoni a nastro o sorgenti che la phantom può danneggiare.§Warning: the scene turns on +48V on {0}. Check that there are no ribbon mics or sources there that phantom power could damage.§Atención: la escena activa +48V en {0}. Comprueba que no haya micrófonos de cinta ni fuentes que la phantom pueda dañar.§Attention : la scène active le +48 V sur {0}. Vérifiez qu’il n’y a pas de micros à ruban ni de sources que l’alimentation fantôme pourrait endommager.§Achtung: Die Szene schaltet +48V auf {0} ein. Prüfe, dass dort keine Bändchenmikrofone oder Quellen hängen, die Phantomspeisung beschädigen kann.
+Scena "{0}" caricata§Scene "{0}" loaded§Escena "{0}" cargada§Scène « {0} » chargée§Szene „{0}“ geladen
+# --- scaletta ---
+Brano precedente§Previous song§Canción anterior§Morceau précédent§Vorheriger Song
+Successivo ▶§Next ▶§Siguiente ▶§Suivant ▶§Weiter ▶
+Brano successivo§Next song§Canción siguiente§Morceau suivant§Nächster Song
+Ultimo brano§Last song§Última canción§Dernier morceau§Letzter Song
+Inizia ▶§Start ▶§Empezar ▶§Commencer ▶§Start ▶
+Aggiungi§Add§Añadir§Ajouter§Hinzufügen
+Barra sopra il mixer§Bar above the mixer§Barra sobre el mezclador§Barre au-dessus de la console§Leiste über dem Mixer
+Ricomincia dall'inizio§Start from the beginning§Volver al principio§Recommencer depuis le début§Von vorn beginnen
+La scaletta è vuota: aggiungi gli snapshot dei brani qui sotto.§The setlist is empty: add the songs’ snapshots below.§La setlist está vacía: añade abajo los snapshots de las canciones.§La setlist est vide : ajoutez ci-dessous les snapshots des morceaux.§Die Setlist ist leer: Füge unten die Snapshots der Songs hinzu.
+Sposta su§Move up§Subir§Monter§Nach oben
+Sposta giù§Move down§Bajar§Descendre§Nach unten
+Togli dalla scaletta§Remove from setlist§Quitar de la setlist§Retirer de la setlist§Aus der Setlist entfernen
+Nessuno snapshot salvato nel mixer§No snapshots saved in the mixer§No hay snapshots guardados en el mezclador§Aucun snapshot enregistré dans la console§Keine Snapshots im Mixer gespeichert
+Snapshot da aggiungere§Snapshot to add§Snapshot que añadir§Snapshot à ajouter§Hinzuzufügender Snapshot
+Snapshot {#0} (vuoto)§Snapshot {0} (empty)§Snapshot {0} (vacío)§Snapshot {0} (vide)§Snapshot {0} (leer)
+Scaletta: {#0} brani§Setlist: {0} songs§Setlist: {0} canciones§Setlist : {0} morceaux§Setlist: {0} Songs
+Scaletta: {#0} brano§Setlist: {0} song§Setlist: {0} canción§Setlist : {0} morceau§Setlist: {0} Song
+Metti in ordine gli snapshot dei brani. Dal vivo passi al successivo con la barra sopra il mixer, con un pedale (PagGiù / PagSu) o con un controller MIDI. Lo snapshot si carica subito, senza domande; i canali protetti restano com'erano.§Put the songs’ snapshots in order. Live, you move to the next one with the bar above the mixer, with a pedal (PgDn / PgUp) or with a MIDI controller. The snapshot loads straight away, without questions; safe channels stay as they were.§Ordena los snapshots de las canciones. En directo pasas al siguiente con la barra sobre el mezclador, con un pedal (AvPág / RePág) o con un controlador MIDI. El snapshot se carga al momento, sin preguntas; los canales protegidos se quedan como estaban.§Mettez les snapshots des morceaux dans l’ordre. En live, passez au suivant avec la barre au-dessus de la console, avec une pédale (PgSuiv / PgPréc) ou avec un contrôleur MIDI. Le snapshot se charge tout de suite, sans question ; les voies protégées restent comme avant.§Bringe die Snapshots der Songs in Reihenfolge. Live wechselst du mit der Leiste über dem Mixer, einem Pedal (Bild↓ / Bild↑) oder einem MIDI-Controller zum nächsten. Der Snapshot wird sofort ohne Rückfrage geladen; geschützte Kanäle bleiben, wie sie waren.
+# --- impostazioni ---
+Aspetto§Appearance§Apariencia§Apparence§Darstellung
+Lingua§Language§Idioma§Langue§Sprache
+Tema§Theme§Tema§Thème§Design
+Chiaro§Light§Claro§Clair§Hell
+Scuro§Dark§Oscuro§Sombre§Dunkel
+Automatico§Automatic§Automático§Automatique§Automatisch
+Dimensione§Size§Tamaño§Taille§Größe
+Normale§Normal§Normal§Normale§Normal
+Grande§Large§Grande§Grande§Groß
+Più grande§Larger§Más grande§Plus grande§Größer
+Massima§Maximum§Máximo§Maximale§Maximal
+Contrasto§Contrast§Contraste§Contraste§Kontrast
+Alto§High§Alto§Élevé§Hoch
+Con VoiceOver (iPhone, iPad, Mac) o TalkBack (Android) ogni fader, pan e manopola si regola scorrendo in su o in giù con un dito; il nome del canale viene letto insieme al comando. Feedback, connessione e blocco vengono annunciati a voce. "Automatico" segue l'impostazione "Aumenta contrasto" del sistema.§With VoiceOver (iPhone, iPad, Mac) or TalkBack (Android), every fader, pan and knob is adjusted by swiping up or down with one finger; the channel name is read together with the control. Feedback, connection and lock are announced aloud. "Automatic" follows the system’s "Increase contrast" setting.§Con VoiceOver (iPhone, iPad, Mac) o TalkBack (Android), cada fader, panorama y mando se ajusta deslizando un dedo hacia arriba o hacia abajo; el nombre del canal se lee junto con el control. El feedback, la conexión y el bloqueo se anuncian en voz alta. "Automático" sigue el ajuste "Aumentar contraste" del sistema.§Avec VoiceOver (iPhone, iPad, Mac) ou TalkBack (Android), chaque fader, panoramique et bouton se règle en balayant vers le haut ou vers le bas avec un doigt ; le nom de la voie est lu avec la commande. Le larsen, la connexion et le verrouillage sont annoncés à voix haute. « Automatique » suit le réglage « Augmenter le contraste » du système.§Mit VoiceOver (iPhone, iPad, Mac) oder TalkBack (Android) stellst du jeden Fader, jedes Panorama und jeden Regler ein, indem du mit einem Finger nach oben oder unten wischst; der Kanalname wird mit dem Regler vorgelesen. Feedback, Verbindung und Sperre werden angesagt. „Automatisch“ folgt der Systemeinstellung „Kontrast erhöhen“.
+Mixer§Mixer§Mezclador§Console§Mixer
+Modello§Model§Modelo§Modèle§Modell
+Indirizzo IP§IP address§Dirección IP§Adresse IP§IP-Adresse
+Solo / cuffie§Solo / headphones§Solo / auriculares§Solo / casque§Solo / Kopfhörer
+Livello solo§Solo level§Nivel de solo§Niveau solo§Solo-Pegel
+Il link stereo collega anche§Stereo link also links§El enlace estéreo también enlaza§Le couplage stéréo couple aussi§Stereo-Link koppelt auch
+Fader e mute§Fader and mute§Fader y mute§Fader et mute§Fader und Mute
+Ingressi, uscite USB, Aux e Ultranet si impostano nella scheda Routing.§Inputs, USB outputs, Aux and Ultranet are set in the Routing tab.§Las entradas, salidas USB, Aux y Ultranet se ajustan en la pestaña Ruteo.§Entrées, sorties USB, Aux et Ultranet se règlent dans l’onglet Routage.§Eingänge, USB-Ausgänge, Aux und Ultranet stellst du im Tab Routing ein.
+PIN del monitor§Monitor PIN§PIN del monitor§Code PIN des retours§Monitor-PIN
+Controller MIDI§MIDI controller§Controlador MIDI§Contrôleur MIDI§MIDI-Controller
+Tutorial§Tutorial§Tutorial§Tutoriel§Tutorial
+Manutenzione§Maintenance§Mantenimiento§Maintenance§Wartung
+Informazioni e note legali§About and legal notes§Información y avisos legales§À propos et mentions légales§Info und rechtliche Hinweise
+Rivedi il tutorial§Show the tutorial again§Ver de nuevo el tutorial§Revoir le tutoriel§Tutorial erneut ansehen
+Rileggi tutti i parametri§Reload all parameters§Volver a leer todos los parámetros§Relire tous les paramètres§Alle Parameter neu lesen
+Rilettura dei parametri dal mixer…§Reading the parameters from the mixer again…§Leyendo de nuevo los parámetros del mezclador…§Relecture des paramètres de la console…§Parameter werden neu vom Mixer gelesen…
+Inizializza mixer…§Initialise mixer…§Inicializar mezclador…§Initialiser la console…§Mixer initialisieren…
+Inizializzare il mixer?§Initialise the mixer?§¿Inicializar el mezclador?§Initialiser la console ?§Mixer initialisieren?
+Tutte le impostazioni del mix tornano ai valori di fabbrica. Prima verrà scaricata una scena di backup su file e salvato il mix attuale nello snapshot {0}. Gli snapshot salvati restano.§All mix settings go back to factory values. First a backup scene will be downloaded to a file and the current mix saved to snapshot {0}. Saved snapshots are kept.§Todos los ajustes de la mezcla vuelven a los valores de fábrica. Antes se descargará una escena de copia de seguridad en un archivo y se guardará la mezcla actual en el snapshot {0}. Los snapshots guardados se mantienen.§Tous les réglages du mixage reviennent aux valeurs d’usine. Une scène de sauvegarde sera d’abord téléchargée dans un fichier et le mixage actuel enregistré dans le snapshot {0}. Les snapshots enregistrés sont conservés.§Alle Mix-Einstellungen gehen auf Werkseinstellungen zurück. Vorher wird eine Backup-Szene als Datei heruntergeladen und der aktuelle Mix in Snapshot {0} gespeichert. Gespeicherte Snapshots bleiben erhalten.
+Tutte le impostazioni del mix tornano ai valori di fabbrica. Prima verrà scaricata una scena di backup su file. Gli snapshot salvati restano.§All mix settings go back to factory values. First a backup scene will be downloaded to a file. Saved snapshots are kept.§Todos los ajustes de la mezcla vuelven a los valores de fábrica. Antes se descargará una escena de copia de seguridad en un archivo. Los snapshots guardados se mantienen.§Tous les réglages du mixage reviennent aux valeurs d’usine. Une scène de sauvegarde sera d’abord téléchargée dans un fichier. Les snapshots enregistrés sont conservés.§Alle Mix-Einstellungen gehen auf Werkseinstellungen zurück. Vorher wird eine Backup-Szene als Datei heruntergeladen. Gespeicherte Snapshots bleiben erhalten.
+Abbassa il volume dell'impianto. Scrivi {0} per confermare.§Turn down the PA volume. Type {0} to confirm.§Baja el volumen del equipo. Escribe {0} para confirmar.§Baissez le volume de la sono. Tapez {0} pour confirmer.§Dreh die Lautstärke der Anlage herunter. Gib {0} ein, um zu bestätigen.
+INIZIALIZZA§INITIALISE§INICIALIZAR§INITIALISER§INITIALISIEREN
+Inizializza§Initialise§Inicializar§Initialiser§Initialisieren
+Inizializzazione in corso…§Initialising…§Inicializando…§Initialisation…§Initialisierung läuft…
+Mixer inizializzato. Il backup è nella cartella Download.§Mixer initialised. The backup is in the Downloads folder.§Mezclador inicializado. La copia de seguridad está en la carpeta Descargas.§Console initialisée. La sauvegarde se trouve dans le dossier Téléchargements.§Mixer initialisiert. Das Backup liegt im Ordner Downloads.
+Mixer inizializzato. Il backup è nella cartella Download e nello snapshot {0}.§Mixer initialised. The backup is in the Downloads folder and in snapshot {0}.§Mezclador inicializado. La copia de seguridad está en la carpeta Descargas y en el snapshot {0}.§Console initialisée. La sauvegarde se trouve dans le dossier Téléchargements et dans le snapshot {0}.§Mixer initialisiert. Das Backup liegt im Ordner Downloads und in Snapshot {0}.
+Il mixer non ha eseguito l'inizializzazione (comando non riconosciuto): nessuna modifica.§The mixer did not initialise (command not recognised): nothing changed.§El mezclador no se ha inicializado (comando no reconocido): ningún cambio.§La console ne s’est pas initialisée (commande non reconnue) : aucune modification.§Der Mixer wurde nicht initialisiert (Befehl nicht erkannt): keine Änderung.
+# --- PIN ---
+Togli il PIN§Remove the PIN§Quitar el PIN§Supprimer le code PIN§PIN entfernen
+Su questo dispositivo, per sbloccare o lasciare la schermata monitor bloccata serve il PIN.§On this device, the PIN is needed to unlock or leave the locked monitor screen.§En este dispositivo, para desbloquear o salir de la pantalla de monitor bloqueada hace falta el PIN.§Sur cet appareil, le code PIN est nécessaire pour déverrouiller ou quitter l’écran retours verrouillé.§Auf diesem Gerät brauchst du die PIN, um den gesperrten Monitor-Bildschirm zu entsperren oder zu verlassen.
+Dai il telefono a un musicista con la schermata monitor bloccata: col PIN non può uscirne e muove solo il suo mix. Protegge dagli errori: chi conosce l'OSC può comunque comandare il mixer dalla rete.§Give the phone to a musician with the monitor screen locked: with the PIN they can’t leave it and only move their own mix. It protects against mistakes: anyone who knows OSC can still control the mixer over the network.§Da el teléfono a un músico con la pantalla de monitor bloqueada: con el PIN no puede salir y solo mueve su mezcla. Protege de errores: quien conozca OSC puede seguir controlando el mezclador desde la red.§Donnez le téléphone à un musicien avec l’écran retours verrouillé : avec le code PIN, il ne peut pas en sortir et ne règle que son mixage. Cela protège des erreurs : quelqu’un qui connaît l’OSC peut toujours piloter la console via le réseau.§Gib das Telefon einem Musiker mit gesperrtem Monitor-Bildschirm: Mit PIN kann er ihn nicht verlassen und regelt nur seinen Mix. Das schützt vor Fehlern: Wer OSC kennt, kann den Mixer trotzdem über das Netzwerk steuern.
+Cambia PIN§Change PIN§Cambiar PIN§Changer le code PIN§PIN ändern
+Imposta PIN§Set PIN§Establecer PIN§Définir un code PIN§PIN festlegen
+PIN attuale§Current PIN§PIN actual§Code PIN actuel§Aktuelle PIN
+Nuovo PIN§New PIN§Nuevo PIN§Nouveau code PIN§Neue PIN
+Da 4 a 8 cifre.§4 to 8 digits.§De 4 a 8 cifras.§De 4 à 8 chiffres.§4 bis 8 Ziffern.
+Avanti§Next§Siguiente§Suivant§Weiter
+Ripeti il PIN§Repeat the PIN§Repite el PIN§Répétez le code PIN§PIN wiederholen
+I due PIN non coincidono§The two PINs don’t match§Los dos PIN no coinciden§Les deux codes PIN ne correspondent pas§Die beiden PINs stimmen nicht überein
+PIN salvato su questo dispositivo§PIN saved on this device§PIN guardado en este dispositivo§Code PIN enregistré sur cet appareil§PIN auf diesem Gerät gespeichert
+PIN tolto§PIN removed§PIN quitado§Code PIN supprimé§PIN entfernt
+Il PIN deve avere da 4 a 8 cifre§The PIN must have 4 to 8 digits§El PIN debe tener de 4 a 8 cifras§Le code PIN doit comporter de 4 à 8 chiffres§Die PIN muss 4 bis 8 Ziffern haben
+Inserisci il PIN di questo dispositivo.§Enter this device’s PIN.§Introduce el PIN de este dispositivo.§Saisissez le code PIN de cet appareil.§Gib die PIN dieses Geräts ein.
+Sblocca§Unlock§Desbloquear§Déverrouiller§Entsperren
+PIN sbagliato. Troppi tentativi: aspetta 30 secondi.§Wrong PIN. Too many attempts: wait 30 seconds.§PIN incorrecto. Demasiados intentos: espera 30 segundos.§Code PIN incorrect. Trop de tentatives : attendez 30 secondes.§Falsche PIN. Zu viele Versuche: Warte 30 Sekunden.
+PIN sbagliato§Wrong PIN§PIN incorrecto§Code PIN incorrect§Falsche PIN
+Troppi tentativi: riprova tra {#0} secondi§Too many attempts: try again in {0} seconds§Demasiados intentos: vuelve a intentarlo en {0} segundos§Trop de tentatives : réessayez dans {0} secondes§Zu viele Versuche: in {0} Sekunden erneut versuchen
+# --- MIDI ---
+Il MIDI funziona nell'app per computer e nei browser Chrome ed Edge; su iPhone, iPad e nell'app Android non è disponibile.§MIDI works in the computer app and in Chrome and Edge; it is not available on iPhone, iPad or in the Android app.§El MIDI funciona en la app para ordenador y en Chrome y Edge; no está disponible en iPhone, iPad ni en la app de Android.§Le MIDI fonctionne dans l’app pour ordinateur et dans Chrome et Edge ; il n’est pas disponible sur iPhone, iPad ni dans l’app Android.§MIDI funktioniert in der Computer-App sowie in Chrome und Edge; auf iPhone, iPad und in der Android-App ist es nicht verfügbar.
+Controller MIDI attivo§MIDI controller on§Controlador MIDI activo§Contrôleur MIDI actif§MIDI-Controller an
+Impara§Learn§Aprender§Apprendre§Lernen
+Nessun controller collegato.§No controller connected.§Ningún controlador conectado.§Aucun contrôleur connecté.§Kein Controller angeschlossen.
+Togli il collegamento§Remove the mapping§Quitar la asignación§Supprimer l’affectation§Zuweisung entfernen
+Togli tutti i collegamenti§Remove all mappings§Quitar todas las asignaciones§Supprimer toutes les affectations§Alle Zuweisungen entfernen
+Tocca "Impara", muovi un comando nell'app e poi il controllo sul controller.§Tap "Learn", move a control in the app and then the control on the controller.§Toca "Aprender", mueve un control en la app y luego el del controlador.§Touchez « Apprendre », bougez une commande dans l’app puis celle du contrôleur.§Tippe auf „Lernen“, bewege einen Regler in der App und dann den Regler am Controller.
+Il MIDI non è stato concesso su questo dispositivo§MIDI was not allowed on this device§No se ha permitido el MIDI en este dispositivo§Le MIDI n’a pas été autorisé sur cet appareil§MIDI wurde auf diesem Gerät nicht erlaubt
+Impara MIDI: muovi un comando nell'app (fader, manopola, mute…) o tocca un pulsante della scaletta§MIDI learn: move a control in the app (fader, knob, mute…) or tap a setlist button§Aprender MIDI: mueve un control en la app (fader, mando, mute…) o toca un botón de la setlist§Apprentissage MIDI : bougez une commande dans l’app (fader, bouton, mute…) ou touchez un bouton de la setlist§MIDI lernen: Bewege einen Regler in der App (Fader, Drehregler, Mute…) oder tippe auf eine Setlist-Taste
+{0}: ora muovi o premi il controllo MIDI§{0}: now move or press the MIDI control§{0}: ahora mueve o pulsa el control MIDI§{0} : bougez ou appuyez maintenant sur la commande MIDI§{0}: Jetzt den MIDI-Regler bewegen oder drücken
+Collegato: {0} → {1}§Mapped: {0} → {1}§Asignado: {0} → {1}§Affecté : {0} → {1}§Zugewiesen: {0} → {1}
+{0} · canale {#1}§{0} · channel {1}§{0} · canal {1}§{0} · canal {1}§{0} · Kanal {1}
+Nota§Note§Nota§Note§Note
+fader§fader§fader§fader§Fader
+mute§mute§mute§mute§Mute
+mandata {0}§send {0}§envío {0}§départ {0}§Send {0}
+# --- monitor ---
+Bus monitor§Monitor bus§Bus de monitor§Bus de retour§Monitor-Bus
+Canali§Channels§Canales§Voies§Kanäle
+Esci§Exit§Salir§Quitter§Beenden
+Bloccato§Locked§Bloqueado§Verrouillé§Gesperrt
+Blocca§Lock§Bloquear§Verrouiller§Sperren
+Sblocca il monitor§Unlock the monitor§Desbloquear el monitor§Déverrouiller les retours§Monitor entsperren
+Canali nel mix§Channels in the mix§Canales en la mezcla§Voies dans le mixage§Kanäle im Mix
+Fatto§Done§Hecho§Terminé§Fertig
+Nessuno§None§Ninguno§Aucune§Keine
+I fader regolano solo il mix di {0}: l'audio in sala non cambia.§The faders only adjust {0}’s mix: the sound in the room doesn’t change.§Los faders solo regulan la mezcla de {0}: el sonido en la sala no cambia.§Les faders ne règlent que le mixage de {0} : le son en salle ne change pas.§Die Fader regeln nur den Mix von {0}: Der Ton im Saal ändert sich nicht.
+Mix di {0} · schermata bloccata (serve il PIN per sbloccare)§{0}’s mix · screen locked (PIN needed to unlock)§Mezcla de {0} · pantalla bloqueada (hace falta el PIN para desbloquear)§Mixage de {0} · écran verrouillé (code PIN requis pour déverrouiller)§Mix von {0} · Bildschirm gesperrt (PIN zum Entsperren nötig)
+Mix di {0} · schermata bloccata (tieni premuto per sbloccare)§{0}’s mix · screen locked (press and hold to unlock)§Mezcla de {0} · pantalla bloqueada (mantén pulsado para desbloquear)§Mixage de {0} · écran verrouillé (maintenez appuyé pour déverrouiller)§Mix von {0} · Bildschirm gesperrt (zum Entsperren gedrückt halten)
+# --- feedback ---
+Concerto§Show§Concierto§Concert§Konzert
+Soundcheck§Soundcheck§Prueba de sonido§Balance§Soundcheck
+Bassa§Low§Baja§Faible§Niedrig
+Media§Medium§Media§Moyenne§Mittel
+Alta§High§Alta§Élevée§Hoch
+Concerto: con la musica. Note e armoniche non contano; il notch automatico interviene solo su picchi che durano, fermi e dominanti (al massimo 4 per uscita).§Show: with music. Notes and harmonics don’t count; the automatic notch only acts on peaks that last, stay put and dominate (at most 4 per output).§Concierto: con música. Las notas y los armónicos no cuentan; el notch automático solo actúa sobre picos que duran, fijos y dominantes (como máximo 4 por salida).§Concert : avec la musique. Les notes et les harmoniques ne comptent pas ; le notch automatique n’agit que sur les pics durables, fixes et dominants (au maximum 4 par sortie).§Konzert: mit Musik. Noten und Obertöne zählen nicht; der automatische Notch greift nur bei anhaltenden, festen und dominanten Spitzen ein (höchstens 4 pro Ausgang).
+Soundcheck: per cercare il feedback a microfoni aperti, senza musica. Ogni picco che resta viene tagliato subito. Torna su Concerto prima di suonare.§Soundcheck: to hunt for feedback with the mics open, without music. Every peak that stays is cut at once. Switch back to Show before playing.§Prueba de sonido: para buscar el feedback con los micrófonos abiertos, sin música. Cada pico que se mantiene se corta al momento. Vuelve a Concierto antes de tocar.§Balance : pour chercher le larsen micros ouverts, sans musique. Chaque pic qui persiste est coupé tout de suite. Repassez sur Concert avant de jouer.§Soundcheck: zum Aufspüren von Feedback bei offenen Mikrofonen, ohne Musik. Jede bleibende Spitze wird sofort abgesenkt. Vor dem Spielen wieder auf Konzert stellen.
+Sorveglia i livelli delle uscite e ne analizza lo spettro con l'RTA del mixer. Un picco stretto che resta alla stessa frequenza viene segnalato come feedback.§Watches the output levels and analyses their spectrum with the mixer’s RTA. A narrow peak that stays at the same frequency is reported as feedback.§Vigila los niveles de las salidas y analiza su espectro con el RTA del mezclador. Un pico estrecho que se mantiene en la misma frecuencia se señala como feedback.§Surveille les niveaux des sorties et analyse leur spectre avec le RTA de la console. Un pic étroit qui reste sur la même fréquence est signalé comme larsen.§Überwacht die Ausgangspegel und analysiert ihr Spektrum mit dem RTA des Mixers. Eine schmale Spitze, die auf derselben Frequenz bleibt, wird als Feedback gemeldet.
+Monitoraggio§Monitoring§Vigilancia§Surveillance§Überwachung
+Modalità§Mode§Modo§Mode§Modus
+Sensibilità§Sensitivity§Sensibilidad§Sensibilité§Empfindlichkeit
+Mette da solo un notch sull'EQ dell'uscita§Places a notch on the output’s EQ by itself§Pone por sí solo un notch en el EQ de la salida§Place tout seul un notch sur l’EQ de la sortie§Setzt selbstständig einen Notch im EQ des Ausgangs
+Notch automatico§Automatic notch§Notch automático§Notch automatique§Automatischer Notch
+Uscite controllate§Monitored outputs§Salidas vigiladas§Sorties surveillées§Überwachte Ausgänge
+Simulatore:§Simulator:§Simulador:§Simulateur :§Simulator:
+Simula feedback§Simulate feedback§Simular feedback§Simuler un larsen§Feedback simulieren
+Avvisi§Alerts§Avisos§Alertes§Meldungen
+Svuota§Clear§Vaciar§Vider§Leeren
+Approfondisci§Deepen§Profundizar§Approfondir§Vertiefen
+Ignora questo feedback§Ignore this feedback§Ignorar este feedback§Ignorer ce larsen§Dieses Feedback ignorieren
+Nessun feedback rilevato.§No feedback detected.§No se ha detectado feedback.§Aucun larsen détecté.§Kein Feedback erkannt.
+Monitoraggio spento.§Monitoring off.§Vigilancia apagada.§Surveillance désactivée.§Überwachung aus.
+Feedback {0}§Feedback {0}§Feedback {0}§Larsen {0}§Feedback {0}
+su {0}§on {0}§en {0}§sur {0}§auf {0}
+Feedback a {0} su {1}§Feedback at {0} on {1}§Feedback a {0} en {1}§Larsen à {0} sur {1}§Feedback bei {0} auf {1}
+Feedback a {0} su {1}. {2}§Feedback at {0} on {1}. {2}§Feedback a {0} en {1}. {2}§Larsen à {0} sur {1}. {2}§Feedback bei {0} auf {1}. {2}
+Notch banda {#0}: {1} dB§Notch band {0}: {1} dB§Notch banda {0}: {1} dB§Notch bande {0} : {1} dB§Notch Band {0}: {1} dB
+notch banda {#0}: {1} dB§notch band {0}: {1} dB§notch banda {0}: {1} dB§notch bande {0} : {1} dB§Notch Band {0}: {1} dB
+Nessuna banda EQ libera su {0}§No free EQ band on {0}§No hay ninguna banda de EQ libre en {0}§Aucune bande d’EQ libre sur {0}§Kein freies EQ-Band auf {0}
+ora§now§ahora§maintenant§jetzt
+{#0} s fa§{0} s ago§hace {0} s§il y a {0} s§vor {0} s
+{#0} min fa§{0} min ago§hace {0} min§il y a {0} min§vor {0} Min.
+# --- vista e layer ---
+Scegli cosa mostrare su ogni canale. Se lo spazio non basta, le sezioni si compattano da sole.§Choose what to show on each channel. If there isn’t enough room, the sections shrink by themselves.§Elige qué mostrar en cada canal. Si no hay espacio suficiente, las secciones se compactan solas.§Choisissez ce qui apparaît sur chaque voie. Si la place manque, les sections se compactent d’elles-mêmes.§Wähle, was auf jedem Kanal angezeigt wird. Reicht der Platz nicht, werden die Bereiche von selbst kompakter.
+Canali in Ingressi§Channels in Inputs§Canales en Entradas§Voies dans Entrées§Kanäle in Eingänge
+Sezioni dei canali§Channel sections§Secciones de los canales§Sections des voies§Kanalbereiche
+Larghezza canali§Channel width§Ancho de los canales§Largeur des voies§Kanalbreite
+Ripristina§Restore§Restablecer§Rétablir§Wiederherstellen
+Lunghi§Long§Largos§Longs§Lang
+Corti§Short§Cortos§Courts§Kurz
+Stretta§Narrow§Estrecho§Étroite§Schmal
+Larga§Wide§Ancho§Large§Breit
+Pan§Pan§Panorama§Panoramique§Panorama
+Nuovo layer: una pagina con i canali che scegli tu§New layer: a page with the channels you choose§Nueva capa: una página con los canales que elijas§Nouveau calque : une page avec les voies de votre choix§Neuer Layer: eine Seite mit den Kanälen deiner Wahl
+Tocca di nuovo per modificare il layer§Tap again to edit the layer§Toca de nuevo para editar la capa§Touchez à nouveau pour modifier le calque§Erneut tippen, um den Layer zu bearbeiten
+Modifica§Edit§Editar§Modifier§Bearbeiten
+Bus e mandate FX§Buses and FX sends§Bus y envíos FX§Bus et départs FX§Busse und FX-Sends
+Modifica layer§Edit layer§Editar capa§Modifier le calque§Layer bearbeiten
+Nuovo layer§New layer§Nueva capa§Nouveau calque§Neuer Layer
+Elimina layer§Delete layer§Eliminar capa§Supprimer le calque§Layer löschen
+Layer {#0}§Layer {0}§Capa {0}§Calque {0}§Layer {0}
+Tocca i canali nell'ordine in cui li vuoi vedere. Tocca di nuovo per toglierlo.§Tap the channels in the order you want to see them. Tap again to remove one.§Toca los canales en el orden en que quieras verlos. Toca de nuevo para quitarlo.§Touchez les voies dans l’ordre où vous voulez les voir. Touchez à nouveau pour en retirer une.§Tippe die Kanäle in der gewünschten Reihenfolge an. Erneut tippen zum Entfernen.
+{0} · {#1} canali§{0} · {1} channels§{0} · {1} canales§{0} · {1} voies§{0} · {1} Kanäle
+# --- tutorial ---
+Benvenuto in AirDesk§Welcome to AirDesk§Bienvenido a AirDesk§Bienvenue dans AirDesk§Willkommen bei AirDesk
+Con AirDesk controlli il tuo mixer digitale dal telefono, dal tablet o dal computer. In un minuto ti mostro i comandi principali.§With AirDesk you control your digital mixer from your phone, tablet or computer. In one minute I’ll show you the main controls.§Con AirDesk controlas tu mezclador digital desde el teléfono, la tableta o el ordenador. En un minuto te enseño los controles principales.§Avec AirDesk, vous pilotez votre console numérique depuis votre téléphone, tablette ou ordinateur. En une minute, je vous montre les commandes principales.§Mit AirDesk steuerst du deinen Digitalmixer vom Telefon, Tablet oder Computer. In einer Minute zeige ich dir die wichtigsten Bedienelemente.
+Collegati al mixer§Connect to the mixer§Conéctate al mezclador§Connectez-vous à la console§Mit dem Mixer verbinden
+Collega il dispositivo alla stessa rete Wi-Fi del mixer, poi tocca qui: AirDesk lo cerca da solo, oppure puoi scriverne l’indirizzo IP.§Connect the device to the mixer’s Wi-Fi network, then tap here: AirDesk finds it by itself, or you can type its IP address.§Conecta el dispositivo a la misma red Wi-Fi que el mezclador y toca aquí: AirDesk lo busca solo, o puedes escribir su dirección IP.§Connectez l’appareil au même réseau Wi-Fi que la console, puis touchez ici : AirDesk la trouve tout seul, ou saisissez son adresse IP.§Verbinde das Gerät mit dem WLAN des Mixers und tippe dann hier: AirDesk findet ihn selbst, oder du gibst seine IP-Adresse ein.
+Le sezioni§The sections§Las secciones§Les sections§Die Bereiche
+Ingressi, Bus ed effetti, DCA, Effetti, Routing e Meter. Con “+ Layer” crei una pagina con solo i canali che ti servono.§Inputs, Buses and effects, DCA, Effects, Routing and Meters. With “+ Layer” you create a page with only the channels you need.§Entradas, Bus y efectos, DCA, Efectos, Ruteo y Medidores. Con “+ Capa” creas una página solo con los canales que necesitas.§Entrées, Bus et effets, DCA, Effets, Routage et Vumètres. Avec « + Calque », vous créez une page avec seulement les voies utiles.§Eingänge, Busse und Effekte, DCA, Effekte, Routing und Pegel. Mit „+ Layer“ erstellst du eine Seite nur mit den Kanälen, die du brauchst.
+Un canale§A channel§Un canal§Une voie§Ein Kanal
+Trascina il fader per il volume. Per una regolazione fine, mentre lo muovi allontana il dito di lato; con un doppio tocco torna a 0 dB. Tocca Gain, Gate, Comp o EQ per aprire il canale, il nome per cambiarlo.§Drag the fader for volume. For fine adjustment, move your finger sideways away from it while dragging; double tap returns it to 0 dB. Tap Gain, Gate, Comp or EQ to open the channel, the name to change it.§Arrastra el fader para el volumen. Para un ajuste fino, mientras lo mueves aleja el dedo hacia un lado; con un doble toque vuelve a 0 dB. Toca Gain, Gate, Comp o EQ para abrir el canal, y el nombre para cambiarlo.§Faites glisser le fader pour le volume. Pour un réglage fin, écartez le doigt sur le côté pendant le mouvement ; un double appui le ramène à 0 dB. Touchez Gain, Gate, Comp ou EQ pour ouvrir la voie, le nom pour le changer.§Ziehe den Fader für die Lautstärke. Für Feineinstellung bewege den Finger beim Ziehen zur Seite weg; Doppeltippen setzt ihn auf 0 dB. Tippe auf Gain, Gate, Comp oder EQ, um den Kanal zu öffnen, auf den Namen, um ihn zu ändern.
+Annulla e Ripeti§Undo and Redo§Deshacer y Rehacer§Annuler et Rétablir§Rückgängig und Wiederholen
+Ogni modifica si può annullare, anche un intero movimento del fader.§Every change can be undone, even a whole fader move.§Cualquier cambio se puede deshacer, incluso un movimiento completo del fader.§Chaque modification peut être annulée, même un mouvement complet du fader.§Jede Änderung lässt sich rückgängig machen, auch eine ganze Faderbewegung.
+Monitor in-ear§In-ear monitor§Monitor in-ear§Retours in-ear§In-Ear-Monitor
+Una schermata con un solo mix monitor: i fader regolano solo quello. Comoda da dare a un musicista.§A screen with a single monitor mix: the faders only adjust that one. Handy to give to a musician.§Una pantalla con una sola mezcla de monitor: los faders solo regulan esa. Cómoda para dársela a un músico.§Un écran avec un seul mixage retour : les faders ne règlent que celui-là. Pratique à confier à un musicien.§Ein Bildschirm mit nur einem Monitormix: Die Fader regeln nur diesen. Praktisch, um ihn einem Musiker zu geben.
+Salva e richiama i tuoi mix. I canali che proteggi non cambiano quando carichi una scena.§Save and recall your mixes. The channels you protect don’t change when you load a scene.§Guarda y recupera tus mezclas. Los canales que protejas no cambian al cargar una escena.§Enregistrez et rappelez vos mixages. Les voies que vous protégez ne changent pas quand vous chargez une scène.§Speichere und lade deine Mixe. Die Kanäle, die du schützt, ändern sich beim Laden einer Szene nicht.
+Usa “Soundcheck” per cercare il feedback a microfoni aperti e “Concerto” mentre suoni.§Use “Soundcheck” to hunt for feedback with the mics open and “Show” while you play.§Usa “Prueba de sonido” para buscar el feedback con los micrófonos abiertos y “Concierto” mientras tocas.§Utilisez « Balance » pour chercher le larsen micros ouverts et « Concert » pendant que vous jouez.§Nutze „Soundcheck“, um bei offenen Mikrofonen Feedback zu suchen, und „Konzert“ beim Spielen.
+Blocco§Lock§Bloqueo§Verrouillage§Sperre
+Blocca i comandi contro i tocchi per sbaglio. Per sbloccare, tieni premuto.§Lock the controls against accidental touches. To unlock, press and hold.§Bloquea los controles contra toques accidentales. Para desbloquear, mantén pulsado.§Verrouillez les commandes contre les contacts involontaires. Pour déverrouiller, maintenez appuyé.§Sperre die Bedienung gegen versehentliches Berühren. Zum Entsperren gedrückt halten.
+Tutto pronto§All set§Todo listo§Tout est prêt§Alles bereit
+Ogni comando arriva subito al mixer: occhio al volume e alla +48V. Puoi rivedere questo tutorial da Impostazioni.§Every control goes straight to the mixer: watch the volume and the +48V. You can see this tutorial again from Settings.§Cada control llega al momento al mezclador: cuidado con el volumen y la +48V. Puedes volver a ver este tutorial desde Ajustes.§Chaque commande arrive tout de suite à la console : attention au volume et au +48 V. Vous pouvez revoir ce tutoriel depuis Réglages.§Jede Bedienung geht sofort an den Mixer: Achte auf Lautstärke und +48V. Du kannst dieses Tutorial in den Einstellungen erneut ansehen.
+Iniziamo§Let’s start§Empecemos§Commençons§Los geht’s
+Fine§Finish§Terminar§Terminer§Fertig
+Salta§Skip§Saltar§Passer§Überspringen
+Indietro§Back§Atrás§Retour§Zurück
+{#0} di {#1}§{0} of {1}§{0} de {1}§{0} sur {1}§{0} von {1}
+# --- informazioni e note legali ---
+Avvertenze d'uso§Safety notes§Advertencias de uso§Précautions d’emploi§Sicherheitshinweise
+Un mixer può produrre livelli sonori dannosi per l'udito: fai le prime prove a volume basso.§A mixer can produce sound levels that damage hearing: do your first tests at low volume.§Un mezclador puede producir niveles sonoros dañinos para el oído: haz las primeras pruebas a volumen bajo.§Une console peut produire des niveaux sonores dangereux pour l’audition : faites les premiers essais à faible volume.§Ein Mixer kann gehörschädigende Pegel erzeugen: Mach die ersten Tests bei geringer Lautstärke.
+La phantom (+48V) può danneggiare microfoni a nastro e alcune sorgenti: controlla prima di accenderla.§Phantom power (+48V) can damage ribbon mics and some sources: check before turning it on.§La alimentación phantom (+48V) puede dañar micrófonos de cinta y algunas fuentes: compruébalo antes de activarla.§L’alimentation fantôme (+48 V) peut endommager les micros à ruban et certaines sources : vérifiez avant de l’activer.§Phantomspeisung (+48V) kann Bändchenmikrofone und manche Quellen beschädigen: Prüfe das, bevor du sie einschaltest.
+Il mixer non ha password: chiunque sia sulla sua rete Wi-Fi può comandarlo con qualsiasi app. Proteggi la rete del mixer con una password.§The mixer has no password: anyone on its Wi-Fi network can control it with any app. Protect the mixer’s network with a password.§El mezclador no tiene contraseña: cualquiera en su red Wi-Fi puede controlarlo con cualquier app. Protege la red del mezclador con una contraseña.§La console n’a pas de mot de passe : toute personne sur son réseau Wi-Fi peut la piloter avec n’importe quelle app. Protégez le réseau de la console par un mot de passe.§Der Mixer hat kein Passwort: Jeder in seinem WLAN kann ihn mit jeder App steuern. Schütze das Netzwerk des Mixers mit einem Passwort.
+Marchi§Trademarks§Marcas§Marques§Marken
+AirDesk è un progetto indipendente: non è affiliato, approvato o sponsorizzato da Behringer o Music Tribe.§AirDesk is an independent project: it is not affiliated with, endorsed or sponsored by Behringer or Music Tribe.§AirDesk es un proyecto independiente: no está afiliado, aprobado ni patrocinado por Behringer ni Music Tribe.§AirDesk est un projet indépendant : il n’est ni affilié, ni approuvé, ni sponsorisé par Behringer ou Music Tribe.§AirDesk ist ein unabhängiges Projekt: Es ist nicht mit Behringer oder Music Tribe verbunden und wird von ihnen weder unterstützt noch gesponsert.
+Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit e Ultranet sono marchi dei rispettivi proprietari, citati solo per indicare la compatibilità.§Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit and Ultranet are trademarks of their respective owners, mentioned only to indicate compatibility.§Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit y Ultranet son marcas de sus respectivos propietarios, citadas solo para indicar la compatibilidad.§Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit et Ultranet sont des marques de leurs propriétaires respectifs, citées uniquement pour indiquer la compatibilité.§Behringer, X AIR, XR12, XR16, XR18, X18, X-AIR-Edit und Ultranet sind Marken ihrer jeweiligen Inhaber und werden nur zur Angabe der Kompatibilität genannt.
+Privacy§Privacy§Privacidad§Confidentialité§Datenschutz
+AirDesk non raccoglie, non invia e non vende dati personali: niente account, pubblicità, statistiche o tracciamento.§AirDesk does not collect, send or sell personal data: no accounts, ads, analytics or tracking.§AirDesk no recopila, no envía y no vende datos personales: sin cuentas, publicidad, estadísticas ni seguimiento.§AirDesk ne collecte, n’envoie et ne vend aucune donnée personnelle : pas de compte, de publicité, de statistiques ni de pistage.§AirDesk sammelt, sendet und verkauft keine persönlichen Daten: keine Konten, Werbung, Statistiken oder Tracking.
+L'app parla solo con il mixer sulla rete locale. Le preferenze restano su questo dispositivo e si cancellano disinstallando l'app.§The app only talks to the mixer on the local network. Preferences stay on this device and are erased when you uninstall the app.§La app solo habla con el mezclador en la red local. Las preferencias se quedan en este dispositivo y se borran al desinstalar la app.§L’app ne communique qu’avec la console sur le réseau local. Les préférences restent sur cet appareil et sont effacées en désinstallant l’app.§Die App kommuniziert nur mit dem Mixer im lokalen Netzwerk. Die Einstellungen bleiben auf diesem Gerät und werden beim Deinstallieren gelöscht.
+Componenti di terze parti§Third-party components§Componentes de terceros§Composants tiers§Komponenten von Drittanbietern
+Capacitor (MIT), ws (MIT), Electron (MIT) con Chromium e Node.js (licenze incluse nell'app per computer), AndroidX e Apache Cordova (Apache-2.0).§Capacitor (MIT), ws (MIT), Electron (MIT) with Chromium and Node.js (licences included in the computer app), AndroidX and Apache Cordova (Apache-2.0).§Capacitor (MIT), ws (MIT), Electron (MIT) con Chromium y Node.js (licencias incluidas en la app para ordenador), AndroidX y Apache Cordova (Apache-2.0).§Capacitor (MIT), ws (MIT), Electron (MIT) avec Chromium et Node.js (licences incluses dans l’app pour ordinateur), AndroidX et Apache Cordova (Apache-2.0).§Capacitor (MIT), ws (MIT), Electron (MIT) mit Chromium und Node.js (Lizenzen in der Computer-App enthalten), AndroidX und Apache Cordova (Apache-2.0).
+AirDesk · controller per mixer digitali compatibili con Behringer X Air (XR12, XR16, XR18). Software libero con licenza MIT, fornito senza garanzie.§AirDesk · controller for digital mixers compatible with Behringer X Air (XR12, XR16, XR18). Free software under the MIT licence, provided without warranty.§AirDesk · controlador para mezcladores digitales compatibles con Behringer X Air (XR12, XR16, XR18). Software libre con licencia MIT, sin garantías.§AirDesk · contrôleur pour consoles numériques compatibles Behringer X Air (XR12, XR16, XR18). Logiciel libre sous licence MIT, fourni sans garantie.§AirDesk · Controller für Digitalmixer, kompatibel mit Behringer X Air (XR12, XR16, XR18). Freie Software unter MIT-Lizenz, ohne Gewähr.
+Licenza (MIT)§Licence (MIT)§Licencia (MIT)§Licence (MIT)§Lizenz (MIT)
+# --- guida vocale ---
+Guida vocale§Voice guide§Guía de voz§Guide vocal§Sprachführung
+Spenta§Off§Desactivada§Désactivé§Aus
+Attiva§On§Activada§Activé§An
+attivo§on§activado§activé§an
+spento§off§desactivado§désactivé§aus
+Guida vocale attiva§Voice guide on§Guía de voz activada§Guide vocal activé§Sprachführung an
+Guida vocale in pausa: lo screen reader è acceso§Voice guide paused: the screen reader is on§Guía de voz en pausa: el lector de pantalla está activado§Guide vocal en pause : le lecteur d’écran est activé§Sprachführung pausiert: Der Screenreader ist an
+La guida vocale legge ad alta voce i tasti che tocchi e i valori che regoli, nella lingua dell'app. Si mette in pausa da sola quando VoiceOver o TalkBack sono accesi.§The voice guide reads aloud the buttons you tap and the values you adjust, in the app’s language. It pauses by itself when VoiceOver or TalkBack is on.§La guía de voz lee en voz alta los botones que tocas y los valores que ajustas, en el idioma de la app. Se pausa sola cuando VoiceOver o TalkBack están activados.§Le guide vocal lit à voix haute les touches que vous touchez et les valeurs que vous réglez, dans la langue de l’app. Il se met en pause tout seul quand VoiceOver ou TalkBack est activé.§Die Sprachführung liest die Tasten, die du antippst, und die Werte, die du einstellst, in der Sprache der App vor. Sie pausiert von selbst, wenn VoiceOver oder TalkBack an ist.

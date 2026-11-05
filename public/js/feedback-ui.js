@@ -1,6 +1,7 @@
 // Interfaccia del rilevatore di feedback: pulsante in alto, pannello impostazioni/avvisi, notifiche.
 
 import { SENSITIVITY, MODES } from './feedback.js';
+import { announce } from './a11y.js';
 
 const PREF_KEY = 'xair.feedback';
 const TOAST_MS = 8000;
@@ -24,6 +25,11 @@ function button(text, className, onClick) {
   b.type = 'button';
   b.addEventListener('click', onClick);
   return b;
+}
+
+function labelled(el, text) {
+  el.setAttribute('aria-label', text);
+  return el;
 }
 
 export function createFeedbackUI({ mixer, monitor, editor, storage }) {
@@ -150,7 +156,7 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
         dialog.close();
         editor.open(monitor.outputStrip(a.output), 'eq');
       }),
-      button('✕', 'btn ghost', () => monitor.dismiss(a)),
+      labelled(button('✕', 'btn ghost', () => monitor.dismiss(a)), 'Ignora questo feedback'),
     );
     li.append(meta, actions);
     return li;
@@ -193,6 +199,7 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
 
   function toast(alert, text) {
     let el = toastFor.get(alert.id);
+    const isNew = !el;
     if (!el) {
       el = h('div', 'toast');
       toastFor.set(alert.id, el);
@@ -207,9 +214,11 @@ export function createFeedbackUI({ mixer, monitor, editor, storage }) {
       el.append(button(alert.notch ? 'Approfondisci' : 'Notch', 'btn', () => notch(alert, m => toast(alert, m))));
     }
     el.append(button('EQ', 'btn ghost', () => editor.open(monitor.outputStrip(alert.output), 'eq')));
-    el.append(button('✕', 'btn ghost', () => removeToast(alert.id)));
+    el.append(labelled(button('✕', 'btn ghost', () => removeToast(alert.id)), 'Chiudi l’avviso'));
     clearTimeout(el.timer);
     el.timer = setTimeout(() => removeToast(alert.id), TOAST_MS);
+    // a voce solo i feedback nuovi e i notch messi, non ogni aggiornamento dello stesso avviso
+    if (isNew || text) announce(`Feedback a ${formatFreq(alert.freq)} su ${outputName(alert.output)}${text ? `. ${text}` : ''}`, { urgent: isNew });
   }
 
   function removeToast(id) {

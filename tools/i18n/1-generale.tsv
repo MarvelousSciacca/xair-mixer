@@ -1,0 +1,114 @@
+# Traduzioni dell'interfaccia: italiano§inglese§spagnolo§francese§tedesco (una riga per testo).
+# {0}, {1}: un valore qualsiasi (nome, frequenza…); {#0}: solo un numero. \n = a capo.
+# Dopo una modifica: node tools/i18n/build.mjs
+# --- barra in alto, schede, stato ---
+Ingressi§Inputs§Entradas§Entrées§Eingänge
+Bus & FX§Bus & FX§Bus y FX§Bus & FX§Busse & FX
+Effetti§Effects§Efectos§Effets§Effekte
++ Layer§+ Layer§+ Capa§+ Calque§+ Layer
+Meter§Meters§Medidores§Vumètres§Pegel
+Sezioni del mixer§Mixer sections§Secciones del mezclador§Sections de la console§Mixer-Bereiche
+Stato della connessione§Connection status§Estado de la conexión§État de la connexion§Verbindungsstatus
+Annulla§Undo§Deshacer§Annuler§Rückgängig
+Ripeti§Redo§Rehacer§Rétablir§Wiederholen
+Annulla l’ultima modifica (⌘Z / Ctrl+Z)§Undo the last change (⌘Z / Ctrl+Z)§Deshacer el último cambio (⌘Z / Ctrl+Z)§Annuler la dernière modification (⌘Z / Ctrl+Z)§Letzte Änderung rückgängig (⌘Z / Strg+Z)
+Ripeti (⇧⌘Z / Ctrl+Y)§Redo (⇧⌘Z / Ctrl+Y)§Rehacer (⇧⌘Z / Ctrl+Y)§Rétablir (⇧⌘Z / Ctrl+Y)§Wiederholen (⇧⌘Z / Strg+Y)
+Vista§View§Vista§Affichage§Ansicht
+Vista: cosa mostrare sui canali§View: what to show on the channels§Vista: qué mostrar en los canales§Affichage : ce qui apparaît sur les voies§Ansicht: was auf den Kanälen angezeigt wird
+Monitor§Monitor§Monitor§Retours§Monitor
+Modalità monitor in-ear§In-ear monitor mode§Modo monitor in-ear§Mode retours in-ear§In-Ear-Monitor-Modus
+Scene§Scenes§Escenas§Scènes§Szenen
+Scene e snapshot§Scenes and snapshots§Escenas y snapshots§Scènes et snapshots§Szenen und Snapshots
+Impostazioni mixer§Mixer settings§Ajustes del mezclador§Réglages de la console§Mixer-Einstellungen
+Feedback§Feedback§Feedback§Larsen§Feedback
+Rilevatore feedback§Feedback detector§Detector de feedback§Détecteur de larsen§Feedback-Erkennung
+Rilevatore feedback (Soundcheck)§Feedback detector (Soundcheck)§Detector de feedback (Soundcheck)§Détecteur de larsen (Soundcheck)§Feedback-Erkennung (Soundcheck)
+Blocca i comandi§Lock the controls§Bloquear los controles§Verrouiller les commandes§Bedienung sperren
+Blocca i comandi contro i tocchi per sbaglio§Lock the controls against accidental touches§Bloquea los controles contra toques accidentales§Verrouille les commandes contre les contacts involontaires§Sperrt die Bedienung gegen versehentliches Berühren
+Comandi bloccati: tieni premuto per sbloccare§Controls locked: press and hold to unlock§Controles bloqueados: mantén pulsado para desbloquear§Commandes verrouillées : maintenez appuyé pour déverrouiller§Bedienung gesperrt: zum Entsperren gedrückt halten
+Bloccato · tieni premuto per sbloccare§Locked · press and hold to unlock§Bloqueado · mantén pulsado para desbloquear§Verrouillé · maintenez appuyé pour déverrouiller§Gesperrt · zum Entsperren gedrückt halten
+Connetti§Connect§Conectar§Connecter§Verbinden
+Connetti al mixer§Connect to the mixer§Conectar al mezclador§Se connecter à la console§Mit dem Mixer verbinden
+Fader§Fader§Fader§Fader§Fader
+Main LR§Main LR§Main LR§Main LR§Main LR
+Non connesso§Not connected§No conectado§Non connecté§Nicht verbunden
+Connessione…§Connecting…§Conectando…§Connexion…§Verbinde…
+Connesso§Connected§Conectado§Connecté§Verbunden
+Mixer non risponde§Mixer not responding§El mezclador no responde§La console ne répond pas§Mixer antwortet nicht
+Offline§Offline§Sin conexión§Hors ligne§Offline
+Attendi…§Wait…§Espera…§Patientez…§Bitte warten…
+Online§Online§En línea§En ligne§Online
+Perso§Lost§Perdido§Perdu§Verloren
+Senza mixer§No mixer§Sin mezclador§Sans console§Ohne Mixer
+Virtuale§Virtual§Virtual§Virtuel§Virtuell
+Lavori senza mixer§Working without a mixer§Trabajas sin mezclador§Vous travaillez sans console§Du arbeitest ohne Mixer
+{0} · {1}§{0} · {1}§{0} · {1}§{0} · {1}§{0} · {1}
+Connesso, {0}§Connected, {0}§Conectado, {0}§Connecté, {0}§Verbunden, {0}
+Ponte non raggiungibile: avvia§Bridge not reachable: start§Puente no disponible: ejecuta§Pont injoignable : lancez§Bridge nicht erreichbar: starte
+sul computer.§on the computer.§en el ordenador.§sur l’ordinateur.§auf dem Computer.
+I fader dei canali tornano al Main LR§The channel faders are back on Main LR§Los faders de los canales vuelven al Main LR§Les faders des voies reviennent sur le Main LR§Die Kanalfader steuern wieder den Main LR
+I fader dei canali regolano le mandate verso {0}§The channel faders now set the sends to {0}§Los faders de los canales regulan los envíos a {0}§Les faders des voies règlent les départs vers {0}§Die Kanalfader regeln die Sends zu {0}
+Mute group {#0}§Mute group {0}§Grupo de mute {0}§Groupe de mute {0}§Mute-Gruppe {0}
+Mute group§Mute groups§Grupos de mute§Groupes de mute§Mute-Gruppen
+MG {#0}§MG {0}§GM {0}§GM {0}§MG {0}
+# --- connessione ---
+Cerca di nuovo§Search again§Buscar de nuevo§Rechercher à nouveau§Erneut suchen
+Oppure inserisci l’IP§Or enter the IP address§O introduce la IP§Ou saisissez l’adresse IP§Oder IP-Adresse eingeben
+Lavora senza mixer§Work without a mixer§Trabajar sin mezclador§Travailler sans console§Ohne Mixer arbeiten
+Prepari mix e scene ora; li invii al mixer quando ti colleghi.§Prepare mixes and scenes now; send them to the mixer when you connect.§Prepara mezclas y escenas ahora; envíalas al mezclador cuando te conectes.§Préparez mixages et scènes maintenant ; envoyez-les à la console une fois connecté.§Bereite Mixe und Szenen jetzt vor und sende sie an den Mixer, sobald du verbunden bist.
+Disconnetti§Disconnect§Desconectar§Déconnecter§Trennen
+Chiudi§Close§Cerrar§Fermer§Schließen
+Ricerca in corso…§Searching…§Buscando…§Recherche…§Suche läuft…
+Nessun mixer trovato. Controlla che sia sulla stessa rete o inserisci l’IP.§No mixer found. Check that it is on the same network or enter its IP address.§No se ha encontrado ningún mezclador. Comprueba que esté en la misma red o introduce su IP.§Aucune console trouvée. Vérifiez qu’elle est sur le même réseau ou saisissez son adresse IP.§Kein Mixer gefunden. Prüfe, ob er im selben Netzwerk ist, oder gib seine IP-Adresse ein.
+Inserisci un indirizzo IP, es. 192.168.1.50§Enter an IP address, e.g. 192.168.1.50§Introduce una dirección IP, p. ej. 192.168.1.50§Saisissez une adresse IP, par ex. 192.168.1.50§Gib eine IP-Adresse ein, z. B. 192.168.1.50
+Ponte non raggiungibile§Bridge not reachable§Puente no disponible§Pont injoignable§Bridge nicht erreichbar
+# --- nome e colore ---
+Canale§Channel§Canal§Voie§Kanal
+Nome§Name§Nombre§Nom§Name
+Colore§Colour§Color§Couleur§Farbe
+Salva§Save§Guardar§Enregistrer§Speichern
+Modifica nome e colore§Edit name and colour§Editar nombre y color§Modifier le nom et la couleur§Name und Farbe bearbeiten
+Colore {0}§Colour {0}§Color {0}§Couleur {0}§Farbe {0}
+{0} inv.§{0} inv.§{0} inv.§{0} inv.§{0} inv.
+Spento§Off§Apagado§Éteint§Aus
+Rosso§Red§Rojo§Rouge§Rot
+Verde§Green§Verde§Vert§Grün
+Giallo§Yellow§Amarillo§Jaune§Gelb
+Blu§Blue§Azul§Bleu§Blau
+Magenta§Magenta§Magenta§Magenta§Magenta
+Ciano§Cyan§Cian§Cyan§Cyan
+Bianco§White§Blanco§Blanc§Weiß
+# --- channel strip (anche le etichette lette dallo screen reader) ---
+Nome e colore: {0}§Name and colour: {0}§Nombre y color: {0}§Nom et couleur : {0}§Name und Farbe: {0}
+Elaborazione di {0}§Processing of {0}§Procesado de {0}§Traitement de {0}§Bearbeitung von {0}
+Elaborazione del canale§Channel processing§Procesado del canal§Traitement de la voie§Kanalbearbeitung
+{0} attivo, {1}: apri§{0} on, {1}: open§{0} activo, {1}: abrir§{0} actif, {1} : ouvrir§{0} an, {1}: öffnen§
+{0} spento, {1}: apri§{0} off, {1}: open§{0} apagado, {1}: abrir§{0} désactivé, {1} : ouvrir§{0} aus, {1}: öffnen
+{0}: tocca per aprire§{0}: tap to open§{0}: toca para abrir§{0} : touchez pour ouvrir§{0}: zum Öffnen tippen
+Compressore: soglia {0} dB, ratio {1}:1 — tocca per aprire§Compressor: threshold {0} dB, ratio {1}:1 — tap to open§Compresor: umbral {0} dB, ratio {1}:1 — toca para abrir§Compresseur : seuil {0} dB, ratio {1}:1 — touchez pour ouvrir§Kompressor: Schwelle {0} dB, Ratio {1}:1 — zum Öffnen tippen
+Fader, {0}§Fader, {0}§Fader, {0}§Fader, {0}§Fader, {0}
+Mandata {0}, {1}§Send {0}, {1}§Envío {0}, {1}§Départ {0}, {1}§Send {0}, {1}
+Pan, {0}§Pan, {0}§Panorama, {0}§Panoramique, {0}§Panorama, {0}
+Bilanciamento, {0}§Balance, {0}§Balance, {0}§Balance, {0}§Balance, {0}
+Mute {0}§Mute {0}§Mute {0}§Mute {0}§Mute {0}
+Solo {0}§Solo {0}§Solo {0}§Solo {0}§Solo {0}
+al centro§centre§al centro§au centre§Mitte
+{#0} a sinistra§{0} left§{0} a la izquierda§{0} à gauche§{0} links
+{#0} a destra§{0} right§{0} a la derecha§{0} à droite§{0} rechts
+non disponibile§not available§no disponible§non disponible§nicht verfügbar
+Gate§Gate§Gate§Gate§Gate
+Compressore§Compressor§Compresor§Compresseur§Kompressor
+Gain§Gain§Ganancia§Gain§Gain
+Comp§Comp§Comp§Comp§Komp
+Mandate§Sends§Envíos§Départs§Sends
+Gruppi§Groups§Grupos§Groupes§Gruppen
+Effetto§Effect§Efecto§Effet§Effekt
+# --- annunci e blocco ---
+Annullato§Undone§Deshecho§Annulé§Rückgängig gemacht
+Ripetuto§Redone§Rehecho§Rétabli§Wiederholt
+Comandi bloccati. Per sbloccare tieni premuto il pulsante in basso§Controls locked. To unlock, press and hold the button at the bottom§Controles bloqueados. Para desbloquear, mantén pulsado el botón de abajo§Commandes verrouillées. Pour déverrouiller, maintenez appuyé le bouton en bas§Bedienung gesperrt. Zum Entsperren die Taste unten gedrückt halten
+Comandi sbloccati§Controls unlocked§Controles desbloqueados§Commandes déverrouillées§Bedienung entsperrt
+Chiudi l’avviso§Close the alert§Cerrar el aviso§Fermer l’alerte§Hinweis schließen
+Scaletta: brano successivo§Setlist: next song§Setlist: siguiente canción§Setlist : morceau suivant§Setlist: nächster Song
+Scaletta: brano precedente§Setlist: previous song§Setlist: canción anterior§Setlist : morceau précédent§Setlist: vorheriger Song
+Ultimo mix§Last mix§Última mezcla§Dernier mixage§Letzter Mix

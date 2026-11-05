@@ -26,7 +26,10 @@ import { FeedbackMonitor } from './feedback.js';
 import { startTour, tourDone } from './tour.js';
 import { createFeedbackUI } from './feedback-ui.js';
 import { createLayers } from './layers.js';
+import { startVoiceGuide } from './speech.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
+import { announce, applyAppearance } from './a11y.js';
+import { startTranslation, collectStrings, protectText, t } from './i18n.js';
 
 const LAST_IP_KEY = 'xair.lastIp';
 const TAB_KEY = 'xair.tab';
@@ -40,7 +43,10 @@ const storage = {
   },
 };
 
+startTranslation();
+if (new URLSearchParams(location.search).has('i18n-collect')) window.__i18nCollect = collectStrings;
 applyTheme();
+applyAppearance();
 // Nell'app (Android) si parla al mixer in UDP nativo; nel browser tramite il ponte Node.
 const native = Capacitor.isNativePlatform();
 document.body.classList.toggle('native-app', native);
@@ -51,6 +57,7 @@ const offline = new OfflineTransport({ storage, addresses: [], strips: [] });
 const transport = new SwitchTransport(realTransport, offline);
 const mixer = new Mixer(transport);
 keepScreenAwake(mixer, udpPlugin);
+startVoiceGuide(udpPlugin);
 const strips = buildStrips();
 // Prima i parametri del mixer principale, poi quelli di elaborazione.
 const allAddresses = [
@@ -60,6 +67,8 @@ const allAddresses = [
   ...fxAddresses(),
 ];
 const links = new Links(mixer, strips);
+// nomi dati dall'utente (canali, bus, DCA, snapshot): restano come li ha scritti, in ogni lingua
+for (const a of allAddresses) if (/\/name$/.test(a)) mixer.on(a, protectText);
 allAddresses.push(...links.addresses(), ...settingsAddresses(), ...FX_SLOTS.map(fxInsertAddress));
 offline.addresses = allAddresses;
 offline.strips = strips;
@@ -88,7 +97,11 @@ MUTE_GROUPS.forEach((address, i) => {
   b.type = 'button';
   b.className = 'mg-btn';
   b.textContent = `MG ${i + 1}`;
-  mixer.on(address, on => b.classList.toggle('active', !!on));
+  b.setAttribute('aria-label', `Mute group ${i + 1}`);
+  mixer.on(address, on => {
+    b.classList.toggle('active', !!on);
+    b.setAttribute('aria-pressed', String(!!on));
+  });
   b.addEventListener('click', () => mixer.set(address, mixer.get(address, 0) ? 0 : 1, 'i'));
   muteGroupsEl.append(b);
 });
@@ -122,6 +135,7 @@ function setFaderTarget(n) {
   for (const [id, el] of stripEls) el.classList.toggle('send-target', id === target);
   document.body.classList.toggle('sends-on-fader', n !== null);
   sendBanner.textContent = n === null ? '' : `I fader dei canali regolano le mandate verso ${faderTarget.selectedOptions[0].text}`;
+  announce(n === null ? 'I fader dei canali tornano al Main LR' : sendBanner.textContent);
 }
 /** Sceglie dove agiscono i fader dei canali: null = Main LR, 1-6 bus, 7-10 effetti. */
 function selectFaderTarget(n) {
@@ -147,6 +161,16 @@ function showTab(group, layerId = null) {
   requestAnimationFrame(() => alignFaders());
 }
 tabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.group)));
+// frecce sinistra/destra tra le schede (come nelle schede di sistema)
+document.querySelector('.topbar .tabs').addEventListener('keydown', e => {
+  const dir = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+  if (!dir) return;
+  const all = [...document.querySelectorAll('.topbar .tabs [role=tab]')];
+  const i = all.indexOf(document.activeElement);
+  if (i < 0) return;
+  e.preventDefault();
+  all[(i + dir + all.length) % all.length].focus();
+});
 const layers = createLayers({
   mixer, strips, stripEls, stripsEl, links,
   tabsEl: document.querySelector('.topbar .tabs'),
@@ -182,6 +206,7 @@ const STATUS_TEXT = {
 // versione breve per i telefoni in verticale (la barra non ha posto per la frase intera)
 const STATUS_SHORT = { disconnected: 'Offline', connecting: 'Attendi…', online: 'Online', lost: 'Perso' };
 let wasOnline = false;
+let spokenStatus = 'disconnected';
 mixer.onStatus((status, info) => {
   const virtual = transport.isOffline && status !== 'disconnected';
   // l'ultimo mix visto sul mixer vero: da lì parte il lavoro senza mixer
@@ -194,12 +219,23 @@ mixer.onStatus((status, info) => {
   document.body.classList.toggle('no-mixer', virtual);
   statusEl.title = `${STATUS_TEXT[status]}${name && status !== 'disconnected' ? ` · ${name}` : ''}`;
   statusEl.querySelector('.status-name').textContent = status === 'disconnected' ? '' : name;
+  // lo screen reader dice i cambi di stato; "Mixer non risponde" interrompe, è urgente
+  if (status !== spokenStatus) {
+    spokenStatus = status;
+    announce(virtual ? 'Lavori senza mixer' : `${STATUS_TEXT[status]}${status === 'online' && name ? `, ${name}` : ''}`, { urgent: status === 'lost' });
+  }
   document.body.classList.toggle('offline', status !== 'online');
   // pulsante pieno solo quando c'è da collegarsi: da connessi diventa un tasto come gli altri
   document.getElementById('connect-btn').classList.toggle('ghost', status === 'online');
 });
 let bridgeWasDown = false;
 transport.onStatus = s => {
+  // senza mixer il ponte non serve: se cade o torna (rete che cambia) l'app non si muove
+  if (transport.isOffline) {
+    document.body.classList.remove('bridge-down');
+    if (s === 'closed') bridgeWasDown = true;
+    return;
+  }
   document.body.classList.toggle('bridge-down', s === 'closed');
   // Il ponte è ripartito dopo un'interruzione: nuova sessione UDP, si rilegge tutto.
   if (s === 'open' && bridgeWasDown && mixer.ip) mixer.resubscribe();
@@ -268,7 +304,7 @@ document.getElementById('ip-form').addEventListener('submit', e => {
   e.preventDefault();
   const ip = ipInput.value.trim();
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) connectTo(ip);
-  else ipInput.setCustomValidity('Inserisci un indirizzo IP, es. 192.168.1.50');
+  else ipInput.setCustomValidity(t('Inserisci un indirizzo IP, es. 192.168.1.50'));
   ipInput.reportValidity();
 });
 ipInput.addEventListener('input', () => ipInput.setCustomValidity(''));
@@ -286,6 +322,7 @@ COLORS.forEach((c, i) => {
   b.type = 'button';
   b.className = 'swatch';
   b.title = c.name;
+  b.setAttribute('aria-label', `Colore ${c.name}`);
   b.dataset.index = i;
   applyColor(b, i);
   b.addEventListener('click', () => {
@@ -349,14 +386,23 @@ const midi = createMidi({
     'setlist-prev': { label: 'Scaletta: brano precedente', run: () => setlist.prev() },
   },
 });
-const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin, midi });
+// cambiando lingua l'app si ricarica: chi lavora senza mixer ci ritorna
+const RESUME_OFFLINE = 'xair.resumeOffline';
+const onLanguage = () => {
+  saveLastMix();
+  offline.flush();
+  try { if (transport.isOffline) sessionStorage.setItem(RESUME_OFFLINE, '1'); } catch { /* non disponibile */ }
+};
+const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin, midi, onLanguage });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());
 
 // --- avvio ------------------------------------------------------------------------
 
 // ?ip=192.168.1.9 nell'indirizzo collega subito a quel mixer (link salvati, prove automatiche)
 const urlIp = new URLSearchParams(location.search).get('ip');
-const lastIp = /^[\d.]+$/.test(urlIp ?? '') ? urlIp : storage.get(LAST_IP_KEY);
+let resumeOffline = false;
+try { resumeOffline = sessionStorage.getItem(RESUME_OFFLINE) === '1'; sessionStorage.removeItem(RESUME_OFFLINE); } catch { /* non disponibile */ }
+const lastIp = resumeOffline ? OFFLINE_IP : /^[\d.]+$/.test(urlIp ?? '') ? urlIp : storage.get(LAST_IP_KEY);
 if (lastIp) mixer.connect(lastIp, allAddresses);
 const askConnection = () => {
   if (!lastIp && mixer.status === 'disconnected') document.getElementById('connect-btn').click();

@@ -106,6 +106,14 @@ export class OfflineTransport {
     this.state = this._load();
   }
 
+  /** Salva subito il lavoro (prima di ricaricare l'app). */
+  flush() {
+    if (!this.saveTimer || !this.state) return;
+    clearTimeout(this.saveTimer);
+    this.saveTimer = 0;
+    this.storage.set(STATE_KEY, JSON.stringify({ params: this.work() }));
+  }
+
   _save() {
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => this.storage.set(STATE_KEY, JSON.stringify({ params: this.work() })), SAVE_MS);

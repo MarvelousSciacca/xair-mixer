@@ -3,6 +3,7 @@
 
 import { stripParams, paramMap, oscType } from './params.js';
 import { notify } from './dialogs.js';
+import { t } from './i18n.js';
 
 /** Sezioni copiabili: rel è l'indirizzo senza la base della strip (es. "/gate/thr"). */
 const SECTIONS = [
@@ -98,7 +99,7 @@ export function pasteStrip(mixer, strip) {
       }
       done = true;
       dialog.close();
-      notify(`${chosen.map(s => s.label).join(', ')} incollati su ${target} (${count} parametri)`);
+      notify(t('{0} incollati su {1} ({2} parametri)', chosen.map(s => t(s.label)).join(', '), target, count));
     });
     dialog.addEventListener('close', () => {
       dialog.remove();

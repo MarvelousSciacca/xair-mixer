@@ -16,6 +16,11 @@ const { startBridge } = await import(`${ROOT}/server/bridge.js`);
 const sim = startSimulator({ port: SIM_PORT });
 const bridge = startBridge({ port: BRIDGE_PORT, host: '127.0.0.1', quiet: true, mixerPort: SIM_PORT });
 const simValue = a => sim.state.get(a)?.value;
+// altezza finta di un fader (jsdom non impagina): 300 px come li vede il dito
+const tall = el => {
+  Object.defineProperty(el, 'clientHeight', { value: 300 });
+  el.getBoundingClientRect = () => ({ x: 0, y: 0, top: 0, left: 0, width: 50, height: 300, right: 50, bottom: 300 });
+};
 // valore del fader di un canale come lo mostra l'app (posizione del cursore)
 const mixerValue = a => Number(w.document.querySelector(`.strip[data-id=ch${Number(a.match(/^\/ch\/(\d\d)\/mix\/fader$/)[1])}] .fader-cap`).style.getPropertyValue('--v'));
 
@@ -36,12 +41,18 @@ for (const k of ['window', 'document', 'location', 'localStorage', 'requestAnima
   Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true });
 globalThis.WebSocket = WS;
 w.localStorage.setItem('xair.lastIp', '127.0.0.1');
+w.localStorage.setItem('xair.lang', 'it'); // le prove controllano i testi italiani
 
 // controller MIDI finto (Web MIDI non esiste in jsdom)
 const midiInput = { name: 'Controller di prova', onmidimessage: null };
 Object.defineProperty(w.navigator, 'requestMIDIAccess', { value: async () => ({ inputs: new Map([['1', midiInput]]), onstatechange: null }), configurable: true });
 let midiClock = 0;
 const midiSend = (...data) => midiInput.onmidimessage?.({ data: Uint8Array.from(data), timeStamp: (midiClock += 1000) });
+
+// sintesi vocale finta: si registra cosa direbbe la guida vocale
+const spoken = [];
+globalThis.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+globalThis.speechSynthesis = { speak: u => spoken.push(u.text), cancel() {}, getVoices: () => [], pending: false, addEventListener() {} };
 
 await import(`${ROOT}/public/js/app.js`);
 
@@ -118,7 +129,7 @@ await test('tutorial: si rivede da Impostazioni e si salta', async () => {
 
 await test('fader: trascinamento arriva al mixer', async () => {
   const fader = $('.strip[data-id=ch1] .fader');
-  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  tall(fader);
   const before = simValue('/ch/01/mix/fader');
   pointer(fader, 'pointerdown', 200);
   for (let y = 198; y >= 150; y -= 2) pointer(fader, 'pointermove', y);
@@ -130,7 +141,7 @@ await test('fader: trascinamento arriva al mixer', async () => {
 
 await test('fader: i valori in arrivo non lo fanno saltare mentre lo si tiene', async () => {
   const fader = $('.strip[data-id=ch2] .fader');
-  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  tall(fader);
   pointer(fader, 'pointerdown', 200);
   pointer(fader, 'pointermove', 140);
   await sleep(60);
@@ -183,7 +194,7 @@ await test('monitor: entra ed esce', async () => {
 
 await test('annulla e ripeti: un trascinamento è un solo passo', async () => {
   const fader = $('.strip[data-id=ch3] .fader');
-  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  tall(fader);
   const before = simValue('/ch/03/mix/fader');
   await drag(fader, 200, 120, 10, 25);
   await until(() => Math.abs(simValue('/ch/03/mix/fader') - before) > 0.1, 3000, 'trascinamento nel simulatore');
@@ -211,7 +222,7 @@ await test('mute: Annulla lo riaccende', async () => {
 
 await test('movimento fine: dito allontanato di lato', async () => {
   const fader = $('.strip[data-id=ch4] .fader');
-  Object.defineProperty(fader, 'clientHeight', { value: 300 });
+  tall(fader);
   const before = simValue('/ch/04/mix/fader');
   await drag(fader, 200, 150, 210); // 50 px in su, 200 px di lato: un quinto della corsa normale
   await until(() => !near(simValue('/ch/04/mix/fader'), before, 0.001), 3000, 'movimento nel simulatore');
@@ -281,7 +292,7 @@ await test('canali protetti: lo snapshot non tocca il canale protetto', async ()
   simSend('/-snap/01/name', 's', 'Prova');
   await sleep(200);
   const f7 = $('.strip[data-id=ch7] .fader'), f8 = $('.strip[data-id=ch8] .fader');
-  [f7, f8].forEach(f => Object.defineProperty(f, 'clientHeight', { value: 300 }));
+  [f7, f8].forEach(f => tall(f));
   const snap7 = simValue('/ch/07/mix/fader'), snap8 = simValue('/ch/08/mix/fader');
   await drag(f7, 250, 150);
   await drag(f8, 250, 150);
@@ -424,7 +435,7 @@ await test('MIDI: impara fader, mute e brano precedente della scaletta', async (
   // fader
   learn();
   const f5 = $('.strip[data-id=ch5] .fader');
-  Object.defineProperty(f5, 'clientHeight', { value: 300 });
+  tall(f5);
   await drag(f5, 250, 200);
   assert($('.midi-learn').textContent.includes('fader'), `avviso: ${$('.midi-learn').textContent}`);
   midiSend(0xb0, 7, 100);
@@ -459,6 +470,142 @@ await test('MIDI: impara fader, mute e brano precedente della scaletta', async (
   $('.settings-dialog .st-close').click();
 });
 
+await test('accessibilità: nomi e stati per gli screen reader', async () => {
+  $('.topbar .tab[data-group=input]').click();
+  const strip = $('.strip[data-id=ch9]');
+  const name = strip.querySelector('.scribble').textContent;
+  assert(strip.getAttribute('role') === 'group' && strip.getAttribute('aria-label').includes(name), `gruppo della strip: ${strip.getAttribute('aria-label')}`);
+  const mute = strip.querySelector('.mute');
+  assert(mute.getAttribute('aria-label') === `Mute ${strip.getAttribute('aria-label')}`, `etichetta mute: ${mute.getAttribute('aria-label')}`);
+  const was = mute.getAttribute('aria-pressed');
+  mute.click();
+  await until(() => mute.getAttribute('aria-pressed') !== was, 3000, 'stato del mute letto');
+  mute.click();
+  await until(() => mute.getAttribute('aria-pressed') === was, 3000, 'mute ripristinato');
+  // ogni comando raggiungibile ha un nome: niente pulsanti muti per lo screen reader
+  const unnamed = $$('button, select, input').filter(el => !el.closest('[hidden], dialog:not([open]), [aria-hidden="true"]')
+    && !el.disabled && !(el.getAttribute('aria-label') || el.textContent.trim() || el.title || el.labels?.length || el.closest('label')));
+  assert(!unnamed.length, `comandi senza nome: ${unnamed.slice(0, 5).map(el => el.outerHTML.slice(0, 80)).join(' | ')}`);
+  // il fader non si legge come una fila di numeri della scala
+  assert(strip.querySelector('.fader-scale').getAttribute('aria-hidden') === 'true', 'scala del fader letta');
+});
+
+await test('accessibilità: fader, pan e manopole si regolano come cursori (VoiceOver/TalkBack)', async () => {
+  const strip = $('.strip[data-id=ch9]');
+  const range = strip.querySelector('.fader .sr-range');
+  assert(range?.type === 'range' && range.getAttribute('aria-label').startsWith('Fader, '), `cursore del fader: ${range?.getAttribute('aria-label')}`);
+  // lo screen reader porta il cursore a uno scatto: il mixer riceve il dB corrispondente
+  const target = Number(range.max) - 20; // scatti da 1 dB vicino allo zero, il massimo è +10 dB: -10 dB
+  range.value = String(target);
+  range.dispatchEvent(new w.Event('input', { bubbles: true }));
+  await until(() => near(simValue('/ch/09/mix/fader'), 0.5, 0.01), 3000, 'fader a -10 dB nel simulatore');
+  assert(range.getAttribute('aria-valuetext') === '-10.0 dB', `valore letto: ${range.getAttribute('aria-valuetext')}`);
+  // mentre il dito è sul fader, il cursore nascosto non comanda
+  pointer(strip.querySelector('.fader'), 'pointerdown', 100);
+  range.value = '0';
+  range.dispatchEvent(new w.Event('input', { bubbles: true }));
+  pointer(strip.querySelector('.fader'), 'pointerup', 100);
+  await sleep(200);
+  assert(near(simValue('/ch/09/mix/fader'), 0.5, 0.01), 'il cursore nascosto ha mosso il fader durante il tocco');
+  assert(range.value === String(target), 'cursore nascosto non riallineato');
+  // pan: "al centro", "25 a sinistra"
+  const pan = strip.querySelector('.pan .sr-range');
+  pan.value = '15';
+  pan.dispatchEvent(new w.Event('input', { bubbles: true }));
+  await until(() => pan.getAttribute('aria-valuetext') === '25 a sinistra', 3000, `pan letto: ${pan.getAttribute('aria-valuetext')}`);
+  pan.value = '20';
+  pan.dispatchEvent(new w.Event('input', { bubbles: true }));
+  // manopola del guadagno della banda 2 nell'EQ (pannello aperto da tastiera o screen reader: focus sul nome)
+  strip.querySelector('.label').focus();
+  strip.querySelector('.label').click();
+  assert(w.document.activeElement === $('.editor .close'), 'il focus non entra nel pannello');
+  [...$$('.editor-tabs .tab')].find(x => x.textContent === 'EQ').click();
+  const gain = $$('.eq-band')[1].querySelector('.eq-gain .sr-range');
+  assert(gain.getAttribute('aria-label') === 'Guadagno, banda 2', `etichetta manopola: ${gain.getAttribute('aria-label')}`);
+  gain.value = '75';
+  gain.dispatchEvent(new w.Event('input', { bubbles: true }));
+  await until(() => near(simValue('/ch/09/eq/2/g'), 0.75, 0.01), 3000, 'guadagno EQ nel simulatore');
+  assert(gain.getAttribute('aria-valuetext').startsWith('+7.5'), `guadagno letto: ${gain.getAttribute('aria-valuetext')}`);
+  gain.value = '50';
+  gain.dispatchEvent(new w.Event('input', { bubbles: true }));
+  $('.editor .close').click();
+  assert(w.document.activeElement === strip.querySelector('.label'), 'alla chiusura il focus non torna alla strip');
+});
+
+await test('accessibilità: annunci a voce, dimensione e contrasto', async () => {
+  $('#lock-btn').click();
+  await sleep(150);
+  const live = $$('[aria-live]').map(el => el.textContent).join(' | ');
+  assert(live.includes('Comandi bloccati'), `annuncio del blocco: ${live}`);
+  $('#lock-overlay').hidden = true; // sblocco rapido per la prova
+  w.document.body.classList.remove('locked');
+  $('#settings-btn').click();
+  const pick = (group, text) => $$(`[aria-label="${group}"] button`).find(b => b.textContent === text);
+  assert(pick('Dimensione', 'Più grande'), 'scelta Dimensione assente');
+  pick('Dimensione', 'Più grande').click();
+  assert(w.document.documentElement.style.zoom === '1.3', `zoom: ${w.document.documentElement.style.zoom}`);
+  pick('Dimensione', 'Normale').click();
+  assert(!w.document.documentElement.style.zoom, 'zoom non tolto');
+  pick('Contrasto', 'Alto').click();
+  assert(w.document.documentElement.dataset.contrast === 'more', 'contrasto alto non applicato');
+  pick('Contrasto', 'Automatico').click();
+  $$('dialog[open]').forEach(d => d.close());
+});
+
+await test('guida vocale: legge tasti, valori e avvisi; spenta tace', async () => {
+  $('#settings-btn').click();
+  const pick = (group, text) => $$(`[aria-label="${group}"] button`).find(b => b.textContent === text);
+  assert(pick('Guida vocale', 'Attiva'), 'scelta Guida vocale assente');
+  pick('Guida vocale', 'Attiva').click();
+  assert(spoken.at(-1) === 'Guida vocale attiva', `conferma: ${spoken.at(-1)}`);
+  $$('dialog[open]').forEach(d => d.close());
+  const strip = $('.strip[data-id=ch1]');
+  strip.querySelector('.mute').click();
+  await sleep(150);
+  assert(/^Mute .*, (attivo|spento)$/.test(spoken.at(-1)), `tasto mute: ${spoken.at(-1)}`);
+  strip.querySelector('.mute').click();
+  await sleep(150);
+  const range = strip.querySelector('.fader .sr-range');
+  range.value = String(Number(range.value) - 1);
+  range.dispatchEvent(new w.Event('input', { bubbles: true }));
+  await sleep(100);
+  assert(/^Fader, .*dB$/.test(spoken.at(-1)), `valore del fader: ${spoken.at(-1)}`);
+  $('#lock-btn').click();
+  await sleep(150);
+  assert(spoken.slice(-3).some(x => x.includes('bloccat')), `avviso blocco: ${spoken.slice(-3)}`);
+  $('#lock-overlay').hidden = true;
+  w.document.body.classList.remove('locked');
+  $('#settings-btn').click();
+  pick('Guida vocale', 'Spenta').click();
+  $$('dialog[open]').forEach(d => d.close());
+  const n = spoken.length;
+  strip.querySelector('.solo').click();
+  await sleep(150);
+  strip.querySelector('.solo').click();
+  assert(spoken.length === n, `spenta parla ancora: ${spoken.slice(n)}`);
+});
+
+await test('senza mixer: l\'app resta ferma (niente "mixer perso" né schermo oscurato)', async () => {
+  $('#connect-btn').click();
+  $('#offline-btn').click();
+  await until(() => $('#status .status-text').textContent === 'Senza mixer' && $('#status').dataset.status === 'online', 5000, 'mixer virtuale collegato');
+  const seen = new Set();
+  const dimmed = [];
+  const watch = setInterval(() => {
+    seen.add($('#status').dataset.status);
+    if (w.document.body.classList.contains('offline')) dimmed.push(Date.now());
+  }, 100);
+  await sleep(10_000); // più del controllo di presenza (8 s)
+  clearInterval(watch);
+  assert(seen.size === 1 && seen.has('online'), `stato cambiato: ${[...seen].join(', ')}`);
+  assert(!dimmed.length, 'mixer oscurato durante il lavoro senza mixer');
+  // di nuovo sul mixer simulato
+  $('#connect-btn').click();
+  $('#ip-input').value = '127.0.0.1';
+  $('#ip-form').requestSubmit();
+  await until(() => $('#status .status-text').textContent !== 'Senza mixer' && $('#status').dataset.status === 'online', 5000, 'di nuovo sul mixer');
+});
+
 await test('senza mixer: si lavora sul mixer virtuale e poi si invia il lavoro al mixer', async () => {
   const simName = simValue('/ch/01/config/name');
   const simFader = simValue('/ch/04/mix/fader');
@@ -468,7 +615,7 @@ await test('senza mixer: si lavora sul mixer virtuale e poi si invia il lavoro a
   assert(!$('#connect-dialog').open, 'finestra di connessione rimasta aperta');
   await until(() => $('.strip[data-id=ch1] .scribble').textContent === simName, 5000, 'parte dall\'ultimo mix del mixer');
   const f4 = $('.strip[data-id=ch4] .fader');
-  Object.defineProperty(f4, 'clientHeight', { value: 300 });
+  tall(f4);
   await drag(f4, 250, 120);
   const work = mixerValue('/ch/04/mix/fader');
   await sleep(800);

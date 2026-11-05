@@ -1,13 +1,17 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
-const S = new URL('.', import.meta.url).pathname.replace(/\/$/, ''); // cartella tools/qa
+const S = decodeURIComponent(new URL('.', import.meta.url).pathname).replace(/\/$/, ''); // cartella tools/qa
 const QA = fs.readFileSync(`${S}/qa.js`, 'utf8');
 const theme = process.argv[2] || 'light';
 const only = process.argv[3];
 const C = `localStorage.setItem('xair.theme','${theme}');localStorage.setItem('xair.tour','done');localStorage.removeItem('xair.setlist');localStorage.removeItem('xair.offline');localStorage.removeItem('xair.view');document.getElementById('ip-input').value='127.0.0.1';document.getElementById('ip-form').requestSubmit()`;
+// QA_ZOOM=1.3 e/o QA_CONTRAST=more: stesse schermate con l'interfaccia ingrandita o a contrasto alto
+const Z = process.env.QA_ZOOM, K = process.env.QA_CONTRAST, L = process.env.QA_LANG || 'it';
+const AP = `localStorage.setItem('xair.lang','${L}');${Z ? `localStorage.setItem('xair.uiSize','${Z}');document.documentElement.style.zoom='${Z}';` : "localStorage.removeItem('xair.uiSize');"}${K ? `localStorage.setItem('xair.contrast','${K}');document.documentElement.dataset.contrast='${K}';` : "localStorage.removeItem('xair.contrast');"}${Z || K || L !== 'it' ? 'location.reload()' : 'void 0'}`; // ricarica: dimensione e contrasto si applicano all'avvio, come nell'app
 const EX = `document.querySelector('.monitor-view')&&!document.querySelector('.monitor-view').hidden&&document.querySelector('.mon-exit').click()`;
 const tab = g => `document.querySelector('.topbar .tab[data-group=${g}]').click()`;
-const open = (id, t) => `${tab('input')};document.querySelector('.strip[data-id=${id}] .label').click();[...document.querySelectorAll('.editor-tabs .tab')].find(x=>x.textContent==='${t}')?.click()`;
+const TAB_ID = { Ingresso: 'input', Gate: 'gate', EQ: 'eq', Compressore: 'dyn', Mandate: 'sends', Gruppi: 'groups', Effetto: 'fx' };
+const open = (id, t) => `${tab('input')};document.querySelector('.strip[data-id=${id}] .label').click();document.querySelector('.editor-tabs .tab[data-tab=${TAB_ID[t]}]')?.click()`;
 const sizes = { wide: [1440, 900], pc: [1280, 800], ipadL: [1180, 820], ipadP: [820, 1180], phone: [390, 844], phoneL: [844, 390] };
 const screens = {
   ingressi: tab('input'), bus: tab('bus'), dca: tab('dca'), fx: tab('fx'), routing: tab('routing'), meter: tab('meters'),
@@ -25,9 +29,9 @@ for (const [sz, [w, h]] of Object.entries(sizes)) {
   if (only && sz !== only) continue;
   for (const [name, act] of Object.entries(screens)) {
     if (sz !== 'pc' && sz !== 'phone' && name.startsWith('dlg')) continue; // finestre: basta pc e telefono
-    const file = `${S}/out/${theme}-${sz}-${name}.png`;
+    const file = `${S}/out/${theme}${L !== 'it' ? `-${L}` : ''}${Z ? `-z${Z}` : ''}${K ? `-${K}` : ''}-${sz}-${name}.png`;
     let r = '';
-    try { r = execFileSync('osascript', ['-l', 'JavaScript', `${S}/shot.js`, 'http://localhost:8091/', file, String(w), String(h), '2', `${C};;${EX};;${act};;void 0`, QA], { encoding: 'utf8', timeout: 60000 }); } catch (e) { r = 'ERRORE ' + e.message; }
+    try { r = execFileSync('osascript', ['-l', 'JavaScript', `${S}/shot.js`, 'http://localhost:8091/', file, String(w), String(h), '2', `${C};;${AP};;${EX};;${act};;void 0`, QA], { encoding: 'utf8', timeout: 60000 }); } catch (e) { r = 'ERRORE ' + e.message; }
     const rep = r.split('\n').slice(1).join('\n').trim();
     if (rep !== 'nessun problema') console.log(`== ${theme} ${sz} ${name}\n${rep}`);
   }

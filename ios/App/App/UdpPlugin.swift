@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import Capacitor
 import Darwin
+import AVFoundation
 
 /// UDP per l'app iOS: stessa interfaccia del plugin Android (UdpPlugin.java).
 /// Un solo socket su porta casuale; i pacchetti ricevuti arrivano al JavaScript come evento
@@ -19,6 +20,8 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "interfaces", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "close", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "keepAwake", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "speak", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "screenReader", returnType: CAPPluginReturnPromise),
     ]
 
     private var fd: Int32 = -1
@@ -107,6 +110,32 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async {
             UIApplication.shared.isIdleTimerDisabled = on
             call.resolve()
+        }
+    }
+
+    private let synth = AVSpeechSynthesizer()
+
+    /// Guida vocale: dice un testo con la voce del sistema (text vuoto: smette di parlare).
+    @objc func speak(_ call: CAPPluginCall) {
+        let text = call.getString("text") ?? ""
+        let lang = call.getString("lang") ?? "it-IT"
+        let flush = call.getBool("flush") ?? true
+        DispatchQueue.main.async {
+            if flush || text.isEmpty { self.synth.stopSpeaking(at: .immediate) }
+            if !text.isEmpty {
+                let u = AVSpeechUtterance(string: text)
+                u.voice = AVSpeechSynthesisVoice(language: lang)
+                u.rate = AVSpeechUtteranceDefaultSpeechRate * 1.1
+                self.synth.speak(u)
+            }
+            call.resolve()
+        }
+    }
+
+    /// VoiceOver è acceso?
+    @objc func screenReader(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            call.resolve(["on": UIAccessibility.isVoiceOverRunning])
         }
     }
 

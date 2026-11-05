@@ -8,6 +8,9 @@ import { ask, notify } from './dialogs.js';
 import { captureScene, downloadScene } from './scenes.js';
 import { THEMES, setTheme, currentTheme } from './theme.js';
 import { aboutSection } from './about.js';
+import { VOICE_GUIDE, voiceGuideSetting, setVoiceGuide, voiceGuideAvailable } from './speech.js';
+import { UI_SIZES, CONTRASTS, currentUiSize, currentContrast, setUiSize, setContrast } from './a11y.js';
+import { LANGS, lang, setLang, t, locale } from './i18n.js';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const pad2 = n => String(n).padStart(2, '0');
@@ -28,7 +31,7 @@ function section(title, ...children) {
   return sec;
 }
 
-export function createSettings({ mixer, addresses, onReload, onTour, pin, midi }) {
+export function createSettings({ mixer, addresses, onReload, onTour, pin, midi, onLanguage }) {
   const dialog = h('dialog', 'settings-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -150,22 +153,38 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi }
   init.type = 'button';
   init.addEventListener('click', initialize);
 
-  // Aspetto: tema chiaro/scuro (salvato su questo dispositivo, non sul mixer)
-  const themeBox = h('div', 'segmented');
-  const themeButtons = THEMES.map(([id, label]) => {
-    const b = h('button', null, label);
-    b.type = 'button';
-    b.addEventListener('click', () => {
-      setTheme(id);
-      themeButtons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  // Aspetto: tema, dimensione e contrasto (salvati su questo dispositivo, non sul mixer)
+  const segmented = (title, options, current, apply) => {
+    const wrap = h('div', 'choice');
+    wrap.append(h('div', 'choice-label', title));
+    const box = h('div', 'segmented');
+    box.setAttribute('role', 'group');
+    box.setAttribute('aria-label', title);
+    const buttons = options.map(([id, label]) => {
+      const b = h('button', null, label);
+      b.type = 'button';
+      b.addEventListener('click', () => {
+        apply(id);
+        buttons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      });
+      b.setAttribute('aria-pressed', String(current === id));
+      box.append(b);
+      return b;
     });
-    b.setAttribute('aria-pressed', String(currentTheme() === id));
-    themeBox.append(b);
-    return b;
-  });
+    wrap.append(box);
+    return wrap;
+  };
+  const langBox = segmented('Lingua', LANGS, lang, id => { if (id !== lang) setLang(id, onLanguage); });
+  langBox.querySelector('.segmented').setAttribute('translate', 'no'); // i nomi delle lingue restano nella loro lingua
+  const themeBox = segmented('Tema', THEMES, currentTheme(), setTheme);
+  const sizeBox = segmented('Dimensione', UI_SIZES, currentUiSize(), setUiSize);
+  const contrastBox = segmented('Contrasto', CONTRASTS, currentContrast(), setContrast);
+  const voiceBox = voiceGuideAvailable() ? segmented('Guida vocale', VOICE_GUIDE, voiceGuideSetting(), setVoiceGuide) : null;
+  const voiceNote = voiceBox ? h('p', 'fx-note', "La guida vocale legge ad alta voce i tasti che tocchi e i valori che regoli, nella lingua dell'app. Si mette in pausa da sola quando VoiceOver o TalkBack sono accesi.") : null;
+  const a11yNote = h('p', 'fx-note', 'Con VoiceOver (iPhone, iPad, Mac) o TalkBack (Android) ogni fader, pan e manopola si regola scorrendo in su o in giù con un dito; il nome del canale viene letto insieme al comando. Feedback, connessione e blocco vengono annunciati a voce. "Automatico" segue l\'impostazione "Aumenta contrasto" del sistema.');
 
   body.append(
-    section('Aspetto', themeBox),
+    section('Aspetto', ...[langBox, themeBox, sizeBox, contrastBox, voiceBox, voiceNote, a11yNote].filter(Boolean)),
     section('Mixer', info),
     section('Solo / cuffie',
       knob(sc, SETTINGS.soloLevel, { kind: 'fader', label: 'Livello solo', def: ZERO_DB }, { reset: ZERO_DB }),
@@ -184,13 +203,14 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi }
 
   async function initialize() {
     const free = Array.from({ length: SNAPSHOTS.count }, (_, i) => i + 1).find(n => !mixer.get(SNAPSHOTS.name(n)));
-    const stamp = new Date().toLocaleString('it-IT', { dateStyle: 'short', timeStyle: 'short' });
+    const stamp = new Date().toLocaleString(locale, { dateStyle: 'short', timeStyle: 'short' });
     const ok = await ask({
       title: 'Inizializzare il mixer?',
-      message: `Tutte le impostazioni del mix tornano ai valori di fabbrica. Prima verrà scaricata una scena di backup su file`
-        + `${free ? ` e salvato il mix attuale nello snapshot ${pad2(free)}` : ''}. Gli snapshot salvati restano.`
-        + ' Abbassa il volume dell\'impianto. Scrivi INIZIALIZZA per confermare.',
-      requireText: 'INIZIALIZZA',
+      message: (free
+        ? t('Tutte le impostazioni del mix tornano ai valori di fabbrica. Prima verrà scaricata una scena di backup su file e salvato il mix attuale nello snapshot {0}. Gli snapshot salvati restano.', pad2(free))
+        : t('Tutte le impostazioni del mix tornano ai valori di fabbrica. Prima verrà scaricata una scena di backup su file. Gli snapshot salvati restano.'))
+        + ' ' + t('Abbassa il volume dell\'impianto. Scrivi {0} per confermare.', t('INIZIALIZZA')),
+      requireText: t('INIZIALIZZA'),
       confirmText: 'Inizializza',
       danger: true,
     });
@@ -215,7 +235,7 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi }
     await sleep(5000);
     const changed = probe.some((a, i) => mixer.get(a) !== before[i]);
     notify(changed
-      ? 'Mixer inizializzato. Il backup è nella cartella Download' + (free ? ` e nello snapshot ${pad2(free)}.` : '.')
+      ? (free ? t('Mixer inizializzato. Il backup è nella cartella Download e nello snapshot {0}.', pad2(free)) : t('Mixer inizializzato. Il backup è nella cartella Download.'))
       : 'Il mixer non ha eseguito l\'inizializzazione (comando non riconosciuto): nessuna modifica.', { error: !changed, ms: 7000 });
   }
 

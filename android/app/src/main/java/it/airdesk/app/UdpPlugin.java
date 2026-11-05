@@ -2,6 +2,8 @@ package it.airdesk.app;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.speech.tts.TextToSpeech;
+import android.view.accessibility.AccessibilityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
@@ -24,6 +26,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +48,8 @@ public class UdpPlugin extends Plugin {
     private final ExecutorService sender = Executors.newSingleThreadExecutor();
     private Network localNetwork;
     private ConnectivityManager.NetworkCallback networkCallback;
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
 
     @Override
     public void load() {
@@ -206,6 +211,42 @@ public class UdpPlugin extends Plugin {
         });
     }
 
+    /** Guida vocale: dice un testo con la voce del sistema (text vuoto: smette di parlare). */
+    @PluginMethod
+    public void speak(PluginCall call) {
+        final String text = call.getString("text", "");
+        final String lang = call.getString("lang", "it-IT");
+        final boolean flush = call.getBoolean("flush", true);
+        if (tts == null) {
+            tts = new TextToSpeech(getContext(), status -> {
+                ttsReady = status == TextToSpeech.SUCCESS;
+                if (ttsReady) say(text, lang, flush);
+            });
+        } else if (ttsReady) {
+            say(text, lang, flush);
+        }
+        call.resolve();
+    }
+
+    private void say(String text, String lang, boolean flush) {
+        if (text.isEmpty()) {
+            tts.stop();
+            return;
+        }
+        tts.setLanguage(Locale.forLanguageTag(lang));
+        tts.setSpeechRate(1.1f);
+        tts.speak(text, flush ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD, null, "airdesk");
+    }
+
+    /** TalkBack (o un altro lettore che esplora col tocco) è acceso? */
+    @PluginMethod
+    public void screenReader(PluginCall call) {
+        AccessibilityManager am = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+        JSObject ret = new JSObject();
+        ret.put("on", am != null && am.isEnabled() && am.isTouchExplorationEnabled());
+        call.resolve(ret);
+    }
+
     @PluginMethod
     public void close(PluginCall call) {
         closeSocket();
@@ -250,6 +291,7 @@ public class UdpPlugin extends Plugin {
 
     @Override
     protected void handleOnDestroy() {
+        if (tts != null) tts.shutdown();
         closeSocket();
         sender.shutdownNow();
         if (networkCallback != null) {

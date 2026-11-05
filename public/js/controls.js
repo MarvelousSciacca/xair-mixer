@@ -1,6 +1,7 @@
 // Controlli collegati ai parametri del mixer: manopola, interruttore, selettore.
 
 import { defaultValue, formatValue, oscType } from './params.js';
+import { srRange } from './a11y.js';
 
 const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
 
@@ -103,12 +104,15 @@ export function dragValue(el, { get, set, reset, step = 0.01, pixels = 200 }) {
   });
 }
 
-export function knob(scope, address, spec, { label = spec.label, big = false, reset = defaultValue(spec) } = {}) {
+/**
+ * Manopola. context: cosa regola, letto dallo screen reader dopo il nome (es. "banda 2, Voce 1").
+ */
+export function knob(scope, address, spec, { label = spec.label, big = false, reset = defaultValue(spec), context = '' } = {}) {
   const el = document.createElement('div');
   el.className = `knob${big ? ' big' : ''}`;
   el.innerHTML = `
     <div class="knob-label"></div>
-    <div class="knob-dial" tabindex="0" role="slider">
+    <div class="knob-dial">
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <path class="knob-track" d="${arcPath(-135, 135)}"/>
         <path class="knob-arc"/>
@@ -118,8 +122,8 @@ export function knob(scope, address, spec, { label = spec.label, big = false, re
     </div>
     <div class="knob-value"></div>`;
   el.querySelector('.knob-label').textContent = label;
+  el.querySelector('.knob-label').setAttribute('aria-hidden', 'true');
   const dial = el.querySelector('.knob-dial');
-  dial.setAttribute('aria-label', label);
   const arc = el.querySelector('.knob-arc');
   const pointer = el.querySelector('.knob-pointer');
   const valueEl = el.querySelector('.knob-value');
@@ -127,6 +131,15 @@ export function knob(scope, address, spec, { label = spec.label, big = false, re
   const isEnum = spec.kind === 'enum';
   const count = isEnum ? spec.options.length : 0;
   const toPos = v => (isEnum ? v / (count - 1) : v);
+  // cursore per gli screen reader: un passo per opzione, oppure 100 passi
+  const steps = isEnum ? count - 1 : 100;
+  const sr = srRange(dial, {
+    label: context ? `${label}, ${context}` : label,
+    steps,
+    index: () => Math.round(toPos(scope.get(address, spec)) * steps),
+    pick: i => scope.set(address, spec, isEnum ? i : i / steps),
+    text: () => formatValue(spec, scope.get(address, spec)),
+  });
 
   const render = v => {
     const angle = -135 + 270 * toPos(v);
@@ -135,8 +148,9 @@ export function knob(scope, address, spec, { label = spec.label, big = false, re
     pointer.setAttribute('transform', `rotate(${angle} 50 50)`);
     const text = formatValue(spec, v);
     valueEl.textContent = text;
-    dial.setAttribute('aria-valuetext', text);
+    sr.sync();
   };
+  valueEl.setAttribute('aria-hidden', 'true');
   render(scope.get(address, spec));
   scope.on(address, render);
 
@@ -193,6 +207,9 @@ export function stepper(scope, address, { label, max = 99 } = {}) {
   render(scope.get(address, spec));
   scope.on(address, render);
   const [minus, plus] = wrap.querySelectorAll('button');
+  minus.setAttribute('aria-label', `${label}: meno`);
+  plus.setAttribute('aria-label', `${label}: più`);
+  out.setAttribute('aria-live', 'polite');
   const step = d => scope.set(address, spec, Math.min(max, Math.max(0, Math.round(scope.get(address, spec)) + d)));
   minus.addEventListener('click', () => step(-1));
   plus.addEventListener('click', () => step(1));
@@ -211,6 +228,8 @@ export function choice(scope, address, spec, { label = spec.label } = {}) {
   if (spec.options.length <= 5) {
     const group = document.createElement('div');
     group.className = 'segmented';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', label);
     const buttons = spec.options.map((text, i) => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -225,6 +244,7 @@ export function choice(scope, address, spec, { label = spec.label } = {}) {
     wrap.append(group);
   } else {
     const select = document.createElement('select');
+    select.setAttribute('aria-label', label);
     spec.options.forEach((text, i) => select.add(new Option(text, i)));
     const render = v => { select.value = String(v); };
     render(scope.get(address, spec));

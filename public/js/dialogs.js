@@ -1,6 +1,8 @@
 // Finestre di conferma e di inserimento testo (al posto di confirm/prompt, che non funzionano
 // in tutte le versioni app).
 
+import { announce } from './a11y.js';
+
 /**
  * ask({ title, message, input, confirmText, danger, requireText }) -> Promise<string|true|null>
  * input: valore iniziale di un campo di testo (se presente restituisce il testo).
@@ -64,6 +66,8 @@ export function notify(text, { error = false, ms = 3500 } = {}) {
   const el = document.createElement('div');
   el.className = `notice${error ? ' error' : ''}`;
   el.textContent = text;
+  el.setAttribute('aria-hidden', 'true'); // letto dallo screen reader tramite announce()
   document.body.append(el);
+  announce(text, { urgent: error });
   setTimeout(() => el.remove(), ms);
 }
