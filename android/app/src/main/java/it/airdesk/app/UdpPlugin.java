@@ -1,7 +1,15 @@
 package it.airdesk.app;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiManager;
+import android.media.midi.MidiOutputPort;
+import android.media.midi.MidiReceiver;
 import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.view.accessibility.AccessibilityManager;
 import android.net.Network;
@@ -26,6 +34,8 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -49,6 +59,9 @@ public class UdpPlugin extends Plugin {
     private Network localNetwork;
     private ConnectivityManager.NetworkCallback networkCallback;
     private TextToSpeech tts;
+    private MidiManager midiManager;
+    private final Map<Integer, MidiDevice> midiDevices = new HashMap<>();
+    private final Map<Integer, String> midiNames = new HashMap<>();
     private boolean ttsReady = false;
 
     @Override
@@ -247,6 +260,113 @@ public class UdpPlugin extends Plugin {
         call.resolve(ret);
     }
 
+    // --- MIDI: controller USB (e Bluetooth già associati) ----------------------------------------
+    // Ogni dispositivo con porte d'uscita (dati dal controller verso l'app) viene aperto; i byte
+    // arrivano al JavaScript come evento "midi" { id, data: [byte…] } e l'elenco dei controller
+    // come "midiInputs" { inputs: [{ id, name }] }. midi-native.js ne fa un accesso Web MIDI.
+
+    /** Avvia il MIDI e restituisce i controller collegati (inputs: [{ id, name }]). */
+    @PluginMethod
+    public void midiStart(PluginCall call) {
+        if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            call.reject("MIDI non disponibile su questo dispositivo");
+            return;
+        }
+        if (midiManager == null) {
+            midiManager = (MidiManager) getContext().getSystemService(Context.MIDI_SERVICE);
+            if (midiManager == null) {
+                call.reject("MIDI non disponibile su questo dispositivo");
+                return;
+            }
+            midiManager.registerDeviceCallback(new MidiManager.DeviceCallback() {
+                @Override
+                public void onDeviceAdded(MidiDeviceInfo info) {
+                    openMidi(info);
+                }
+
+                @Override
+                public void onDeviceRemoved(MidiDeviceInfo info) {
+                    closeMidi(info.getId());
+                    sendMidiInputs();
+                }
+            }, new Handler(Looper.getMainLooper()));
+            for (MidiDeviceInfo info : midiDevicesList()) openMidi(info);
+        }
+        JSObject ret = new JSObject();
+        ret.put("inputs", midiInputs());
+        call.resolve(ret);
+    }
+
+    @SuppressWarnings("deprecation")
+    private MidiDeviceInfo[] midiDevicesList() {
+        return midiManager.getDevices();
+    }
+
+    private void openMidi(MidiDeviceInfo info) {
+        if (info.getOutputPortCount() == 0 || midiDevices.containsKey(info.getId())) return;
+        String name = info.getProperties().getString(MidiDeviceInfo.PROPERTY_NAME);
+        if (name == null) name = info.getProperties().getString(MidiDeviceInfo.PROPERTY_PRODUCT);
+        final String label = name != null ? name : "MIDI";
+        final int id = info.getId();
+        midiManager.openDevice(info, device -> {
+            if (device == null) return;
+            synchronized (midiDevices) {
+                midiDevices.put(id, device);
+                midiNames.put(id, label);
+            }
+            for (int i = 0; i < info.getOutputPortCount(); i++) {
+                MidiOutputPort port = device.openOutputPort(i);
+                if (port == null) continue;
+                port.connect(new MidiReceiver() {
+                    @Override
+                    public void onSend(byte[] msg, int offset, int count, long timestamp) {
+                        JSArray data = new JSArray();
+                        for (int k = 0; k < count; k++) data.put(msg[offset + k] & 0xff);
+                        JSObject ev = new JSObject();
+                        ev.put("id", id);
+                        ev.put("data", data);
+                        notifyListeners("midi", ev);
+                    }
+                });
+            }
+            sendMidiInputs();
+        }, new Handler(Looper.getMainLooper()));
+    }
+
+    private void closeMidi(int id) {
+        MidiDevice d;
+        synchronized (midiDevices) {
+            d = midiDevices.remove(id);
+            midiNames.remove(id);
+        }
+        if (d != null) {
+            try {
+                d.close();
+            } catch (IOException ignored) {
+                // già chiuso
+            }
+        }
+    }
+
+    private JSArray midiInputs() {
+        JSArray list = new JSArray();
+        synchronized (midiDevices) {
+            for (Map.Entry<Integer, String> e : midiNames.entrySet()) {
+                JSObject o = new JSObject();
+                o.put("id", e.getKey());
+                o.put("name", e.getValue());
+                list.put(o);
+            }
+        }
+        return list;
+    }
+
+    private void sendMidiInputs() {
+        JSObject ev = new JSObject();
+        ev.put("inputs", midiInputs());
+        notifyListeners("midiInputs", ev);
+    }
+
     @PluginMethod
     public void close(PluginCall call) {
         closeSocket();
@@ -292,6 +412,7 @@ public class UdpPlugin extends Plugin {
     @Override
     protected void handleOnDestroy() {
         if (tts != null) tts.shutdown();
+        for (Integer id : new java.util.ArrayList<>(midiDevices.keySet())) closeMidi(id);
         closeSocket();
         sender.shutdownNow();
         if (networkCallback != null) {

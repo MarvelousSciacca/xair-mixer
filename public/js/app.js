@@ -18,6 +18,7 @@ import { createScenes } from './scenes.js';
 import { createSetlist } from './setlist.js';
 import { createPin } from './pin.js';
 import { createMidi } from './midi.js';
+import { nativeMidiAccess } from './midi-native.js';
 import { OfflineTransport, SwitchTransport, OFFLINE_IP, LAST_MIX_KEY } from './offline.js';
 import { captureScene } from './scenes.js';
 import { createSettings } from './settings.js';
@@ -381,6 +382,7 @@ const midi = createMidi({
   mixer,
   storage,
   describe: describeAddress,
+  requestAccess: native ? () => nativeMidiAccess(udpPlugin) : null,
   actions: {
     'setlist-next': { label: 'Scaletta: brano successivo', run: () => setlist.next() },
     'setlist-prev': { label: 'Scaletta: brano precedente', run: () => setlist.prev() },

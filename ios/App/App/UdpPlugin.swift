@@ -3,6 +3,7 @@ import UIKit
 import Capacitor
 import Darwin
 import AVFoundation
+import CoreMIDI
 
 /// UDP per l'app iOS: stessa interfaccia del plugin Android (UdpPlugin.java).
 /// Un solo socket su porta casuale; i pacchetti ricevuti arrivano al JavaScript come evento
@@ -22,6 +23,7 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "keepAwake", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "speak", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "screenReader", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "midiStart", returnType: CAPPluginReturnPromise),
     ]
 
     private var fd: Int32 = -1
@@ -137,6 +139,65 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async {
             call.resolve(["on": UIAccessibility.isVoiceOverRunning])
         }
+    }
+
+    // MARK: - MIDI
+
+    // Controller USB (con l'adattatore della fotocamera o USB-C) e Bluetooth già associati: ogni
+    // sorgente CoreMIDI viene collegata a una porta d'ingresso; i byte arrivano al JavaScript come
+    // evento "midi" { id, data: [byte…] }, l'elenco come "midiInputs" { inputs: [{ id, name }] }.
+    private var midiClient = MIDIClientRef()
+    private var midiPort = MIDIPortRef()
+
+    @objc func midiStart(_ call: CAPPluginCall) {
+        if midiClient == 0 {
+            var client = MIDIClientRef()
+            let st = MIDIClientCreateWithBlock("AirDesk" as CFString, &client) { [weak self] note in
+                if note.pointee.messageID == .msgSetupChanged {
+                    DispatchQueue.main.async { self?.midiConnectAll() }
+                }
+            }
+            guard st == noErr else {
+                call.reject("MIDI non disponibile")
+                return
+            }
+            midiClient = client
+            var port = MIDIPortRef()
+            let st2 = MIDIInputPortCreateWithBlock(client, "AirDesk In" as CFString, &port) { [weak self] list, src in
+                let id = Int(bitPattern: src)
+                for packet in list.unsafeSequence() {
+                    let len = Int(packet.pointee.length)
+                    let bytes: [Int] = withUnsafeBytes(of: packet.pointee.data) { raw in
+                        raw.prefix(len).map { Int($0) }
+                    }
+                    self?.notifyListeners("midi", data: ["id": id, "data": bytes])
+                }
+            }
+            guard st2 == noErr else {
+                call.reject("MIDI non disponibile")
+                return
+            }
+            midiPort = port
+        }
+        call.resolve(["inputs": midiConnectAll(notify: false)])
+    }
+
+    /// Collega tutte le sorgenti MIDI (il refCon è l'id della sorgente, letto nella ricezione).
+    @discardableResult
+    private func midiConnectAll(notify: Bool = true) -> [[String: Any]] {
+        var list: [[String: Any]] = []
+        for i in 0..<MIDIGetNumberOfSources() {
+            let src = MIDIGetSource(i)
+            var uid: Int32 = 0
+            MIDIObjectGetIntegerProperty(src, kMIDIPropertyUniqueID, &uid)
+            var name: Unmanaged<CFString>?
+            MIDIObjectGetStringProperty(src, kMIDIPropertyDisplayName, &name)
+            MIDIPortDisconnectSource(midiPort, src)
+            MIDIPortConnectSource(midiPort, src, UnsafeMutableRawPointer(bitPattern: Int(uid)))
+            list.append(["id": Int(uid), "name": name.map { $0.takeRetainedValue() as String } ?? "MIDI"])
+        }
+        if notify { notifyListeners("midiInputs", data: ["inputs": list]) }
+        return list
     }
 
     deinit {

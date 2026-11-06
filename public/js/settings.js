@@ -95,7 +95,7 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi, 
   const renderMidi = () => {
     midiBox.innerHTML = '';
     if (!midi?.supported) {
-      midiBox.append(h('p', 'fx-note', 'Il MIDI funziona nell\'app per computer e nei browser Chrome ed Edge; su iPhone, iPad e nell\'app Android non è disponibile.'));
+      midiBox.append(h('p', 'fx-note', 'Il MIDI funziona nelle app (computer, Android, iPhone e iPad) e nei browser Chrome ed Edge; questo browser non lo supporta.'));
       return;
     }
     const on = h('button', 'toggle', 'Controller MIDI attivo');

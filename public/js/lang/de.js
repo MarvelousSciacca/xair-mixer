@@ -412,7 +412,7 @@ export default {
   "PIN sbagliato. Troppi tentativi: aspetta 30 secondi.": "Falsche PIN. Zu viele Versuche: Warte 30 Sekunden.",
   "PIN sbagliato": "Falsche PIN",
   "Troppi tentativi: riprova tra {#0} secondi": "Zu viele Versuche: in {0} Sekunden erneut versuchen",
-  "Il MIDI funziona nell'app per computer e nei browser Chrome ed Edge; su iPhone, iPad e nell'app Android non è disponibile.": "MIDI funktioniert in der Computer-App sowie in Chrome und Edge; auf iPhone, iPad und in der Android-App ist es nicht verfügbar.",
+  "Il MIDI funziona nelle app (computer, Android, iPhone e iPad) e nei browser Chrome ed Edge; questo browser non lo supporta.": "MIDI funktioniert in den Apps (Computer, Android, iPhone und iPad) sowie in Chrome und Edge; dieser Browser unterstützt es nicht.",
   "Controller MIDI attivo": "MIDI-Controller an",
   "Impara": "Lernen",
   "Nessun controller collegato.": "Kein Controller angeschlossen.",

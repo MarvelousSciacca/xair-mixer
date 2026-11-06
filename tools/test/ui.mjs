@@ -651,6 +651,34 @@ await test('senza mixer: si lavora sul mixer virtuale e poi si invia il lavoro a
   $('.scenes-dialog .sc-close').click();
 });
 
+await test('MIDI nelle app: messaggi nativi separati e consegnati come Web MIDI', async () => {
+  const { splitMidi, nativeMidiAccess } = await import(`${ROOT}/public/js/midi-native.js`);
+  const arr = x => splitMidi(x).map(m => [...m].join(','));
+  // due CC nello stesso pacchetto, running status, clock in mezzo, SysEx scartato
+  assert(arr([0xb0, 7, 100, 0xb0, 8, 1]).join(' ') === '176,7,100 176,8,1', 'due CC');
+  assert(arr([0xb0, 7, 100, 8, 1]).join(' ') === '176,7,100 176,8,1', 'running status');
+  assert(arr([0x90, 0xf8, 60, 127]).join(' ') === '144,60,127', 'clock in mezzo');
+  assert(arr([0xf0, 1, 2, 3, 0xf7, 0xc0, 5]).join(' ') === '192,5', 'sysex + program');
+  // plugin finto
+  const handlers = {};
+  const plugin = {
+    addListener: async (ev, cb) => { handlers[ev] = cb; },
+    midiStart: async () => ({ inputs: [{ id: 3, name: 'Pad USB' }] }),
+  };
+  const access = await nativeMidiAccess(plugin);
+  assert([...access.inputs.values()].map(i => i.name).join() === 'Pad USB', 'elenco controller');
+  const got = [];
+  access.inputs.get('3').onmidimessage = e => got.push([...e.data].join(','));
+  handlers.midi({ id: 3, data: [0xb0, 1, 64, 2, 65] });
+  assert(got.join(' ') === '176,1,64 176,2,65', `messaggi: ${got}`);
+  let changed = 0;
+  access.onstatechange = () => changed++;
+  handlers.midiInputs({ inputs: [{ id: 3, name: 'Pad USB' }, { id: 9, name: 'Tastiera' }] });
+  assert(changed === 1 && access.inputs.size === 2, 'controller aggiunto');
+  handlers.midiInputs({ inputs: [{ id: 9, name: 'Tastiera' }] });
+  assert(access.inputs.size === 1 && access.inputs.has('9'), 'controller tolto');
+});
+
 await test('nessun errore JavaScript', async () => {
   assert(!errors.length, errors.join(' | '));
 });

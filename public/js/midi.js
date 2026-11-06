@@ -1,4 +1,4 @@
-// Controller MIDI (Web MIDI: app per computer e browser Chrome/Edge; non c'è su iPhone/iPad).
+// Controller MIDI: Web MIDI nell'app per computer e in Chrome/Edge, plugin nativo nelle app Android e iOS.
 // "Impara": si muove un comando nell'app, poi il controllo sul controller, e restano collegati.
 // Manopole e fader (CC) muovono i parametri continui; tasti (note, CC, program change) accendono e
 // spengono i parametri on/off o eseguono un'azione (es. brano successivo della scaletta).
@@ -35,7 +35,7 @@ export const describeKey = key => {
  * actions: { id: { label, run } } azioni assegnabili (bottoni con data-midi-action).
  * describe(address) -> testo leggibile del parametro.
  */
-export function createMidi({ mixer, storage, actions = {}, describe = a => a }) {
+export function createMidi({ mixer, storage, actions = {}, describe = a => a, requestAccess = null }) {
   let state = { enabled: false, map: {} };
   try {
     const d = JSON.parse(storage.get(KEY) ?? 'null');
@@ -45,7 +45,9 @@ export function createMidi({ mixer, storage, actions = {}, describe = a => a }) 
   const listeners = new Set();
   const emit = () => listeners.forEach(cb => cb());
 
-  const supported = typeof navigator !== 'undefined' && typeof navigator.requestMIDIAccess === 'function';
+  // requestAccess: nelle app il MIDI nativo (midi-native.js); altrimenti Web MIDI del browser
+  const webMidi = typeof navigator !== 'undefined' && typeof navigator.requestMIDIAccess === 'function';
+  const supported = !!requestAccess || webMidi;
   let access = null;
   let learning = null; // { target } mentre si impara
   const lastSeen = new Map(); // key -> { value, at } (per i tasti che mandano 127 e poi 0)
@@ -92,7 +94,7 @@ export function createMidi({ mixer, storage, actions = {}, describe = a => a }) 
     save();
     if (on && supported && !access) {
       try {
-        access = await navigator.requestMIDIAccess({ sysex: false });
+        access = requestAccess ? await requestAccess() : await navigator.requestMIDIAccess({ sysex: false });
         access.onstatechange = attachInputs; // controller collegati o scollegati dopo
       } catch {
         notify('Il MIDI non è stato concesso su questo dispositivo', { error: true });

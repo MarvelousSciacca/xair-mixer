@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- controller MIDI (USB): facoltativo, l'app si installa anche dove il MIDI non c'è -->
+    <uses-feature android:name="android.software.midi" android:required="false" />
+
     <!-- guida vocale: Android 11+ mostra i motori di sintesi vocale solo se dichiarati -->
     <queries>
         <intent>
