@@ -24,6 +24,7 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "speak", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "screenReader", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "midiStart", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "haptic", returnType: CAPPluginReturnPromise),
     ]
 
     private var fd: Int32 = -1
@@ -138,6 +139,27 @@ public class UdpPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func screenReader(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             call.resolve(["on": UIAccessibility.isVoiceOverRunning])
+        }
+    }
+
+    // MARK: - vibrazione
+
+    // Lo stesso scatto della rotella della sveglia (UISelectionFeedbackGenerator), e un colpo più
+    // deciso sui punti di riferimento (0 dB, centro del pan).
+    private lazy var selectionFeedback = UISelectionFeedbackGenerator()
+    private lazy var impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+
+    @objc func haptic(_ call: CAPPluginCall) {
+        let strong = call.getBool("strong") ?? false
+        DispatchQueue.main.async {
+            if strong {
+                self.impactFeedback.impactOccurred()
+                self.impactFeedback.prepare()
+            } else {
+                self.selectionFeedback.selectionChanged()
+                self.selectionFeedback.prepare()
+            }
+            call.resolve()
         }
     }
 

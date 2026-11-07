@@ -8,7 +8,7 @@ import { announce } from './a11y.js';
  * input: valore iniziale di un campo di testo (se presente restituisce il testo).
  * requireText: parola da digitare per abilitare la conferma (azioni pericolose).
  */
-export function ask({ title, message = '', input = null, confirmText = 'OK', danger = false, requireText = null, maxLength = 32, secret = false }) {
+export function ask({ title, message = '', input = null, confirmText = 'Continua', danger = false, requireText = null, maxLength = 32, secret = false }) {
   return new Promise(resolve => {
     const dialog = document.createElement('dialog');
     dialog.className = 'ask-dialog';

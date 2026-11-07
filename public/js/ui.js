@@ -150,6 +150,8 @@ export function applyColor(el, index) {
   const c = COLORS[index] ?? COLORS[0];
   el.style.setProperty('--strip-color', c.hex);
   el.classList.toggle('inverted', c.inverted);
+  // 'Spento' e 'Bianco' non distinguono il canale: nessun filo colorato sotto il nome (css/ottava.css)
+  el.classList.toggle('no-color', c.hex === '#3a3d44' || c.hex === '#e5e7eb');
 }
 
 /**
@@ -257,6 +259,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
     index: () => nearestStep(FADER_STEPS_DB, faderToDb(mixer.get(faderAddr, 0))),
     pick: i => faderAddr && mixer.set(faderAddr, dbToFader(FADER_STEPS_DB[i])),
     text: () => (faderAddr ? `${formatDb(faderToDb(mixer.get(faderAddr, 0)))} dB` : 'non disponibile'),
+    detents: [0, FADER_STEPS_DB.indexOf(0)], // vibrazione decisa a -∞ e a 0 dB
   });
   const faderLabel = n => faderSr.setLabel(`${faderWhat}, ${n}`);
   nameFor.push(faderLabel);
@@ -313,6 +316,7 @@ export function createStrip(mixer, strip, { onEdit, onProcess, editable, links =
       index: () => Math.round(getPan() * 40),
       pick: i => (linked() ? links.setBalance(strip, i / 40) : mixer.set(panAddr, i / 40)),
       text: () => panSpeech(getPan()),
+      detents: [20], // vibrazione decisa al centro
     });
     nameFor.push(n => panSr.setLabel(`${linked() ? 'Bilanciamento' : 'Pan'}, ${n}`));
     renderPan = () => {

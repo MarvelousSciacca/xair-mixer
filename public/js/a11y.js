@@ -2,6 +2,7 @@
 // nascosti sopra fader e manopole, dimensione dell'interfaccia e contrasto alto.
 
 import { speak, speakValue } from './speech.js';
+import { hapticStep } from './haptics.js';
 import { translate } from './i18n.js';
 
 // --- annunci ---------------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ export function announce(text, { urgent = false } = {}) {
  * steps: numero di scatti (0…steps); index(): scatto attuale; pick(i): applica lo scatto i;
  * text(): valore da leggere ("-10 dB", "L25"…).
  */
-export function srRange(host, { label, steps, index, pick, text }) {
+export function srRange(host, { label, steps, index, pick, text, detents = [] }) {
   const input = document.createElement('input');
   input.type = 'range';
   input.className = 'sr-range';
@@ -50,7 +51,8 @@ export function srRange(host, { label, steps, index, pick, text }) {
   input.max = String(steps);
   input.step = '1';
   let touching = false;
-  host.addEventListener('pointerdown', () => { touching = true; });
+  let lastIndex = null; // per la vibrazione: lo scatto di prima mentre si trascina
+  host.addEventListener('pointerdown', () => { touching = true; lastIndex = Number(input.value); });
   const say = final => speakValue(`${input.getAttribute('aria-label') ?? ''}, ${translate(text())}`, { final });
   const up = () => {
     if (touching) say(true);
@@ -66,6 +68,10 @@ export function srRange(host, { label, steps, index, pick, text }) {
   });
   const sync = () => {
     const i = String(Math.max(0, Math.min(steps, index())));
+    if (touching && lastIndex !== null && Number(i) !== lastIndex) {
+      hapticStep(lastIndex, Number(i), detents);
+      lastIndex = Number(i);
+    }
     if (input.value !== i) input.value = i;
     const t = text();
     if (input.getAttribute('aria-valuetext') !== t) {

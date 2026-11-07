@@ -8,6 +8,7 @@ import { ask, notify } from './dialogs.js';
 import { captureScene, downloadScene } from './scenes.js';
 import { THEMES, setTheme, currentTheme } from './theme.js';
 import { aboutSection } from './about.js';
+import { HAPTICS, hapticsAvailable, hapticsSetting, setHaptics } from './haptics.js';
 import { VOICE_GUIDE, voiceGuideSetting, setVoiceGuide, voiceGuideAvailable } from './speech.js';
 import { UI_SIZES, CONTRASTS, currentUiSize, currentContrast, setUiSize, setContrast } from './a11y.js';
 import { LANGS, lang, setLang, t, locale } from './i18n.js';
@@ -179,12 +180,14 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi, 
   const themeBox = segmented('Tema', THEMES, currentTheme(), setTheme);
   const sizeBox = segmented('Dimensione', UI_SIZES, currentUiSize(), setUiSize);
   const contrastBox = segmented('Contrasto', CONTRASTS, currentContrast(), setContrast);
+  const hapticBox = hapticsAvailable() ? segmented('Vibrazione', HAPTICS, hapticsSetting(), setHaptics) : null;
+  const hapticNote = hapticBox ? h('p', 'fx-note', 'Uno scatto leggero sotto il dito a ogni passo di fader, pan e manopole, più deciso a 0 dB e al centro.') : null;
   const voiceBox = voiceGuideAvailable() ? segmented('Guida vocale', VOICE_GUIDE, voiceGuideSetting(), setVoiceGuide) : null;
   const voiceNote = voiceBox ? h('p', 'fx-note', "La guida vocale legge ad alta voce i tasti che tocchi e i valori che regoli, nella lingua dell'app. Si mette in pausa da sola quando VoiceOver o TalkBack sono accesi.") : null;
   const a11yNote = h('p', 'fx-note', 'Con VoiceOver (iPhone, iPad, Mac) o TalkBack (Android) ogni fader, pan e manopola si regola scorrendo in su o in giù con un dito; il nome del canale viene letto insieme al comando. Feedback, connessione e blocco vengono annunciati a voce. "Automatico" segue l\'impostazione "Aumenta contrasto" del sistema.');
 
   body.append(
-    section('Aspetto', ...[langBox, themeBox, sizeBox, contrastBox, voiceBox, voiceNote, a11yNote].filter(Boolean)),
+    section('Aspetto', ...[langBox, themeBox, sizeBox, contrastBox, hapticBox, hapticNote, voiceBox, voiceNote, a11yNote].filter(Boolean)),
     section('Mixer', info),
     section('Solo / cuffie',
       knob(sc, SETTINGS.soloLevel, { kind: 'fader', label: 'Livello solo', def: ZERO_DB }, { reset: ZERO_DB }),

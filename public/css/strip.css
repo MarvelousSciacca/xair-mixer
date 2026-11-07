@@ -1,6 +1,6 @@
 /* Superfici e channel strip: profondità leggera (tasti in rilievo, pozzetti incassati), forme nette,
    colore del canale su tutta la strip e sezioni in miniatura scelte dalla "Vista".
-   Le variabili hanno valori per il tema scuro qui e per il chiaro in theme-light.css. */
+   I valori delle variabili per i due temi sono in ottava.css. */
 
 :root {
   --r-ctl: 6px;           /* angoli dei controlli */

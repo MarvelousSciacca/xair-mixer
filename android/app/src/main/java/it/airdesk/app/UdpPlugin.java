@@ -16,6 +16,8 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.util.Base64;
+import android.os.Build;
+import android.view.HapticFeedbackConstants;
 import android.view.WindowManager;
 
 import com.getcapacitor.JSArray;
@@ -222,6 +224,22 @@ public class UdpPlugin extends Plugin {
             else getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             call.resolve();
         });
+    }
+
+    /**
+     * Vibrazione sotto il dito mentre si muove un fader o una manopola: lo scatto della rotella
+     * dell'orologio (CLOCK_TICK), più deciso sui punti di riferimento (strong: 0 dB, centro).
+     * Rispetta l'impostazione "Vibrazione al tocco" del sistema; non serve nessun permesso.
+     */
+    @PluginMethod
+    public void haptic(PluginCall call) {
+        final boolean strong = call.getBoolean("strong", false);
+        getActivity().runOnUiThread(() -> {
+            int kind = HapticFeedbackConstants.CLOCK_TICK;
+            if (strong) kind = Build.VERSION.SDK_INT >= 30 ? HapticFeedbackConstants.CONFIRM : HapticFeedbackConstants.VIRTUAL_KEY;
+            getBridge().getWebView().performHapticFeedback(kind);
+        });
+        call.resolve();
     }
 
     /** Guida vocale: dice un testo con la voce del sistema (text vuoto: smette di parlare). */

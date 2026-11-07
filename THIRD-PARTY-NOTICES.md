@@ -12,6 +12,8 @@ AirDesk includes the components listed below, distributed under their own licens
 | Node.js | app per computer (dentro Electron) | MIT e altre: vedi `LICENSE.electron.txt` / `LICENSES.chromium.html` |
 | AndroidX (appcompat, coordinatorlayout, core-splashscreen) — The Android Open Source Project | app Android | Apache-2.0 |
 | Apache Cordova Android framework — The Apache Software Foundation | app Android (tramite Capacitor) | Apache-2.0 |
+| Inter — The Inter Project Authors (Rasmus Andersson) | tutte le app (`public/vendor/fonts`) | SIL OFL 1.1: testo in `public/vendor/fonts/Inter-OFL.txt` |
+| JetBrains Mono — The JetBrains Mono Project Authors | tutte le app (`public/vendor/fonts`) | SIL OFL 1.1: testo in `public/vendor/fonts/JetBrainsMono-OFL.txt` |
 
 Il logo (la scritta "AirDesk" nelle icone) è disegnato con il carattere Newsreader di Production Type,
 licenza SIL Open Font License 1.1; il carattere non è incluso nell'app, solo il disegno delle lettere.

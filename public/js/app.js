@@ -28,6 +28,7 @@ import { startTour, tourDone } from './tour.js';
 import { createFeedbackUI } from './feedback-ui.js';
 import { createLayers } from './layers.js';
 import { startVoiceGuide } from './speech.js';
+import { startHaptics } from './haptics.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 import { announce, applyAppearance } from './a11y.js';
 import { startTranslation, collectStrings, protectText, t } from './i18n.js';
@@ -59,6 +60,7 @@ const transport = new SwitchTransport(realTransport, offline);
 const mixer = new Mixer(transport);
 keepScreenAwake(mixer, udpPlugin);
 startVoiceGuide(udpPlugin);
+startHaptics(udpPlugin);
 const strips = buildStrips();
 // Prima i parametri del mixer principale, poi quelli di elaborazione.
 const allAddresses = [

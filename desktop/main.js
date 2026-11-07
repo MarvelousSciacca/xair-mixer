@@ -30,7 +30,7 @@ async function createWindow() {
     minWidth: 760,
     minHeight: 520,
     title: 'AirDesk',
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#000000',
     icon: path.join(DIR, 'build', 'icon.png'),
     webPreferences: {
       contextIsolation: true,

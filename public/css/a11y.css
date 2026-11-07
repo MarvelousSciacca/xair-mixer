@@ -25,11 +25,11 @@
 }
 
 /* focus da tastiera: anello spesso, sempre visibile */
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--ol-focus, var(--accent)); outline-offset: 2px; }
 .sr-range:focus-visible { outline: none; }
 .fader:has(.sr-range:focus-visible) .fader-cap,
-.pan:has(.sr-range:focus-visible) .pan-track { outline: 3px solid var(--accent); outline-offset: 2px; }
-.knob-dial:has(.sr-range:focus-visible) { box-shadow: 0 0 0 3px var(--accent); }
+.pan:has(.sr-range:focus-visible) .pan-track { outline: 3px solid var(--ol-focus, var(--accent)); outline-offset: 2px; }
+.knob-dial:has(.sr-range:focus-visible) { box-shadow: 0 0 0 3px var(--ol-focus, var(--accent)); }
 
 /* --- contrasto alto (Impostazioni → Aspetto, oppure "Aumenta contrasto" del sistema) ------------ */
 :root:not([data-theme="light"])[data-contrast="more"] {
@@ -40,7 +40,7 @@
   --grid: #3a404a;
   --grid-strong: #8a919c;
   --zone-name: #c9cdd4;
-  --accent: #ffc233;
+  --accent: #ffffff;
   --slot: #000000;
   --cap-line-default: #ffffff;
   --knob-track: #6b717c;
@@ -59,7 +59,7 @@
   --grid: #c4c4c4;
   --grid-strong: #6e7075;
   --zone-name: #3a3c40;
-  --accent: #1d47c2;
+  --accent: #000000;
   --mute: #c4001f;
   --ok: #0b6b33;
   --slot: #6e7075;
@@ -80,12 +80,13 @@
   color: var(--text);
 }
 [data-contrast="more"] .toggle[aria-pressed="true"], [data-contrast="more"] .segmented button[aria-pressed="true"],
-[data-contrast="more"] .tab[aria-selected="true"], [data-contrast="more"] .proc-btn.active {
-  box-shadow: inset 0 0 0 3px var(--accent);
+[data-contrast="more"] .tab[aria-selected="true"], [data-contrast="more"] .proc-btn.active,
+[data-contrast="more"] .mute.active, [data-contrast="more"] .solo.active, [data-contrast="more"] .mg-btn.active {
+  /* acceso: pieno in inchiostro (stile Ottava Lab), testo nel colore opposto */
+  box-shadow: none;
+  background: var(--text);
+  color: var(--bg);
 }
-[data-contrast="more"] .mute.active { box-shadow: inset 0 0 0 3px var(--text); }
-[data-contrast="more"] .solo.active { box-shadow: inset 0 0 0 3px var(--text); color: #000; }
-[data-contrast="more"] .fader-cap { box-shadow: 0 0 0 2px var(--text); }
 [data-contrast="more"] .label, [data-contrast="more"] .pan-val, [data-contrast="more"] .mark { color: var(--text); }
 [data-contrast="more"] .strip { border-right: 1px solid var(--line); }
 
@@ -110,3 +111,11 @@
 
 /* lingue con parole lunghe (tedesco, francese): i titoli stretti vanno a capo */
 .mg-title { white-space: normal; overflow-wrap: anywhere; hyphens: auto; line-height: 1.15; }
+
+/* interfaccia ingrandita sul telefono: i tasti in alto vanno a capo invece di uscire a sinistra,
+   e il menu dell'effetto prende tutta la riga invece di schiacciarsi accanto a "Cambia…" */
+@media (max-width: 700px) {
+  .topbar-actions { flex-wrap: wrap; row-gap: 6px; }
+  .fx-card-head .fx-pick { flex: 1 1 100%; }
+  .fx-pick .choice { min-width: 120px; }
+}

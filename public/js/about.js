@@ -27,6 +27,7 @@ const PARTS = [
   ]],
   ['Componenti di terze parti', [
     'Capacitor (MIT), ws (MIT), Electron (MIT) con Chromium e Node.js (licenze incluse nell\'app per computer), AndroidX e Apache Cordova (Apache-2.0).',
+    'Caratteri Inter e JetBrains Mono (SIL Open Font License 1.1).',
   ]],
 ];
 
@@ -37,8 +38,32 @@ function h(tag, className, text) {
   return el;
 }
 
+// firma Ottava Lab: il segno (anello in inchiostro e intarsio arancione) e il nome, come nel lockup
+// del design system. Disegnato qui invece che caricato, così segue il tema (currentColor).
+function signature() {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 64 64');
+  svg.setAttribute('aria-hidden', 'true');
+  const ring = document.createElementNS(NS, 'circle');
+  for (const [k, v] of [['cx', 32], ['cy', 42], ['r', 18], ['fill', 'none'], ['stroke', 'currentColor'], ['stroke-width', 4]]) ring.setAttribute(k, v);
+  const inlay = document.createElementNS(NS, 'circle');
+  for (const [k, v] of [['cx', 32], ['cy', 15], ['r', 9], ['fill', 'var(--ol-signal)']]) inlay.setAttribute(k, v);
+  svg.append(ring, inlay);
+  const box = h('div', 'ol-signature');
+  const text = h('div');
+  const name = h('strong', null, 'AirDesk');
+  name.setAttribute('translate', 'no');
+  const by = h('div', 'ol-by', 'by Ottava Lab');
+  by.setAttribute('translate', 'no');
+  text.append(name, by);
+  box.append(svg, text);
+  return box;
+}
+
 export function aboutSection() {
   const box = h('div', 'about');
+  box.append(signature());
   box.append(h('p', 'about-lead', 'AirDesk · controller per mixer digitali compatibili con Behringer X Air (XR12, XR16, XR18). Software libero con licenza MIT, fornito senza garanzie.'));
   for (const [title, lines] of PARTS) {
     const d = h('details', 'about-part');

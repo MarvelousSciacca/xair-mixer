@@ -1,0 +1,388 @@
+/* Ottava Lab — identità grafica delle app (linee guida del 7/11/2026).
+   Bianco e nero, il contenuto al centro, un solo intarsio arancione per schermata (qui: il clip dei
+   meter e la banda EQ scelta). Niente ombre, sfumature o texture: i livelli si distinguono dallo
+   sfondo (surface → surface-alt → surface-raised). Inter per i testi, JetBrains Mono per i valori.
+   Caricato dopo style.css e strip.css: ridefinisce le loro variabili sui token
+   Ottava Lab e rifinisce i componenti. Il contrasto alto (a11y.css) viene dopo e resta valido. */
+
+/* --- caratteri, inclusi nell'app (licenza SIL OFL 1.1, vendor/fonts) ------------------------ */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../vendor/fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../vendor/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("../vendor/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("../vendor/fonts/jetbrains-mono-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* --- token Ottava Lab: tema scuro (principale) ------------------------------------------------ */
+:root, :root[data-theme="dark"] {
+  --ol-surface: #000000;
+  --ol-surface-alt: #1c1c1e;
+  --ol-surface-raised: #161617;
+  --ol-ink: #f5f5f7;
+  --ol-on-ink: #000000;
+  --ol-ink-muted: #a1a1a6;
+  --ol-line: #38383a;
+  --ol-signal: #ff5a1f;
+  --ol-signal-text: #ff6a33;
+  --ol-focus: #ff6a33;
+  --ol-danger: #ff5f57;          /* proposto nelle linee guida: solo errori e azioni distruttive */
+  --ol-wash: rgba(245, 245, 247, .08); /* ink trasparente: riempimenti di curve e grafici */
+}
+/* --- token Ottava Lab: tema chiaro ------------------------------------------------------------ */
+:root[data-theme="light"] {
+  --ol-surface: #ffffff;
+  --ol-surface-alt: #f5f5f7;
+  --ol-surface-raised: #ffffff;
+  --ol-ink: #1d1d1f;
+  --ol-on-ink: #ffffff;
+  --ol-ink-muted: #6e6e73;
+  --ol-line: #d2d2d7;
+  --ol-signal: #ff5a1f;
+  --ol-signal-text: #c2410c;
+  --ol-focus: #c2410c;
+  --ol-danger: #d92d20;
+  --ol-wash: rgba(29, 29, 31, .06);
+}
+
+/* --- le variabili dell'app, rimappate sui token (stessi valori per i due temi) ---------------- */
+:root, :root[data-theme="dark"], :root[data-theme="light"] {
+  --ol-font: "Inter", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ol-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --radius-sm: 8px;    /* campi, piccoli contenitori */
+  --radius-md: 12px;   /* card e channel strip nelle schermate dense */
+  --radius-lg: 28px;   /* card grandi, finestre */
+  --radius-pill: 980px;
+  --no-shadow: 0 0 0 0 transparent; /* "niente ombre", ma valido anche dentro un elenco di ombre */
+
+  --bg: var(--ol-surface);
+  --panel: var(--ol-surface-raised);
+  --panel-2: var(--ol-surface-alt);
+  --line: var(--ol-line);
+  --text: var(--ol-ink);
+  --muted: var(--ol-ink-muted);
+  --muted-2: var(--ol-ink-muted);
+  --accent: var(--ol-ink);        /* il "colore principale" era l'accento: ora è l'inchiostro */
+  --on-accent: var(--ol-on-ink);
+  --mute: var(--ol-danger);       /* usato per errori e feedback; i tasti M hanno il loro stile sotto */
+  --solo: var(--ol-ink);
+  --ok: var(--ol-ink);
+  --sky: var(--ol-ink-muted);
+  --font-display: var(--ol-font);
+
+  --well: var(--ol-surface-alt);
+  --slot: var(--ol-line);
+  --meter-track: var(--ol-line);
+  --meter-edge: var(--no-shadow);
+  --strip-bg: var(--ol-surface-alt);
+  --strip-bg-alt: var(--ol-surface-alt);
+  --strip-sep: var(--ol-surface);
+  --grid: var(--ol-line);
+  --grid-strong: var(--ol-ink-muted);
+  --zone: var(--ol-wash);
+  --zone-name: var(--ol-ink-muted);
+  --graph-bg: var(--ol-surface);
+  --curve: var(--ol-ink);
+  --curve-fill: var(--ol-wash);
+  --band-color: var(--ol-ink);
+  --tip-bg: var(--ol-surface-raised);
+  --knob-track: var(--ol-line);
+  --knob-body: var(--ol-surface-alt);
+  --knob-edge: var(--ol-surface-alt);
+  --knob-body-active: var(--ol-surface-alt);
+  --cap-body: var(--ol-ink);
+  --cap-shadow: var(--no-shadow);
+  --cap-line-default: transparent;
+  --ok-bg: var(--ol-ink);
+  --warn-bg: var(--ol-surface-alt);
+  --warn-fg: var(--ol-danger);
+  --rta-fill: var(--ol-wash);
+  --rta-line: var(--ol-ink-muted);
+  --rta-canvas-top: var(--ol-wash);
+  --rta-canvas-bottom: transparent;
+  --rta-canvas-peak: var(--ol-ink-muted);
+  --overlay: rgba(0, 0, 0, .55);
+  --shadow-sm: var(--no-shadow);
+  --shadow-md: var(--no-shadow);
+  --shadow-lg: var(--no-shadow);
+
+  --r-ctl: var(--radius-pill);
+  --r-panel: var(--radius-md);
+  --key-bg: transparent;
+  --key-shadow: var(--no-shadow);
+  --key-pressed: var(--no-shadow);
+  --well-shadow: var(--no-shadow);
+  --sec-bg: var(--ol-surface);
+  --tint-base: var(--ol-surface-alt);
+  --tint-body: 0%;
+  --tint-top: 0%;
+  --sec-gate: var(--ol-ink);
+  --sec-dyn: var(--ol-ink);
+  --sec-eq: var(--ol-ink);
+}
+:root[data-theme="light"] { --overlay: rgba(0, 0, 0, .25); }
+
+/* --- testo ------------------------------------------------------------------------------------- */
+html, body { font-family: var(--ol-font); font-feature-settings: "cv11", "ss01"; }
+[data-theme="light"] body { letter-spacing: normal; }
+/* niente maiuscolo, nemmeno nei titoletti */
+*, *::before, *::after { text-transform: none !important; }
+.ed-section h3, .view-group h3, .mg-title, .eq-graph .grid text.zone-name, .lib-card-meta,
+dialog h3, .st-section h3, .settings-dialog h3 { letter-spacing: normal !important; }
+/* titoli: Inter stretta, niente serif */
+.brand, dialog h2, .rt-head h2, .editor-title .name, .fx-card-title strong, .mb-block h2,
+[data-theme="light"] .brand, [data-theme="light"] dialog h2, [data-theme="light"] .rt-head h2,
+[data-theme="light"] .editor-title .name, [data-theme="light"] .fx-card-title strong {
+  font-family: var(--ol-font);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+dialog h2 { font-size: 22px; }
+dialog { font-size: 15px; }
+.ed-section h3, .view-group h3, dialog h3 { font-size: 13px; font-weight: 600; color: var(--ol-ink-muted); }
+
+/* numeri veri: valori in JetBrains Mono a cifre fisse */
+.db, .db-val, .knob-value, .sec-value, .pan-val, .mark, .mb-peak, .mb-scale, .fb-freq, .geq-val,
+.eq-graph text, .dyn-graph text, .graph-box text, .status-name, .rt-in-src, .fx-param-value, .flag,
+input[type="number"], .meter-db, .fb-alert .fb-db {
+  font-family: var(--ol-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.mark { font-size: 11px; }
+.mark.zero { color: var(--ol-ink); }
+
+/* --- superfici: niente ombre, angoli dai token ------------------------------------------------ */
+dialog { background: var(--ol-surface-raised); border: 1px solid var(--ol-line); border-radius: var(--radius-lg); }
+[data-theme="light"] dialog { border-color: transparent; }
+.graph-box, .rt-block, .fx-card, .editor-panel, .mb-block, .send-card, .rt-in, .eq-band, .lib-card { border-radius: var(--radius-md); }
+.mb-block, .fx-card, .rt-block, .send-card, .lib-card, .eq-band { background: var(--ol-surface-alt); border-color: transparent; }
+.editor-panel, .editor { background: var(--ol-surface); }
+.toast, .notice { border-radius: var(--radius-md); }
+input, select, textarea, .preset-select, .choice select { border-radius: var(--radius-sm) !important; }
+dialog input, .preset-select, .choice select { background-color: var(--ol-surface-alt); border-color: transparent; color: var(--ol-ink); }
+dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible { outline: 2px solid var(--ol-focus); outline-offset: 0; }
+
+/* --- barra in alto ------------------------------------------------------------------------------ */
+.topbar { background: var(--ol-surface); border-bottom: 1px solid var(--ol-line); }
+.brand span { color: inherit; }
+.tabs { background: var(--ol-surface-alt); border: 0; border-radius: var(--radius-pill); }
+.tab { border-radius: var(--radius-pill); color: var(--ol-ink-muted); font-weight: 500; }
+.tab[aria-selected="true"] { background: var(--ol-ink); color: var(--ol-on-ink); }
+.tab-add { color: var(--ol-ink-muted); }
+.status[data-status="online"] .dot { background: var(--ol-ink); }
+.status[data-status="connecting"] .dot { background: var(--ol-ink-muted); }
+.status[data-status="lost"] .dot { background: var(--ol-danger); }
+
+/* --- pulsanti: a pillola. Principale pieno in ink, secondario a contorno ---------------------- */
+.btn { border-radius: var(--radius-pill); background: var(--ol-ink); color: var(--ol-on-ink); font-weight: 600; }
+.btn:hover { filter: none; opacity: .85; }
+.btn:active { opacity: .85; }
+.btn.ghost, .icon-btn, .chip-btn {
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px solid var(--ol-line);
+  color: var(--ol-ink);
+}
+.btn.ghost:hover, .icon-btn:hover, .chip-btn:hover { opacity: 1; background: var(--ol-surface-alt); }
+.btn.ghost:active, .icon-btn:active, .chip-btn:active { background: var(--ol-surface-alt); }
+.btn.danger { background: var(--ol-danger); color: #ffffff; }
+.topbar-actions .btn.ghost .ico { color: var(--ol-ink); }
+.topbar-actions .btn:disabled .ico { color: var(--ol-ink-muted); }
+.history .btn:first-child { border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
+.history .btn:last-child { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
+.history .btn:only-child { border-radius: var(--radius-pill); }
+/* pulsante feedback: anello in ink in Soundcheck, rosso errore con un avviso */
+.fb-btn.soundcheck { border-color: var(--ol-ink); }
+.fb-btn[data-state="alert"] { border-color: var(--ol-danger); color: var(--ol-danger); }
+
+/* interruttori e scelte: a riposo contorno grigio, attivi pieni in ink */
+.toggle, .proc-btn, .mg-btn, .lib-cat {
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px solid var(--ol-line);
+  color: var(--ol-ink-muted);
+  font-weight: 600;
+}
+.toggle[aria-pressed="true"], .proc-btn.active, .mg-btn.active, .lib-cat[aria-pressed="true"], .lib-cat.active {
+  background: var(--ol-ink);
+  border-color: var(--ol-ink);
+  color: var(--ol-on-ink);
+}
+/* +48V e simili: acceso pieno in ink come gli altri (il rosso è solo per errori) */
+.toggle.warn[aria-pressed="true"] { background: var(--ol-ink); border-color: var(--ol-ink); color: var(--ol-on-ink); }
+.segmented { border: 0; border-radius: var(--radius-pill); background: var(--ol-surface-alt); padding: 2px; gap: 2px; }
+.segmented button { background: transparent; border-radius: var(--radius-pill); color: var(--ol-ink-muted); font-weight: 500; }
+.segmented button + button { border-left: 0; }
+.segmented button[aria-pressed="true"] { background: var(--ol-ink); color: var(--ol-on-ink); }
+
+/* --- channel strip ------------------------------------------------------------------------------ */
+.strips { background: var(--ol-surface); }
+.strip, .strip:nth-child(even) {
+  background: var(--ol-surface-alt);
+  border-right: 0;
+  margin-right: 2px;
+  border-radius: var(--radius-md);
+}
+/* il nome del canale: testo in ink, il colore scelto sul mixer resta come filo sotto il nome */
+.scribble, .strip.inverted .scribble {
+  background: var(--ol-surface);
+  color: var(--ol-ink);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--strip-color);
+}
+/* i colori "spento" e "bianco" non dicono niente: nessun filo */
+.no-color .scribble, .scribble.no-color { box-shadow: none; }
+.sec { background: var(--ol-surface); border-radius: var(--radius-sm); }
+.sec:hover { filter: none; }
+.sec.on .sec-fill { opacity: .10; }
+.flag { background: var(--ol-surface-alt); color: var(--ol-ink); border-radius: 4px; }
+.flag.warn { background: var(--ol-ink); color: var(--ol-on-ink); }
+.flag.usb { background: transparent; color: var(--ol-ink); box-shadow: inset 0 0 0 1px var(--ol-line); }
+.sec-bar { background: var(--ol-line); }
+.sec-bar-fill { background: var(--ol-ink-muted); }
+.sec-send { background: var(--ol-line); }
+.sec-send > span, .sec-send.fx > span { background: var(--ol-ink-muted); }
+
+/* mute e solo: monocromi. Spenti a contorno con lettera grigia, accesi pieni in ink */
+.solo, .mute {
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px solid var(--ol-line);
+  color: var(--ol-ink-muted);
+  font-weight: 700;
+}
+.solo.active, .mute.active, .mg-btn.active { background: var(--ol-ink); border-color: var(--ol-ink); color: var(--ol-on-ink); }
+.strip.muted .fader-cap { filter: none; }
+.strip.muted .fader-cap::before { background: var(--ol-ink-muted); }
+
+/* pan: binario sottile, valore in ink */
+.pan-track { height: 4px; background: var(--ol-line); }
+.pan-track::after { background: var(--ol-ink-muted); }
+.pan-fill { background: var(--ol-ink); }
+
+/* fader: binario da 4 pt in line, cursore a pillola in ink (28 × 14); toccato si allarga.
+   L'elemento resta alto --cap-h: è l'area da toccare e la base dei calcoli di posizione. */
+.fader-slot { width: 4px; background: var(--ol-line); border-radius: 2px; }
+.fader-cap, .strip-main .fader-cap, .strip-bus .fader-cap, .strip-dca .fader-cap, .strip.send-mode .fader-cap {
+  background: transparent;
+  border-radius: 0;
+}
+.fader-cap::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 14px;
+  translate: -50% -50%;
+  border-radius: var(--radius-pill);
+  background: var(--ol-ink);
+  transition: width .15s ease-out, height .15s ease-out;
+}
+.dragging .fader-cap::before, .fader.fine .fader-cap::before { width: 34px; height: 16px; }
+.fader.fine .fader-cap { outline: 0; }
+.strip:has(.fader.fine) .db-val { color: var(--ol-ink); font-weight: 700; }
+.pan.fine .pan-track { outline-color: var(--ol-ink); }
+.knob-dial.fine { outline: 2px solid var(--ol-ink); outline-offset: 2px; }
+.mark::after { background: var(--ol-line); }
+
+/* meter: barra in ink-muted su binario line, picco in ink, clip in arancione (l'intarsio) */
+.meter { background: var(--ol-ink-muted); border-radius: 2px; }
+.meter-cover { background: var(--ol-line); border-radius: 0; }
+.meter-peak { border-top-color: var(--ol-ink); opacity: 1; }
+.meter-peak.clip { border-top-color: var(--ol-signal); }
+.mb-peak.clip { color: var(--ol-signal-text); }
+.mb-item { background: transparent; }
+.mb-name { box-shadow: inset -2px 0 0 var(--strip-color); }
+
+/* valore in dB sotto il fader */
+.db { background: var(--ol-surface); border: 0; border-radius: var(--radius-sm); color: var(--ol-ink); }
+.label { color: var(--ol-ink-muted); }
+
+/* --- manopole: cerchio surface-alt, arco e tacca in ink ----------------------------------------- */
+.knob-track { stroke: var(--ol-line); }
+.knob-arc { stroke: var(--ol-ink); }
+.knob-body { fill: var(--ol-surface-alt); stroke: var(--ol-surface-alt); }
+.knob-pointer { stroke: var(--ol-ink); }
+.knob-label, .choice-label, .preset-label { color: var(--ol-ink-muted); font-weight: 500; }
+
+/* --- EQ: bande monocrome riconoscibili dal numero; quella scelta è l'intarsio arancione -------- */
+.eq-node.selected, .eq-band.selected { --c: var(--ol-signal) !important; }
+.eq-band.selected { box-shadow: inset 0 0 0 2px var(--ol-signal); }
+.eq-band-title { color: var(--ol-ink); }
+.eq-band.selected .eq-band-title { color: var(--ol-signal-text); }
+.eq-node text { fill: var(--ol-on-ink); }
+.eq-node circle { fill: var(--c); stroke: var(--c); }
+.eq-node.selected text { fill: #000000; }
+.eq-node.hp circle { fill: var(--ol-surface-alt); stroke: var(--ol-ink-muted); }
+.eq-node.hp text { fill: var(--ol-ink); font-family: var(--ol-font); font-size: 10px; }
+.eq-node.hp.selected circle { stroke: var(--ol-signal); }
+.eq-graph .grid text.zone-name { font-family: var(--ol-font); font-weight: 500; }
+.eq-graph.off .eq-fill { fill: var(--ol-wash); }
+.eq-band .segmented button[aria-pressed="true"], .eq-band .choice button[aria-pressed="true"] { background: var(--ol-ink); color: var(--ol-on-ink); }
+
+/* --- feedback: è un avviso, quindi il rosso degli errori ----------------------------------------- */
+.fb-markers text, .fb-freq, .fb-error, .toast-msg strong { color: var(--ol-danger); fill: var(--ol-danger); }
+.strip.feedback { background: color-mix(in srgb, var(--ol-danger) 14%, var(--ol-surface-alt)); box-shadow: inset 0 0 0 2px var(--ol-danger); }
+.toast { background: var(--ol-surface-raised); color: var(--ol-ink); border: 1px solid var(--ol-line); }
+.toast-sub { color: var(--ol-ink-muted); }
+.notice { background: var(--ol-surface-alt); border-color: transparent; color: var(--ol-ink); }
+.notice.error { background: var(--ol-surface-alt); border-color: var(--ol-danger); color: var(--ol-danger); }
+
+/* --- mandate sul fader, monitor, effetti, routing: niente blu, ciano o giallo ------------------- */
+.sends-on-fader .fader-target select { border-color: var(--ol-ink); color: var(--ol-ink); }
+.send-banner, .mon-hint, .monitor-view.locked .mon-hint { background: var(--ol-surface-alt); color: var(--ol-ink); }
+.strip.send-mode .db, .mon-strips .strip .db { color: var(--ol-ink); }
+.strip.send-target { box-shadow: inset 0 0 0 2px var(--ol-ink); }
+.send-card, .send-card.fx { border-top: 0; }
+.mon-lock[aria-pressed="true"] { background: var(--ol-ink); border-color: var(--ol-ink); color: var(--ol-on-ink); }
+.fx-card-title, .rt-in-name, .editor-title { --strip-color: var(--ol-ink-muted); }
+.fx-badge { background: var(--ol-surface); color: var(--ol-ink-muted); }
+.lib-slot.insert strong::after { color: var(--ol-ink-muted); }
+.lib-card:hover { border-color: var(--ol-ink); }
+.lib-card-meta { color: var(--ol-ink-muted); }
+.rt-in.is-usb { border-color: var(--ol-ink); box-shadow: inset 3px 0 0 var(--ol-ink); }
+.tour-veil path { fill: rgba(0, 0, 0, .6); }
+.tour-card { background: var(--ol-surface-raised); border-radius: var(--radius-md); }
+.midi-learn { background: var(--ol-ink); color: var(--ol-on-ink); border-radius: var(--radius-pill); }
+@keyframes tap-flash { from { background: var(--ol-ink); color: var(--ol-on-ink); } }
+
+/* animazioni brevi e senza rimbalzo */
+dialog[open] { animation: ol-in .2s ease-out; }
+@keyframes ol-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } .fader-cap::before { transition: none; } }
+
+/* firma nella schermata Informazioni */
+.ol-signature { display: flex; align-items: center; gap: 10px; margin: 4px 0 12px; color: var(--ol-ink); }
+.ol-signature svg { height: 40px; width: 40px; flex: none; }
+.ol-signature strong { display: block; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+.ol-by { font-size: 13px; color: var(--ol-ink-muted); }
+.ol-signature .ol-version { font-family: var(--ol-mono); font-size: 13px; color: var(--ol-ink-muted); }
+.ol-signature a { color: var(--ol-signal-text); text-decoration: none; }

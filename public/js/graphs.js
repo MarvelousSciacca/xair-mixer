@@ -8,7 +8,8 @@ import { uiZoom } from './a11y.js';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 /** Zone dello spettro mostrate sul grafico EQ (Hz). */
 export const EQ_ZONES = [[20, 60, 'Sub'], [60, 250, 'Bassi'], [250, 2000, 'Medi'], [2000, 6000, 'Presenza'], [6000, 20000, 'Aria']];
-export const BAND_COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#06b6d4', '#3b82f6', '#d946ef'];
+// bande dell'EQ: monocrome (linee guida Ottava Lab), si riconoscono dal numero; quella scelta è in arancione (css/ottava.css)
+export const BAND_COLORS = Array(6).fill('var(--band-color)');
 const RTA_PREF = 'xair.rta';
 const RTA_FLOOR = -80;
 

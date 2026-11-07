@@ -139,6 +139,38 @@ await test('fader: trascinamento arriva al mixer', async () => {
   assert($('.strip[data-id=ch1] .db-val').textContent !== '', 'testo dB vuoto');
 });
 
+await test('vibrazione: scatti trascinando il fader, deciso a 0 dB, spenta non vibra', async () => {
+  const { startHaptics, setHaptics, hapticStep, haptic } = await import(`${ROOT}/public/js/haptics.js`);
+  const taps = [];
+  startHaptics({ haptic: async ({ strong }) => { taps.push(strong); } });
+  // passi: leggero; arrivare o attraversare il punto di riferimento: deciso; lasciarlo: leggero
+  const one = (a, b) => { taps.length = 0; hapticStep(a, b, [10]); return taps[0]; };
+  await sleep(30);
+  assert(one(8, 9) === false, 'passo normale');
+  await sleep(30);
+  assert(one(9, 10) === true, 'arrivo a 0 dB');
+  await sleep(30);
+  assert(one(10, 11) === false, 'lascia 0 dB');
+  await sleep(30);
+  assert(one(13, 7) === true, 'attraversa 0 dB di corsa');
+  // trascinamento vero del fader
+  taps.length = 0;
+  const fader = $('.strip[data-id=ch4] .fader');
+  tall(fader);
+  pointer(fader, 'pointerdown', 200);
+  for (let y = 198; y >= 120; y -= 2) { pointer(fader, 'pointermove', y); await sleep(30); }
+  pointer(fader, 'pointerup', 120);
+  assert(taps.length >= 3, `scatti durante il trascinamento: ${taps.length}`);
+  // spenta
+  setHaptics('off');
+  taps.length = 0;
+  await sleep(30);
+  haptic(true);
+  assert(taps.length === 0, 'spenta vibra ancora');
+  setHaptics('on');
+  startHaptics(null);
+});
+
 await test('fader: i valori in arrivo non lo fanno saltare mentre lo si tiene', async () => {
   const fader = $('.strip[data-id=ch2] .fader');
   tall(fader);

@@ -139,6 +139,7 @@ export function knob(scope, address, spec, { label = spec.label, big = false, re
     index: () => Math.round(toPos(scope.get(address, spec)) * steps),
     pick: i => scope.set(address, spec, isEnum ? i : i / steps),
     text: () => formatValue(spec, scope.get(address, spec)),
+    detents: spec.bipolar ? [steps / 2] : [], // vibrazione decisa a metà (0 dB di un guadagno EQ…)
   });
 
   const render = v => {
