@@ -194,6 +194,8 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
 .tabs { background: var(--ol-surface-alt); border: 0; border-radius: var(--radius-pill); }
 .tab { border-radius: var(--radius-pill); color: var(--ol-ink-muted); font-weight: 500; }
 .tab[aria-selected="true"] { background: var(--ol-ink); color: var(--ol-on-ink); }
+/* la sezione del mixer in cui ti trovi è in arancione (testo nero: contrasto 7:1 in entrambi i temi) */
+.topbar .tab[aria-selected="true"] { background: var(--ol-signal); color: #000; }
 .tab-add { color: var(--ol-ink-muted); }
 .status[data-status="online"] .dot { background: var(--ol-ink); }
 .status[data-status="connecting"] .dot { background: var(--ol-ink-muted); }
@@ -307,6 +309,23 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
   transition: width .15s ease-out, height .15s ease-out;
 }
 .dragging .fader-cap::before, .fader.fine .fader-cap::before { width: 34px; height: 16px; }
+/* tacca arancione al centro del cursore, come sui fader veri; il fader che stai muovendo si accende tutto */
+.fader-cap::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  translate: -50% -50%;
+  border-radius: 1px;
+  background: var(--ol-signal);
+  transition: width .15s ease-out;
+}
+.dragging .fader-cap::before, .fader.fine .fader-cap::before { background: var(--ol-signal); }
+.dragging .fader-cap::after, .fader.fine .fader-cap::after { background: var(--ol-on-ink); width: 20px; }
+.strip.muted .fader-cap::after { background: var(--ol-surface-alt); }
+[data-contrast="more"] .fader-cap::after { background: var(--ol-on-ink); }
 .fader.fine .fader-cap { outline: 0; }
 .strip:has(.fader.fine) .db-val { color: var(--ol-ink); font-weight: 700; }
 .pan.fine .pan-track { outline-color: var(--ol-ink); }
