@@ -216,6 +216,21 @@ await test('pannello canale: preset e schede', async () => {
   $('.editor .close').click();
 });
 
+await test('doppio tocco: punto dell\'EQ grafico a 0 dB', async () => {
+  $('.strip[data-id=ch1] .label').click();
+  $('.editor-tabs .tab[data-tab=eq]').click();
+  await sleep(100);
+  await until(() => !near(simValue('/ch/01/eq/2/g'), 0.5, 0.01), 3000, 'banda 2 già a 0 dB');
+  const node = $$('.editor .eq-node:not(.hp)')[1];
+  const at = { bubbles: true, clientX: 50, clientY: 50, button: 0 };
+  for (let i = 0; i < 2; i++) {
+    node.dispatchEvent(new w.MouseEvent('pointerdown', at));
+    $('.editor .eq-graph').dispatchEvent(new w.MouseEvent('pointerup', at));
+  }
+  await until(() => near(simValue('/ch/01/eq/2/g'), 0.5, 0.01), 3000, 'banda 2 a 0 dB');
+  $('.editor .close').click();
+});
+
 await test('monitor: entra ed esce', async () => {
   $('#monitor-btn').click();
   assert(!$('.monitor-view').hidden, 'monitor non aperto');

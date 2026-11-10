@@ -4,6 +4,7 @@ import { SPEC, RATIOS, GATE_MODES, fromNorm, toNorm, paramMap } from './params.j
 import { RTA_BINS, binFreq, isCut, stripBands, stripFilters, responseDb } from './dsp.js';
 import { rtaSource } from './model.js';
 import { uiZoom } from './a11y.js';
+import { doubleTap, TAP_SLOP_PX } from './controls.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 /** Zone dello spettro mostrate sul grafico EQ (Hz). */
@@ -302,18 +303,32 @@ export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedbac
     select(band);
     onSelect(band);
   };
+  // doppio tocco (o doppio clic) su un punto: guadagno a 0 dB; sul low cut lo accende o lo spegne
+  const resetNode = band => {
+    if (band === 'hp') return scope.set(`${base}/preamp/hpon`, SPEC.hpon, val(`${base}/preamp/hpon`) ? 0 : 1);
+    setReal(bandAddr(band, 'g'), 0);
+  };
+  let tapResetAt = -1e9; // il dblclick che alcuni telefoni aggiungono dopo il doppio tocco non va ripetuto
+  let tapDown = null;
   nodes.forEach(n => {
+    const tap = doubleTap();
     n.g.addEventListener('pointerdown', e => {
       e.stopPropagation();
+      if (pointers.size <= 1 && tap.down(e)) {
+        tapResetAt = e.timeStamp;
+        pointers.delete(e.pointerId);
+        return resetNode(n.band);
+      }
       svg.setPointerCapture(e.pointerId);
       if (pointers.size > 1) return;
+      tapDown = { tap, x: e.clientX, y: e.clientY };
       dragging = n.band;
       if (n.band !== 'hp') choose(n.band);
       showTip(n.band);
     });
-    n.g.addEventListener('dblclick', () => {
-      if (n.band === 'hp') return scope.set(`${base}/preamp/hpon`, SPEC.hpon, val(`${base}/preamp/hpon`) ? 0 : 1);
-      setReal(bandAddr(n.band, 'g'), 0);
+    n.g.addEventListener('dblclick', e => {
+      if (e.timeStamp - tapResetAt < 700) return;
+      resetNode(n.band);
     });
   });
   // Tocco su un punto vuoto: seleziona la banda più vicina in frequenza.
@@ -341,6 +356,10 @@ export function eqGraph(scope, strip, { onSelect = () => {}, rta = null, feedbac
     if (!isCut(type)) setReal(bandAddr(dragging, 'g'), clamp(dbAt(y), -15, 15));
   });
   const stop = e => {
+    if (tapDown) {
+      tapDown.tap.up(e, Math.hypot(e.clientX - tapDown.x, e.clientY - tapDown.y) > TAP_SLOP_PX);
+      tapDown = null;
+    }
     pointers.delete(e.pointerId);
     if (pointers.size < 2) pinch = null;
     if (dragging !== null || !pointers.size) showTip(tipBand, 1200);

@@ -3,6 +3,7 @@
 
 import { fxParamAddress } from './fx.js';
 import { fromNorm, toNorm, formatValue } from './params.js';
+import { doubleTap, TAP_SLOP_PX } from './controls.js';
 
 const clamp = v => Math.min(1, Math.max(0, v));
 export const GEQ_CODES = new Set(['GEQ', 'GEQ2', 'TEQ', 'TEQ2']);
@@ -34,6 +35,7 @@ export function geqControls(scope, slot, params) {
     const sliders = document.createElement('div');
     sliders.className = 'geq-sliders';
     const bands = [];
+    let tapResetAt = -1e9; // il dblclick che alcuni telefoni aggiungono dopo il doppio tocco non va ripetuto
     for (let i = 0; i <= 31; i++) {
       const spec = params[offset + i];
       const address = fxParamAddress(slot, offset + i);
@@ -47,7 +49,7 @@ export function geqControls(scope, slot, params) {
       };
       render(scope.get(address, spec));
       scope.on(address, render);
-      col.addEventListener('dblclick', () => scope.set(address, spec, toNorm(spec, 0)));
+      col.addEventListener('dblclick', e => { if (e.timeStamp - tapResetAt > 700) scope.set(address, spec, toNorm(spec, 0)); });
       (i === 31 ? bank : sliders).append(col);
       bands.push({ col, spec, address });
     }
@@ -63,15 +65,32 @@ export function geqControls(scope, slot, params) {
         scope.set(b.address, b.spec, toNorm(b.spec, db));
       }
     };
+    // doppio tocco su un cursore: 0 dB (col mouse c'è il dblclick sulla banda)
+    const bandAt = (e, list) => list.find(b => {
+      const r = b.col.querySelector('.geq-track').getBoundingClientRect();
+      return e.clientX >= r.left - 2 && e.clientX <= r.right + 2;
+    });
     const drag = (el, list) => {
       let active = false;
+      let down = null;
+      const tap = doubleTap();
       el.addEventListener('pointerdown', e => {
+        const b = bandAt(e, list);
+        if (tap.down(e) && b) {
+          tapResetAt = e.timeStamp;
+          return scope.set(b.address, b.spec, toNorm(b.spec, 0));
+        }
         active = true;
+        down = { x: e.clientX, y: e.clientY };
         el.setPointerCapture?.(e.pointerId);
         paint(e, list);
       });
       el.addEventListener('pointermove', e => { if (active) paint(e, list); });
-      const end = () => { active = false; };
+      const end = e => {
+        active = false;
+        if (down) tap.up(e, Math.hypot(e.clientX - down.x, e.clientY - down.y) > TAP_SLOP_PX);
+        down = null;
+      };
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
     };
