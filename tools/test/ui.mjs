@@ -231,6 +231,20 @@ await test('doppio tocco: punto dell\'EQ grafico a 0 dB', async () => {
   $('.editor .close').click();
 });
 
+await test('sistema vecchio: avviso con un solo tasto, niente avviso sui sistemi nuovi', async () => {
+  const { needsUpdate, compatNotice } = await import(`${ROOT}/public/js/compat.js`);
+  const oldEngine = () => false, newEngine = () => true;
+  assert(needsUpdate(oldEngine) && !needsUpdate(newEngine) && !needsUpdate(null), 'rilevamento sbagliato');
+  await compatNotice(newEngine);
+  assert(!$('dialog.ask-dialog'), 'avviso mostrato su un sistema nuovo');
+  const closed = compatNotice(oldEngine);
+  const dlg = $('dialog.ask-dialog');
+  assert(dlg?.open, 'avviso non mostrato');
+  assert(dlg.querySelector('[value=cancel]').hidden, 'tasto Annulla visibile');
+  dlg.querySelector('[value=ok]').click();
+  await closed;
+});
+
 await test('monitor: entra ed esce', async () => {
   $('#monitor-btn').click();
   assert(!$('.monitor-view').hidden, 'monitor non aperto');

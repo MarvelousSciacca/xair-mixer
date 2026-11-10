@@ -7,8 +7,9 @@ import { announce } from './a11y.js';
  * ask({ title, message, input, confirmText, danger, requireText }) -> Promise<string|true|null>
  * input: valore iniziale di un campo di testo (se presente restituisce il testo).
  * requireText: parola da digitare per abilitare la conferma (azioni pericolose).
+ * info: solo un avviso, senza Annulla.
  */
-export function ask({ title, message = '', input = null, confirmText = 'Continua', danger = false, requireText = null, maxLength = 32, secret = false }) {
+export function ask({ title, message = '', input = null, confirmText = 'Continua', danger = false, requireText = null, maxLength = 32, secret = false, info = false }) {
   return new Promise(resolve => {
     const dialog = document.createElement('dialog');
     dialog.className = 'ask-dialog';
@@ -27,6 +28,7 @@ export function ask({ title, message = '', input = null, confirmText = 'Continua
     const field = dialog.querySelector('.ask-input');
     const ok = dialog.querySelector('[value="ok"]');
     ok.textContent = confirmText;
+    if (info) dialog.querySelector('[value="cancel"]').hidden = true; // solo un avviso: un tasto
     if (danger) ok.classList.add('danger');
     if (input !== null || requireText) {
       field.hidden = false;

@@ -13,6 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 const PARTS = [
   ['Avvertenze d\'uso', [
+    'Requisiti: iPhone o iPad con iOS 16 o successivo; Android 7 o successivo con Android System WebView aggiornato; Mac, Windows o Linux recenti. Su sistemi più vecchi i fader potrebbero non mostrare il livello giusto.',
     'Un mixer può produrre livelli sonori dannosi per l\'udito: fai le prime prove a volume basso.',
     'La phantom (+48V) può danneggiare microfoni a nastro e alcune sorgenti: controlla prima di accenderla.',
     'Il mixer non ha password: chiunque sia sulla sua rete Wi-Fi può comandarlo con qualsiasi app. Proteggi la rete del mixer con una password.',
