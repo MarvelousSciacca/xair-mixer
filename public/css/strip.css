@@ -187,13 +187,15 @@
 .monitor-view.locked .mon-view { display: none; }
 
 /* barra della modalità monitor sugli schermi stretti: una o due righe compatte */
-@media (max-width: 760px) {
+/* fino a 1100 px vale anche per telefoni in orizzontale e iPad: lì la barra normale si impila in colonna */
+@media (max-width: 1100px) {
   .topbar.monitor-head { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; }
   .monitor-head .brand, .monitor-head .spacer { display: none; }
   .monitor-head .mon-bus { flex: 1 1 140px; min-width: 0; }
-  .monitor-head .btn, .monitor-head .toggle { flex: 0 0 auto; height: 36px; padding: 0 10px; }
-  .monitor-head .mon-view .btn-text { display: none; }
+  .monitor-head .btn, .monitor-head .toggle { flex: 0 0 auto; height: 36px; padding: 0 12px; }
 }
+@media (max-width: 760px) { .monitor-head .mon-view .btn-text { display: none; } .monitor-head .mon-bus { flex-basis: 100px; } }
+@media (max-height: 520px) { .mon-hint { padding: 2px 12px; font-size: 11px; } }
 
 /* --- menu dei preset (canale ed EQ) ------------------------------------------------------------ */
 .preset-menu { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }

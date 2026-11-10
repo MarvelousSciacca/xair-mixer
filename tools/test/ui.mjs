@@ -99,6 +99,8 @@ await test('connessione al simulatore', async () => {
 });
 
 await test('tutorial: al primo avvio, si scorre fino alla fine e non riappare', async () => {
+  // il tutorial aspetta la fine dell'apertura animata (al massimo 1,8 s)
+  for (let i = 0; i < 25 && !$('dialog.tour')?.open; i++) await sleep(100);
   const tour = $('dialog.tour');
   assert(tour?.open, 'tutorial non aperto al primo avvio');
   const title = () => $('#tour-title').textContent;

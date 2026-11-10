@@ -28,6 +28,7 @@ import { startTour, tourDone } from './tour.js';
 import { createFeedbackUI } from './feedback-ui.js';
 import { createLayers } from './layers.js';
 import { startVoiceGuide } from './speech.js';
+import { splashDone } from './splash.js';
 import { startHaptics } from './haptics.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 import { announce, applyAppearance } from './a11y.js';
@@ -412,5 +413,7 @@ const askConnection = () => {
   if (!lastIp && mixer.status === 'disconnected') document.getElementById('connect-btn').click();
 };
 // al primo avvio prima il tutorial, poi (se serve) la ricerca del mixer; ?ip= (link e prove) lo salta
-if (!tourDone(storage) && !urlIp) startTour({ storage, onClose: askConnection });
-else askConnection();
+splashDone.then(() => {
+  if (!tourDone(storage) && !urlIp) startTour({ storage, onClose: askConnection });
+  else askConnection();
+});
