@@ -318,7 +318,12 @@ document.getElementById('ip-form').addEventListener('submit', e => {
 ipInput.addEventListener('input', () => ipInput.setCustomValidity(''));
 document.getElementById('offline-btn').addEventListener('click', () => connectTo(OFFLINE_IP));
 // telefono: collegati tramite computer; app per computer: condividi con telefoni
-initPcLink({ native, realTransport, storage, mixer, connectTo, connectDialog });
+const pcLink = initPcLink({
+  native, realTransport, storage, mixer, connectTo, connectDialog,
+  isOffline: () => transport.isOffline,
+  // QR del musicista inquadrato: monitor di quel bus, bloccato (monitorView è creato più sotto)
+  openMonitor: mon => monitorView.enter(mon.bus, { locked: true, channels: mon.ch }),
+});
 
 // --- editor nome/colore ---------------------------------------------------------------
 
@@ -365,7 +370,7 @@ createFeedbackUI({ mixer, monitor: feedback, editor, storage });
 // --- modalità monitor (in-ear) -------------------------------------------------------------
 
 const pin = createPin(storage);
-const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel, pin });
+const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel, pin, musicianQr: pcLink.showMonitorQr });
 document.getElementById('monitor-btn').addEventListener('click', () => monitorView.enter());
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------

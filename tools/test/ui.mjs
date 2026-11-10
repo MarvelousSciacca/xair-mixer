@@ -255,6 +255,29 @@ await test('monitor: entra ed esce', async () => {
   assert($('.monitor-view').hidden, 'monitor non chiuso');
 });
 
+await test('monitor: QR del musicista con bus e canali, che riporta allo stesso mix', async () => {
+  const { parseLink } = await import(`${ROOT}/public/js/pc-link.js`);
+  $('#monitor-btn').click();
+  $('.mon-qr').click();
+  const dlg = $('#mon-qr-dialog');
+  assert(dlg.open, 'finestra del QR non aperta');
+  await until(() => dlg.querySelector('.share-qr svg'), 3000, 'QR disegnato');
+  assert(/Bus|Mix/.test(dlg.querySelector('h2').textContent), 'titolo senza il bus');
+  dlg.querySelector('.mon-qr-close').click();
+  $('.mon-exit').click();
+  // il testo del QR: lo stesso che legge il telefono del musicista
+  const { linkText } = await import(`${ROOT}/public/js/pc-link.js`);
+  const text = linkText(['192.168.1.10', '10.0.0.2'], 'ABCD2345', { bus: 3, ch: ['ch1', 'ch2', 'rtn1', 'xx9'] });
+  assert(text.length < 80, `QR troppo lungo: ${text}`);
+  const pc = parseLink(text.replace('ABCD2345', 'abcd2345'));
+  assert(pc?.kind === 'pc' && pc.key === 'ABCD2345' && pc.ips.length === 2, 'QR del computer letto male');
+  assert(pc.mon?.bus === 3 && pc.mon.ch.join() === 'ch1,ch2,rtn1', `bus o canali letti male: ${pc.mon?.ch}`);
+  const mx = parseLink('airdesk://mixer?ip=192.168.1.50&mon=2');
+  assert(mx?.kind === 'mixer' && mx.ips[0] === '192.168.1.50' && mx.mon.bus === 2, 'QR del mixer letto male');
+  assert(!parseLink('airdesk://pc?ip=192.168.1.10&mon=2') && !parseLink('https://example.com') && !parseLink('airdesk://mixer?ip=999.1.1.1'), 'QR sbagliati accettati');
+  assert(parseLink('airdesk://mixer?ip=192.168.1.50&mon=9').mon === null, 'bus fuori dai limiti accettato');
+});
+
 await test('annulla e ripeti: un trascinamento è un solo passo', async () => {
   const fader = $('.strip[data-id=ch3] .fader');
   tall(fader);

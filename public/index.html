@@ -99,8 +99,8 @@
       <span>Prepari mix e scene ora; li invii al mixer quando ti colleghi.</span>
     </div>
     <div class="offline-row" id="pc-row" hidden>
-      <button class="btn ghost" id="pc-btn" type="button">Collegati tramite computer</button>
-      <span>Inquadra il codice QR di AirDesk sul computer collegato al mixer.</span>
+      <button class="btn ghost" id="pc-btn" type="button">Inquadra codice QR</button>
+      <span>Il codice di AirDesk sul computer o sul telefono del fonico.</span>
     </div>
     <div class="offline-row" id="share-row" hidden>
       <button class="btn ghost" id="share-btn" type="button">Condividi con telefoni</button>
@@ -113,8 +113,8 @@
   </dialog>
 
   <dialog id="pc-dialog" class="pc-dialog">
-    <h2>Collegati tramite computer</h2>
-    <p class="pc-hint">Sul computer apri AirDesk, premi Connetti e poi Condividi con telefoni.</p>
+    <h2>Inquadra codice QR</h2>
+    <p class="pc-hint">Lo mostra AirDesk: sul computer in Connetti → Condividi con telefoni, o al fonico con il pulsante Musicista del monitor.</p>
     <div class="qr-camera" hidden><video id="pc-video" playsinline muted autoplay></video><span class="qr-frame" aria-hidden="true"></span></div>
     <p class="pc-status" id="pc-status" role="status" aria-live="polite"></p>
     <form id="pc-form" class="ip-form">
@@ -138,11 +138,21 @@
       <dt>Codice</dt><dd id="share-key" class="pc-key" translate="no">—</dd>
     </dl>
     <p class="pc-status" id="share-status" role="status" aria-live="polite"></p>
-    <p class="pc-hint">Sul telefono: AirDesk → Connetti → Collegati tramite computer, sulla stessa rete Wi-Fi di questo computer. Se il sistema chiede di accettare le connessioni in entrata per AirDesk, rispondi sì.</p>
+    <p class="pc-hint">Sul telefono: AirDesk → Connetti → Inquadra codice QR, sulla stessa rete Wi-Fi di questo computer. Se il sistema chiede di accettare le connessioni in entrata per AirDesk, rispondi sì.</p>
     <div class="dialog-actions">
       <button class="btn ghost" id="share-new" type="button">Nuovo codice</button>
       <button class="btn ghost" id="share-stop" type="button">Smetti di condividere</button>
       <button class="btn" id="share-close" type="button">Chiudi</button>
+    </div>
+  </dialog>
+
+  <dialog id="mon-qr-dialog" class="share-dialog">
+    <h2>Mix per il musicista</h2>
+    <div class="share-qr" hidden></div>
+    <p class="pc-status" role="status" aria-live="polite"></p>
+    <p class="pc-hint">Sul telefono del musicista: AirDesk → Connetti → Inquadra codice QR. Vedrà solo questo mix, già bloccato.</p>
+    <div class="dialog-actions">
+      <button class="btn mon-qr-close" type="button">Chiudi</button>
     </div>
   </dialog>
 

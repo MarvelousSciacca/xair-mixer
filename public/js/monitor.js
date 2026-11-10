@@ -2,6 +2,7 @@
 // Si scelgono i canali da vedere; i loro fader regolano solo le mandate verso quel bus,
 // quindi non cambiano il mix di sala. Si può bloccare la schermata (uscita tenendo premuto).
 // Apertura diretta da link: ?monitor=2 (bus 2), aggiungendo &lock=1 la schermata parte bloccata.
+// Pulsante Musicista: un QR che porta il telefono di un musicista su questo mix, bloccato (pc-link.js).
 
 import { alignFaders } from './view.js';
 import { createStrip } from './ui.js';
@@ -39,7 +40,7 @@ function holdable(btn, needsHold, action) {
   });
 }
 
-export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null, pin = null }) {
+export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null, pin = null, musicianQr = null }) {
   const inputs = strips.filter(s => s.group === 'input' && s.sends);
   const buses = strips.filter(s => s.id.startsWith('bus'));
 
@@ -64,6 +65,7 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
       <select class="mon-bus" aria-label="Bus monitor"></select>
       <button class="btn ghost mon-pick" type="button">Canali</button>
       <button class="btn ghost mon-view" type="button" title="Vista: cosa mostrare sui canali"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg><span class="btn-text">Vista</span></button>
+      <button class="btn ghost mon-qr" type="button" title="QR per il musicista: vede solo questo mix, bloccato"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M14 20h1M17 17h4v4h-4z"/></svg><span class="btn-text">Musicista</span></button>
       <div class="spacer"></div>
       <button class="toggle mon-lock" type="button">Blocca</button>
       <button class="btn mon-exit" type="button">Esci</button>
@@ -79,6 +81,12 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
   if (viewPanel) $('.mon-view').addEventListener('click', () => viewPanel.open());
   else $('.mon-view').hidden = true;
   const hint = $('.mon-hint');
+  if (musicianQr) {
+    $('.mon-qr').addEventListener('click', () => {
+      const n = links.primaryBus(settings.bus);
+      musicianQr({ bus: n, name: busName(n), channels: selected(n) });
+    });
+  } else $('.mon-qr').hidden = true;
 
   // Le strip vengono create una volta sola; cambiando bus o canali si mostrano/nascondono.
   const noop = () => {};
@@ -188,9 +196,16 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
   }));
   holdable($('.mon-exit'), needsHold, guarded(() => exit()));
 
-  function enter(bus = settings.bus) {
+  /** opts (QR del musicista): locked = parte bloccata; channels = canali da mostrare. */
+  function enter(bus = settings.bus, opts = {}) {
     settings.active = true;
     settings.bus = bus;
+    if (opts.locked) settings.locked = true;
+    if (Array.isArray(opts.channels) && opts.channels.length) {
+      const known = new Set(inputs.map(s => s.id));
+      const ch = opts.channels.filter(id => known.has(id));
+      if (ch.length) settings.channels[links.primaryBus(bus)] = ch;
+    }
     save();
     root.hidden = false;
     document.body.classList.add('monitor-mode');

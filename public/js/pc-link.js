@@ -4,6 +4,8 @@
 // - App per telefono: "Collegati tramite computer" inquadra il QR con la fotocamera (o si scrivono
 //   indirizzo e codice a mano). Poi il computer si usa come un mixer: stesso UDP nativo, più il saluto
 //   con il codice (transport-udp.js).
+// - QR del musicista (pulsante Musicista nel monitor): lo stesso QR, più il bus e i canali. Chi lo inquadra
+//   si collega (al computer, o direttamente al mixer) e si ritrova solo quel mix, già bloccato.
 
 import { t } from './i18n.js';
 import { ask } from './dialogs.js';
@@ -22,10 +24,25 @@ export function newKey() {
   return Array.from(bytes, b => ALPHABET[b % ALPHABET.length]).join('');
 }
 
-/** Testo del QR: airdesk://pc?ip=<indirizzi separati da virgola>&k=<codice> */
-export const linkText = (ips, key) => `airdesk://pc?ip=${ips.join(',')}&k=${key}`;
+// monitor del musicista: &mon=<bus>&c=<canali>. I canali sono una maschera di bit in esadecimale
+// (ch1…ch16, aux, rtn1…rtn4: al massimo 6 caratteri), così il QR resta rado e si legge anche al buio.
+const CHANNELS = [...Array.from({ length: 16 }, (_, i) => `ch${i + 1}`), 'aux', 'rtn1', 'rtn2', 'rtn3', 'rtn4'];
+const maskOf = ids => CHANNELS.reduce((m, id, i) => (ids.includes(id) ? m + 2 ** i : m), 0).toString(16);
+const idsOf = hex => (/^[0-9a-f]{1,6}$/i.test(hex ?? '') ? CHANNELS.filter((_, i) => Math.floor(parseInt(hex, 16) / 2 ** i) % 2) : []);
+const monParams = mon => {
+  if (!mon) return '';
+  const all = !mon.ch?.length || CHANNELS.every(id => mon.ch.includes(id));
+  return `&mon=${mon.bus}${all ? '' : `&c=${maskOf(mon.ch)}`}`;
+};
+/** Testo del QR del computer: airdesk://pc?ip=<indirizzi separati da virgola>&k=<codice>[&mon=…] */
+export const linkText = (ips, key, mon = null) => `airdesk://pc?ip=${ips.join(',')}&k=${key}${monParams(mon)}`;
+/** Testo del QR che porta direttamente al mixer (fonico collegato al mixer senza computer). */
+export const mixerLinkText = (ip, mon = null) => `airdesk://mixer?ip=${ip}${monParams(mon)}`;
 
-/** Legge il testo del QR: { ips, key } oppure null se non è un codice di AirDesk. */
+/**
+ * Legge il testo del QR: { kind: 'pc', ips, key, mon } o { kind: 'mixer', ips: [ip], mon },
+ * oppure null se non è un codice di AirDesk. mon: { bus, ch } o null.
+ */
 export function parseLink(text) {
   let url;
   try {
@@ -35,8 +52,12 @@ export function parseLink(text) {
   }
   if (url.protocol !== 'airdesk:') return null;
   const ips = (url.searchParams.get('ip') ?? '').split(',').filter(validIp).slice(0, 8);
+  const bus = Number(url.searchParams.get('mon'));
+  const ch = idsOf(url.searchParams.get('c'));
+  const mon = Number.isInteger(bus) && bus >= 1 && bus <= 6 ? { bus, ch } : null;
+  if (url.host === 'mixer') return ips.length ? { kind: 'mixer', ips: ips.slice(0, 1), mon } : null;
   const key = (url.searchParams.get('k') ?? '').toUpperCase();
-  return ips.length && validKey(key) ? { ips, key } : null;
+  return url.host === 'pc' && ips.length && validKey(key) ? { kind: 'pc', ips, key, mon } : null;
 }
 
 const readKeys = storage => {
@@ -155,12 +176,19 @@ function initShare({ ws, storage, mixer, connectDialog }) {
     if (ok) start(true);
   });
   document.getElementById('share-close').addEventListener('click', () => dialog.close());
-  return { render };
+
+  /** Accende la condivisione se serve (QR del musicista) e aspetta che sia pronta: lo stato finale. */
+  async function ensureOn() {
+    if (!state.on) start(false);
+    for (let i = 0; i < 30 && !state.on && !state.error; i++) await new Promise(r => setTimeout(r, 100));
+    return state;
+  }
+  return { render, ensureOn };
 }
 
 // --- app per telefono: collegamento a un computer --------------------------------------------
 
-function initLink({ udp, storage, connectTo, connectDialog }) {
+function initLink({ udp, storage, connectTo, connectDialog, openMonitor }) {
   const row = document.getElementById('pc-row');
   const dialog = document.getElementById('pc-dialog');
   const video = document.getElementById('pc-video');
@@ -216,13 +244,19 @@ function initLink({ udp, storage, connectTo, connectDialog }) {
       const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
       if (!code?.data) return;
       const link = parseLink(code.data);
-      if (link) linkTo(link.ips, link.key);
+      if (link?.kind === 'mixer') {
+        // QR del fonico collegato direttamente al mixer: niente computer di mezzo
+        stopCamera();
+        dialog.close();
+        connectTo(link.ips[0]);
+        if (link.mon) openMonitor(link.mon);
+      } else if (link) linkTo(link.ips, link.key, link.mon);
       else say(t('Questo non è un codice di AirDesk. Inquadra quello mostrato da AirDesk sul computer.'));
     }, SCAN_EVERY_MS);
   }
 
   /** Prova gli indirizzi del computer (Wi-Fi, cavo…) e si collega al primo che risponde con il codice. */
-  async function linkTo(ips, key) {
+  async function linkTo(ips, key, mon = null) {
     if (busy) return;
     busy = true;
     say(t('Collegamento al computer…'));
@@ -237,6 +271,7 @@ function initLink({ udp, storage, connectTo, connectDialog }) {
       stopCamera();
       dialog.close();
       connectTo(ok.ip);
+      if (mon) openMonitor(mon);
       return;
     }
     if (answers.some(a => a.status === 'no-mixer')) say(t('Il computer risponde ma non è collegato a un mixer: collegalo dal computer e riprova.'));
@@ -279,7 +314,45 @@ function initLink({ udp, storage, connectTo, connectDialog }) {
  * native: app per telefono (UdpTransport) o per computer/browser (WebSocketTransport).
  * Nel browser normale il ponte non offre la condivisione e i pulsanti restano nascosti.
  */
-export function initPcLink({ native, realTransport, storage, mixer, connectTo, connectDialog }) {
-  if (native) return initLink({ udp: realTransport, storage, connectTo, connectDialog });
-  return initShare({ ws: realTransport, storage, mixer, connectDialog });
+export function initPcLink({ native, realTransport, storage, mixer, connectTo, connectDialog, isOffline, openMonitor }) {
+  const share = native ? null : initShare({ ws: realTransport, storage, mixer, connectDialog });
+  if (native) initLink({ udp: realTransport, storage, connectTo, connectDialog, openMonitor });
+
+  // --- QR del musicista ---
+  const dialog = document.getElementById('mon-qr-dialog');
+  const box = dialog.querySelector('.share-qr');
+  const statusEl = dialog.querySelector('.pc-status');
+  dialog.querySelector('.mon-qr-close').addEventListener('click', () => dialog.close());
+
+  /** Mostra il QR che porta un musicista sul mix del bus dato (canali: quelli scelti nel monitor). */
+  async function showMonitorQr({ bus, name, channels }) {
+    dialog.querySelector('h2').textContent = t('Mix di {0} per il musicista', name);
+    box.hidden = true;
+    box.innerHTML = '';
+    statusEl.textContent = '';
+    dialog.showModal();
+    const mon = { bus, ch: channels };
+    let text = null;
+    if (isOffline() || mixer.status !== 'online' || !mixer.ip) {
+      statusEl.textContent = t('Collega prima questo dispositivo al mixer: il musicista userà lo stesso.');
+    } else if (native) {
+      // telefono del fonico: se a sua volta passa da un computer, il musicista passa dallo stesso
+      const key = realTransport.keys.get(mixer.ip);
+      text = key ? linkText([mixer.ip], key, mon) : mixerLinkText(mixer.ip, mon);
+    } else if (realTransport.canShare) {
+      statusEl.textContent = t('Condivisione in avvio…');
+      const st = await share.ensureOn();
+      if (st.on && st.ips?.length) text = linkText(st.ips, st.key, mon);
+      statusEl.textContent = text ? '' : st.error === 'busy'
+        ? t('La porta UDP 10024 di questo computer è già usata da un altro programma: chiudilo e riprova.')
+        : t('Condivisione non riuscita. Riprova.');
+    } else {
+      text = mixerLinkText(mixer.ip, mon);
+    }
+    if (!text || !dialog.open) return;
+    box.innerHTML = await qrSvg(text); // disegnato qui da indirizzi, codice e numeri già controllati
+    box.firstElementChild.setAttribute('aria-label', t('Codice QR per il musicista'));
+    box.hidden = false;
+  }
+  return { showMonitorQr };
 }
