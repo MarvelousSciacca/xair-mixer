@@ -9,6 +9,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import { encode, decode } from './osc.js';
+import { startRelay, validKey, RELAY_PORT } from './relay.js';
 
 export const MIXER_PORT = 10024;
 const MAX_WS_PAYLOAD = 64 * 1024; // un messaggio OSC del mixer è di poche centinaia di byte
@@ -130,10 +131,15 @@ const toWire = m => ({
 const fromWire = (args = []) =>
   args.map(a => (a.type === 'b' ? { type: 'b', value: Buffer.from(a.value, 'base64') } : a));
 
+const isLoopback = ip => /^(127\.|::1$|::ffff:127\.)/.test(ip ?? '');
+
 class Session {
-  constructor(ws, mixerPort) {
+  /** share: opzioni del ripetitore per i telefoni (solo app per computer e solo da questo computer), o null */
+  constructor(ws, mixerPort, share = null) {
     this.ws = ws;
     this.mixerPort = mixerPort;
+    this.share = share;
+    this.relay = null;
     this.target = null;
     this.discovery = null;
     this.udp = dgram.createSocket('udp4');
@@ -146,7 +152,42 @@ class Session {
       }),
     );
     ws.on('message', data => this.onWs(data));
-    ws.on('close', () => this.udp.close());
+    ws.on('close', () => {
+      this.stopShare();
+      this.udp.close();
+    });
+    this.reply({ type: 'hello', share: !!share });
+  }
+
+  // --- condivisione con i telefoni (server/relay.js) ---
+  async startShare(key) {
+    this.stopShare();
+    if (!validKey(key)) return this.reply({ type: 'share', on: false, error: 'bad-key' });
+    let info = null;
+    const relay = startRelay({
+      key,
+      port: this.share.port ?? RELAY_PORT,
+      mixer: () => this.target,
+      onChange: clients => { if (info && this.relay === relay) this.reply({ type: 'share', on: true, ...info, clients }); },
+    });
+    this.relay = relay;
+    let port;
+    try {
+      port = await relay.ready;
+    } catch (err) {
+      relay.close();
+      if (this.relay === relay) this.relay = null;
+      return this.reply({ type: 'share', on: false, error: err?.code === 'EADDRINUSE' ? 'busy' : 'error' });
+    }
+    if (this.relay !== relay) return;
+    info = { ips: ipv4Interfaces().map(ni => ni.address), port, key };
+    this.reply({ type: 'share', on: true, ...info, clients: relay.clients });
+  }
+
+  stopShare() {
+    if (!this.relay) return;
+    this.relay.close();
+    this.relay = null;
   }
 
   reply(obj) {
@@ -189,6 +230,14 @@ class Session {
       case 'disconnect':
         this.target = null;
         break;
+      case 'share':
+        if (!this.share) break;
+        if (msg.on) await this.startShare(msg.key);
+        else {
+          this.stopShare();
+          this.reply({ type: 'share', on: false });
+        }
+        break;
       case 'osc':
         if (!this.target || typeof msg.address !== 'string' || !/^\/[\x21-\x7e]{0,127}$/.test(msg.address)) break;
         if (msg.args !== undefined && (!Array.isArray(msg.args) || msg.args.length > MAX_OSC_ARGS)) break;
@@ -228,8 +277,11 @@ class Session {
   }
 }
 
-/** mixerPort: porta OSC del mixer (diversa solo nelle prove automatiche con il simulatore). */
-export function startBridge({ port = 8080, host, quiet = false, mixerPort = MIXER_PORT } = {}) {
+/**
+ * mixerPort: porta OSC del mixer (diversa solo nelle prove automatiche con il simulatore).
+ * share: { port } per permettere la condivisione con i telefoni (app per computer); port solo nelle prove.
+ */
+export function startBridge({ port = 8080, host, quiet = false, mixerPort = MIXER_PORT, share = null } = {}) {
   const server = http.createServer((req, res) => {
     serveStatic(req, res).catch(() => {
       if (!res.headersSent) res.writeHead(500, SECURITY_HEADERS);
@@ -242,7 +294,8 @@ export function startBridge({ port = 8080, host, quiet = false, mixerPort = MIXE
     maxPayload: MAX_WS_PAYLOAD,
     verifyClient: ({ req }) => trustedHost(req.headers.host) && trustedOrigin(req.headers.origin, req.headers.host),
   });
-  wss.on('connection', ws => new Session(ws, mixerPort));
+  // la condivisione la può accendere solo una finestra aperta su questo computer
+  wss.on('connection', (ws, req) => new Session(ws, mixerPort, share && isLoopback(req.socket.remoteAddress) ? share : null));
   server.listen(port, host, () => {
     if (quiet) return;
     console.log(`\nAirDesk pronto:`);

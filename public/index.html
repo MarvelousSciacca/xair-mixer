@@ -98,10 +98,52 @@
       <button class="btn ghost" id="offline-btn" type="button">Lavora senza mixer</button>
       <span>Prepari mix e scene ora; li invii al mixer quando ti colleghi.</span>
     </div>
+    <div class="offline-row" id="pc-row" hidden>
+      <button class="btn ghost" id="pc-btn" type="button">Collegati tramite computer</button>
+      <span>Inquadra il codice QR di AirDesk sul computer collegato al mixer.</span>
+    </div>
+    <div class="offline-row" id="share-row" hidden>
+      <button class="btn ghost" id="share-btn" type="button">Condividi con telefoni</button>
+      <span>Telefoni e tablet si collegano al mixer passando da questo computer.</span>
+    </div>
     <form method="dialog" class="dialog-actions">
       <button class="btn ghost" id="disconnect-btn" type="button">Disconnetti</button>
       <button class="btn ghost" value="cancel">Chiudi</button>
     </form>
+  </dialog>
+
+  <dialog id="pc-dialog" class="pc-dialog">
+    <h2>Collegati tramite computer</h2>
+    <p class="pc-hint">Sul computer apri AirDesk, premi Connetti e poi Condividi con telefoni.</p>
+    <div class="qr-camera" hidden><video id="pc-video" playsinline muted autoplay></video><span class="qr-frame" aria-hidden="true"></span></div>
+    <p class="pc-status" id="pc-status" role="status" aria-live="polite"></p>
+    <form id="pc-form" class="ip-form">
+      <label for="pc-ip">Oppure scrivi indirizzo e codice mostrati sul computer</label>
+      <div class="row">
+        <input id="pc-ip" inputmode="decimal" placeholder="192.168.1.10" autocomplete="off" aria-label="Indirizzo del computer">
+        <input id="pc-key" class="pc-key" placeholder="CODICE" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" aria-label="Codice">
+        <button class="btn" type="submit">Connetti</button>
+      </div>
+    </form>
+    <form method="dialog" class="dialog-actions">
+      <button class="btn ghost" value="cancel">Chiudi</button>
+    </form>
+  </dialog>
+
+  <dialog id="share-dialog" class="share-dialog">
+    <h2>Condividi con telefoni</h2>
+    <div class="share-qr" id="share-qr" hidden></div>
+    <dl class="share-info">
+      <dt>Indirizzo</dt><dd id="share-ips" translate="no">—</dd>
+      <dt>Codice</dt><dd id="share-key" class="pc-key" translate="no">—</dd>
+    </dl>
+    <p class="pc-status" id="share-status" role="status" aria-live="polite"></p>
+    <p class="pc-hint">Sul telefono: AirDesk → Connetti → Collegati tramite computer, sulla stessa rete Wi-Fi di questo computer. Se il sistema chiede di accettare le connessioni in entrata per AirDesk, rispondi sì.</p>
+    <div class="dialog-actions">
+      <button class="btn ghost" id="share-new" type="button">Nuovo codice</button>
+      <button class="btn ghost" id="share-stop" type="button">Smetti di condividere</button>
+      <button class="btn" id="share-close" type="button">Chiudi</button>
+    </div>
   </dialog>
 
   <dialog id="edit-dialog">

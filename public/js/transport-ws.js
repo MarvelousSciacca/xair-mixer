@@ -10,6 +10,8 @@ export class WebSocketTransport {
     this.target = null;
     this.onMessage = () => {};
     this.onStatus = () => {};
+    this.onShare = () => {}; // stato della condivisione con i telefoni (solo app per computer)
+    this.canShare = false;
     this._discoverResolve = null;
     this._open();
   }
@@ -32,6 +34,11 @@ export class WebSocketTransport {
       const m = JSON.parse(e.data);
       if (m.type === 'osc') {
         this.onMessage({ address: m.address, args: m.args });
+      } else if (m.type === 'hello') {
+        this.canShare = !!m.share;
+        this.onShare({ type: 'hello', canShare: this.canShare });
+      } else if (m.type === 'share') {
+        this.onShare(m);
       } else if (m.type === 'discovered' && this._discoverResolve) {
         this._discoverResolve(m.mixers);
         this._discoverResolve = null;
@@ -76,6 +83,11 @@ export class WebSocketTransport {
   disconnect() {
     this.target = null;
     this._raw({ type: 'disconnect' });
+  }
+
+  /** Accende o spegne il ripetitore per i telefoni (server/relay.js) con il codice dato. */
+  share(on, key) {
+    return this._raw({ type: 'share', on, key });
   }
 
   send(address, args = []) {

@@ -1,5 +1,6 @@
 // App per computer (macOS, Windows, Linux): il ponte WebSocket <-> UDP gira dentro l'app,
 // solo su questo computer, e la finestra mostra la stessa interfaccia del browser.
+// Su richiesta fa anche da ripetitore per i telefoni (server/relay.js, porta UDP 10024).
 // Porta fissa così le preferenze (salvate per indirizzo) restano tra un avvio e l'altro.
 
 import { app, BrowserWindow, shell, Menu, session } from 'electron';
@@ -15,7 +16,7 @@ if (!app.requestSingleInstanceLock()) app.quit(); // una sola copia: la porta è
 
 function listen(port) {
   return new Promise((resolve, reject) => {
-    const server = startBridge({ port, host: '127.0.0.1', quiet: true });
+    const server = startBridge({ port, host: '127.0.0.1', quiet: true, share: {} });
     server.once('listening', () => resolve(server.address().port));
     server.once('error', reject);
   });

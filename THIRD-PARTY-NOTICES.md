@@ -10,6 +10,8 @@ AirDesk includes the components listed below, distributed under their own licens
 | Electron — OpenJS Foundation e contributori | app per computer | MIT |
 | Chromium e le sue dipendenze | app per computer (dentro Electron) | BSD e altre: testo completo in `LICENSES.chromium.html` accanto all'app |
 | Node.js | app per computer (dentro Electron) | MIT e altre: vedi `LICENSE.electron.txt` / `LICENSES.chromium.html` |
+| jsQR — Cosmo Wolfe | app per telefono (`public/vendor/jsqr.js`, lettura del codice QR) | Apache-2.0 |
+| qrcode-generator — Kazuhiko Arase | app per computer (`public/vendor/qrcode.js`, disegno del codice QR) | MIT |
 | AndroidX (appcompat, coordinatorlayout, core-splashscreen) — The Android Open Source Project | app Android | Apache-2.0 |
 | Apache Cordova Android framework — The Apache Software Foundation | app Android (tramite Capacitor) | Apache-2.0 |
 | Inter — The Inter Project Authors (Rasmus Andersson) | tutte le app (`public/vendor/fonts`) | SIL OFL 1.1: testo in `public/vendor/fonts/Inter-OFL.txt` |
@@ -102,7 +104,36 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-## AndroidX, Apache Cordova — Apache License 2.0
+## qrcode-generator — MIT
+
+```
+Copyright (c) 2009 Kazuhiko Arase
+
+URL: http://www.d-project.com/
+
+Licensed under the MIT license:
+  http://www.opensource.org/licenses/mit-license.php
+
+The word 'QR Code' is registered trademark of DENSO WAVE INCORPORATED
+  http://www.denso-wave.com/qrcode/faqpatent-e.html
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## AndroidX, Apache Cordova, jsQR (Cosmo Wolfe) — Apache License 2.0
 
 ```
                                  Apache License

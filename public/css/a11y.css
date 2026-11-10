@@ -23,6 +23,8 @@
   touch-action: none;
   z-index: 3;
 }
+/* app senza screen reader acceso (js/speech.js): il dito arriva al controllo disegnato */
+.sr-off .sr-range { pointer-events: none; }
 
 /* focus da tastiera: anello spesso, sempre visibile */
 :focus-visible { outline: 3px solid var(--ol-focus, var(--accent)); outline-offset: 2px; }

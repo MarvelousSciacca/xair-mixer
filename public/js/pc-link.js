@@ -1,0 +1,285 @@
+// Collegamento tramite computer.
+// - App per computer: "Condividi con telefoni" accende il ripetitore (server/relay.js) e mostra un codice QR
+//   con gli indirizzi del computer e un codice di 8 caratteri.
+// - App per telefono: "Collegati tramite computer" inquadra il QR con la fotocamera (o si scrivono
+//   indirizzo e codice a mano). Poi il computer si usa come un mixer: stesso UDP nativo, più il saluto
+//   con il codice (transport-udp.js).
+
+import { t } from './i18n.js';
+import { ask } from './dialogs.js';
+
+const SHARE_KEY = 'airdesk.shareKey';
+const SHARE_ON = 'airdesk.shareOn';
+const PC_KEYS = 'airdesk.pcKeys'; // { indirizzo del computer: codice }
+const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // come server/relay.js: niente 0/O, 1/I/L
+const SCAN_EVERY_MS = 200;
+
+export const validKey = key => /^[A-Z2-9]{8}$/.test(key ?? '');
+const validIp = ip => /^\d{1,3}(\.\d{1,3}){3}$/.test(ip ?? '') && ip.split('.').every(n => Number(n) <= 255);
+
+export function newKey() {
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  return Array.from(bytes, b => ALPHABET[b % ALPHABET.length]).join('');
+}
+
+/** Testo del QR: airdesk://pc?ip=<indirizzi separati da virgola>&k=<codice> */
+export const linkText = (ips, key) => `airdesk://pc?ip=${ips.join(',')}&k=${key}`;
+
+/** Legge il testo del QR: { ips, key } oppure null se non è un codice di AirDesk. */
+export function parseLink(text) {
+  let url;
+  try {
+    url = new URL(String(text).trim());
+  } catch {
+    return null;
+  }
+  if (url.protocol !== 'airdesk:') return null;
+  const ips = (url.searchParams.get('ip') ?? '').split(',').filter(validIp).slice(0, 8);
+  const key = (url.searchParams.get('k') ?? '').toUpperCase();
+  return ips.length && validKey(key) ? { ips, key } : null;
+}
+
+const readKeys = storage => {
+  try {
+    const o = JSON.parse(storage.get(PC_KEYS) ?? '{}');
+    return o && typeof o === 'object' ? o : {};
+  } catch {
+    return {};
+  }
+};
+
+/** All'avvio dell'app per telefono: i codici dei computer già usati, così si ricollega da sola. */
+export function loadPcKeys(udp, storage) {
+  for (const [ip, key] of Object.entries(readKeys(storage))) if (validIp(ip) && validKey(key)) udp.keys.set(ip, key);
+}
+
+/** QR come SVG: moduli neri su bianco (i lettori vogliono scuro su chiaro), margine di 4 moduli. */
+async function qrSvg(text) {
+  const { default: qrcode } = await import('../vendor/qrcode.js');
+  const q = qrcode(0, 'M');
+  q.addData(text);
+  q.make();
+  const n = q.getModuleCount(), m = 4, size = n + 2 * m;
+  let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c + m} ${r + m}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${size} ${size}" role="img" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+
+// --- app per computer: condivisione ----------------------------------------------------------
+
+function initShare({ ws, storage, mixer, connectDialog }) {
+  const row = document.getElementById('share-row');
+  const dialog = document.getElementById('share-dialog');
+  const qr = document.getElementById('share-qr');
+  const ipsEl = document.getElementById('share-ips');
+  const keyEl = document.getElementById('share-key');
+  const statusEl = document.getElementById('share-status');
+  let state = { on: false };
+  let shownText = '';
+
+  const key = () => {
+    let k = storage.get(SHARE_KEY);
+    if (!validKey(k)) storage.set(SHARE_KEY, (k = newKey()));
+    return k;
+  };
+
+  async function render() {
+    if (!dialog.open) return;
+    const lines = [];
+    if (state.error === 'busy') lines.push(t('La porta UDP 10024 di questo computer è già usata da un altro programma: chiudilo e riprova.'));
+    else if (state.error) lines.push(t('Condivisione non riuscita. Riprova.'));
+    else if (!state.on) lines.push(t('Condivisione in avvio…'));
+    else {
+      const n = state.clients ?? 0;
+      lines.push(n === 0 ? t('Nessun telefono collegato') : n === 1 ? t('1 telefono collegato') : t('{0} telefoni collegati', n));
+      if (mixer.status !== 'online') lines.push(t('Questo computer non è collegato a un mixer: collegalo, i telefoni useranno quello.'));
+    }
+    statusEl.textContent = lines.join(' ');
+    const ips = state.on ? state.ips ?? [] : [];
+    ipsEl.textContent = ips.length ? ips.join(' · ') : '—';
+    keyEl.textContent = state.on ? state.key : '—';
+    dialog.querySelector('#share-stop').disabled = !state.on;
+    const text = state.on && ips.length ? linkText(ips, state.key) : '';
+    if (text === shownText) return;
+    shownText = text;
+    if (!text) {
+      qr.innerHTML = '';
+      qr.hidden = true;
+      return;
+    }
+    const svg = await qrSvg(text);
+    if (shownText === text) {
+      qr.innerHTML = svg; // disegnato qui da indirizzi IP e codice già controllati
+      qr.firstElementChild.setAttribute('aria-label', t('Codice QR per collegare i telefoni'));
+      qr.hidden = false;
+    }
+  }
+
+  ws.onShare = m => {
+    if (m.type === 'hello') {
+      row.hidden = !m.canShare;
+      state = { on: false };
+      // condivisione accesa l'ultima volta: riparte da sola (anche dopo un riavvio del ponte)
+      if (m.canShare && storage.get(SHARE_ON) === '1') ws.share(true, key());
+    } else {
+      state = m;
+    }
+    render();
+  };
+  mixer.onStatus(() => render());
+  const start = newCode => {
+    if (newCode) storage.set(SHARE_KEY, newKey());
+    storage.set(SHARE_ON, '1');
+    state = { on: false };
+    ws.share(true, key());
+    render();
+  };
+
+  document.getElementById('share-btn').addEventListener('click', () => {
+    connectDialog.close();
+    dialog.showModal();
+    if (!state.on) start(false);
+    else render();
+  });
+  document.getElementById('share-stop').addEventListener('click', () => {
+    storage.set(SHARE_ON, '0');
+    ws.share(false);
+    dialog.close();
+  });
+  document.getElementById('share-new').addEventListener('click', async () => {
+    const ok = await ask({
+      title: t('Nuovo codice'),
+      message: t('I telefoni collegati con il codice di adesso si scollegano e dovranno inquadrare di nuovo il QR.'),
+      confirmText: t('Cambia codice'),
+    });
+    if (ok) start(true);
+  });
+  document.getElementById('share-close').addEventListener('click', () => dialog.close());
+  return { render };
+}
+
+// --- app per telefono: collegamento a un computer --------------------------------------------
+
+function initLink({ udp, storage, connectTo, connectDialog }) {
+  const row = document.getElementById('pc-row');
+  const dialog = document.getElementById('pc-dialog');
+  const video = document.getElementById('pc-video');
+  const camera = dialog.querySelector('.qr-camera');
+  const statusEl = document.getElementById('pc-status');
+  const ipInput = document.getElementById('pc-ip');
+  const keyInput = document.getElementById('pc-key');
+  let stream = null;
+  let timer = null;
+  let busy = false;
+  row.hidden = false;
+
+  const say = text => { statusEl.textContent = text; };
+
+  function stopCamera() {
+    clearInterval(timer);
+    timer = null;
+    stream?.getTracks().forEach(tr => tr.stop());
+    stream = null;
+    video.srcObject = null;
+    camera.hidden = true;
+  }
+
+  async function startCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      say(t('Fotocamera non disponibile: scrivi indirizzo e codice qui sotto.'));
+      return;
+    }
+    say(t('Inquadra il codice QR mostrato sul computer.'));
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    } catch (err) {
+      say(err?.name === 'NotAllowedError'
+        ? t('Accesso alla fotocamera negato: permettilo nelle impostazioni del telefono, oppure scrivi indirizzo e codice qui sotto.')
+        : t('Fotocamera non disponibile: scrivi indirizzo e codice qui sotto.'));
+      return;
+    }
+    if (!dialog.open) return stopCamera();
+    camera.hidden = false;
+    video.srcObject = stream;
+    video.play?.().catch(() => {});
+    const { default: jsQR } = await import('../vendor/jsqr.js');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    timer = setInterval(() => {
+      if (busy || !video.videoWidth) return;
+      // immagine rimpicciolita: il QR resta leggibile e il telefono non scalda
+      const scale = Math.min(1, 480 / video.videoWidth);
+      canvas.width = Math.round(video.videoWidth * scale);
+      canvas.height = Math.round(video.videoHeight * scale);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+      if (!code?.data) return;
+      const link = parseLink(code.data);
+      if (link) linkTo(link.ips, link.key);
+      else say(t('Questo non è un codice di AirDesk. Inquadra quello mostrato da AirDesk sul computer.'));
+    }, SCAN_EVERY_MS);
+  }
+
+  /** Prova gli indirizzi del computer (Wi-Fi, cavo…) e si collega al primo che risponde con il codice. */
+  async function linkTo(ips, key) {
+    if (busy) return;
+    busy = true;
+    say(t('Collegamento al computer…'));
+    const answers = await Promise.all(ips.map(ip => udp.probeRelay(ip, key).then(status => ({ ip, status }))));
+    busy = false;
+    const ok = answers.find(a => a.status === 'ok');
+    if (ok) {
+      const keys = readKeys(storage);
+      keys[ok.ip] = key;
+      storage.set(PC_KEYS, JSON.stringify(keys));
+      udp.keys.set(ok.ip, key);
+      stopCamera();
+      dialog.close();
+      connectTo(ok.ip);
+      return;
+    }
+    if (answers.some(a => a.status === 'no-mixer')) say(t('Il computer risponde ma non è collegato a un mixer: collegalo dal computer e riprova.'));
+    else if (answers.some(a => a.status === 'bad-key')) say(t('Codice sbagliato: sul computer potrebbe essere cambiato. Inquadra di nuovo il QR.'));
+    else say(t('Il computer non risponde. Telefono e computer devono essere sulla stessa rete Wi-Fi, con la condivisione accesa sul computer e il firewall che permette ad AirDesk le connessioni in entrata.'));
+  }
+
+  document.getElementById('pc-btn').addEventListener('click', () => {
+    connectDialog.close();
+    say('');
+    keyInput.value = '';
+    dialog.showModal();
+    startCamera();
+  });
+  dialog.addEventListener('close', stopCamera);
+  document.getElementById('pc-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const ip = ipInput.value.trim();
+    const key = keyInput.value.trim().toUpperCase().replace(/[\s-]/g, '');
+    if (!validIp(ip)) return say(t('Inserisci l’indirizzo mostrato sul computer, es. 192.168.1.10'));
+    if (!validKey(key)) return say(t('Il codice è di 8 caratteri, come mostrato sul computer.'));
+    linkTo([ip], key);
+  });
+
+  // computer che cambia stato mentre il telefono è collegato
+  let lastStatus = 'ok';
+  udp.onRelay = status => {
+    if (status === lastStatus) return;
+    lastStatus = status;
+    if (status === 'bad-key') {
+      ask({ title: t('Codice cambiato'), message: t('Sul computer il codice è cambiato: inquadra di nuovo il QR.'), confirmText: t('Ho capito'), info: true });
+    } else if (status === 'no-mixer') {
+      ask({ title: t('Computer senza mixer'), message: t('Il computer non è più collegato al mixer. Ricollegalo dal computer: il telefono riprende da solo.'), confirmText: t('Ho capito'), info: true });
+    }
+  };
+  return { linkTo };
+}
+
+/**
+ * native: app per telefono (UdpTransport) o per computer/browser (WebSocketTransport).
+ * Nel browser normale il ponte non offre la condivisione e i pulsanti restano nascosti.
+ */
+export function initPcLink({ native, realTransport, storage, mixer, connectTo, connectDialog }) {
+  if (native) return initLink({ udp: realTransport, storage, connectTo, connectDialog });
+  return initShare({ ws: realTransport, storage, mixer, connectDialog });
+}

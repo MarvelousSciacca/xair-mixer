@@ -30,6 +30,7 @@ import { createLayers } from './layers.js';
 import { startVoiceGuide } from './speech.js';
 import { splashDone } from './splash.js';
 import { compatNotice } from './compat.js';
+import { initPcLink, loadPcKeys } from './pc-link.js';
 import { startHaptics } from './haptics.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 import { announce, applyAppearance } from './a11y.js';
@@ -56,6 +57,8 @@ const native = Capacitor.isNativePlatform();
 document.body.classList.toggle('native-app', native);
 const udpPlugin = native ? registerPlugin('XAirUdp') : null;
 const realTransport = native ? new UdpTransport(udpPlugin) : new WebSocketTransport();
+// telefono collegato a un computer (pc-link.js): i codici salvati, prima di ricollegarsi all'avvio
+if (native) loadPcKeys(realTransport, storage);
 // "Lavora senza mixer": un mixer virtuale al posto di quello vero (gli indirizzi si danno più sotto)
 const offline = new OfflineTransport({ storage, addresses: [], strips: [] });
 const transport = new SwitchTransport(realTransport, offline);
@@ -314,6 +317,8 @@ document.getElementById('ip-form').addEventListener('submit', e => {
 });
 ipInput.addEventListener('input', () => ipInput.setCustomValidity(''));
 document.getElementById('offline-btn').addEventListener('click', () => connectTo(OFFLINE_IP));
+// telefono: collegati tramite computer; app per computer: condividi con telefoni
+initPcLink({ native, realTransport, storage, mixer, connectTo, connectDialog });
 
 // --- editor nome/colore ---------------------------------------------------------------
 

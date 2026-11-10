@@ -5,6 +5,9 @@ import { encode, decode, toBase64, fromBase64 } from './osc.js';
 
 const MIXER_PORT = 10024;
 const MAX_SWEEP = 1024; // indirizzi interrogati uno per uno al massimo (rete /22)
+// AirDesk per computer come ripetitore (server/relay.js): il telefono si presenta con il codice del QR
+export const HELLO = '/airdesk/hello';
+const HELLO_EVERY_MS = 4000;
 
 const ipToInt = ip => ip.split('.').reduce((n, b) => (n << 8) + Number(b), 0) >>> 0;
 const intToIp = n => [24, 16, 8, 0].map(s => (n >>> s) & 255).join('.');
@@ -36,6 +39,9 @@ export class UdpTransport {
     this.onMessage = () => {};
     this.onStatus = () => {};
     this.isOpen = false;
+    this.keys = new Map(); // indirizzo di un computer -> codice per il ripetitore
+    this._probes = new Map(); // indirizzo -> risposta attesa al saluto
+    this._hello = null;
     this._ready = this._open();
   }
 
@@ -58,6 +64,12 @@ export class UdpTransport {
       return;
     }
     for (const m of messages) {
+      if (m.address === HELLO) { // risposta del ripetitore: non è del mixer
+        const status = String(m.args[0]?.value ?? '');
+        this._probes.get(host)?.(status);
+        if (host === this.target) this.onRelay?.(status);
+        continue;
+      }
       if (this.discovery && m.address === '/xinfo') {
         const [, name, model, version] = m.args.map(a => a.value);
         this.discovery.set(host, { ip: host, name, model, version });
@@ -96,13 +108,42 @@ export class UdpTransport {
     return [...found.values()];
   }
 
+  /**
+   * Si presenta al computer con il codice: 'ok', 'no-mixer' (il computer non è collegato a un mixer),
+   * 'bad-key' o null se nessuna risposta (computer spento, rete diversa, firewall).
+   */
+  async probeRelay(ip, key, timeout = 1500) {
+    await this.ready();
+    return new Promise(resolve => {
+      const done = status => {
+        clearTimeout(timer);
+        if (this._probes.get(ip) === done) this._probes.delete(ip);
+        resolve(status);
+      };
+      const timer = setTimeout(() => done(null), timeout);
+      this._probes.set(ip, done);
+      this._sendTo(ip, HELLO, [{ type: 's', value: key }]);
+    });
+  }
+
   async connect(ip) {
     this.target = ip;
+    clearInterval(this._hello);
+    this._hello = null;
     await this.ready();
+    // collegati a un computer: prima il saluto (altrimenti il ripetitore ignora tutto), poi ogni 4 s
+    const key = this.keys.get(ip);
+    if (key) {
+      const hello = () => this._sendTo(ip, HELLO, [{ type: 's', value: key }]);
+      hello();
+      this._hello = setInterval(() => { if (this.target === ip) hello(); }, HELLO_EVERY_MS);
+    }
   }
 
   disconnect() {
     this.target = null;
+    clearInterval(this._hello);
+    this._hello = null;
   }
 
   send(address, args = []) {

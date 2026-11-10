@@ -742,6 +742,19 @@ await test('MIDI nelle app: messaggi nativi separati e consegnati come Web MIDI'
   assert(access.inputs.size === 1 && access.inputs.has('9'), 'controller tolto');
 });
 
+await test('app senza screen reader: il dito passa oltre i cursori invisibili, con VoiceOver no', async () => {
+  const { startVoiceGuide } = await import(`${ROOT}/public/js/speech.js`);
+  let on = false;
+  startVoiceGuide({ speak: async () => {}, screenReader: async () => ({ on }) });
+  await sleep(50);
+  const root = w.document.documentElement;
+  assert(root.classList.contains('sr-off'), 'cursori invisibili ancora sopra il fader');
+  on = true;
+  w.document.dispatchEvent(new w.Event('visibilitychange'));
+  await sleep(50);
+  assert(!root.classList.contains('sr-off'), 'con VoiceOver acceso i cursori devono restare toccabili');
+});
+
 await test('nessun errore JavaScript', async () => {
   assert(!errors.length, errors.join(' | '));
 });

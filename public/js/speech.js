@@ -94,12 +94,21 @@ export function startVoiceGuide(native = null) {
     pickWebVoice();
     speechSynthesis.addEventListener?.('voiceschanged', pickWebVoice);
   }
+  // Nelle app i cursori nativi trasparenti sopra fader e manopole servono solo a VoiceOver e TalkBack.
+  // Senza screen reader li si rende "trasparenti" anche al dito: su iPhone il cursore nativo si prendeva
+  // il tocco e il doppio tocco sul fader non arrivava.
+  const root = document.documentElement;
+  if (plugin?.screenReader) root.classList.add('sr-off');
   const check = () => {
     if (!plugin?.screenReader) return;
-    plugin.screenReader().then(r => { screenReaderOn = !!r?.on; }).catch(() => {});
+    plugin.screenReader().then(r => {
+      screenReaderOn = !!r?.on;
+      root.classList.toggle('sr-off', !screenReaderOn);
+    }).catch(() => {});
   };
   check();
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+  setInterval(check, 5000); // lo screen reader si può accendere anche con l'app aperta
 
   document.addEventListener('click', e => {
     if (!active()) return;

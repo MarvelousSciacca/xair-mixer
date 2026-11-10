@@ -17,6 +17,10 @@ gestisce server che ricevano dati dall'app.
   UDP 10024. Per trovare il mixer manda una richiesta a tutti i dispositivi della rete locale.
 - L'app non si collega a Internet. Il ponte dell'app per computer accetta solo indirizzi della rete locale
   e solo la pagina dell'app stessa.
+- **Collegamento tramite computer** (facoltativo): l'app per computer può fare da ripetitore per telefoni e
+  tablet della stessa rete locale. Si accende solo quando premi "Condividi con telefoni", ascolta sulla
+  porta UDP 10024 e accetta solo i dispositivi che si presentano con il codice mostrato nel QR; gira i
+  comandi al mixer a cui il computer è collegato e nient'altro.
 - Le informazioni scambiate con il mixer sono le impostazioni audio (livelli, nomi e colori dei canali,
   effetti, scene) e restano tra il tuo dispositivo e il tuo mixer.
 
@@ -25,6 +29,8 @@ gestisce server che ricevano dati dall'app.
 Restano solo sul tuo dispositivo e non vengono mai inviati allo sviluppatore:
 
 - preferenze dell'app: tema, vista, layer, canali protetti, ultimo indirizzo IP del mixer usato;
+- se usi il collegamento tramite computer: l'indirizzo IP del computer e il suo codice (sul telefono), il
+  codice di condivisione (sul computer);
 - le scene che salvi tu come file, nella cartella che scegli.
 
 Per cancellarli basta disinstallare l'app o cancellarne i dati dalle impostazioni del sistema. Sull'app
@@ -36,9 +42,15 @@ Android il backup automatico dei dati è disattivato.
   Su Android il permesso si chiama "Internet" anche quando la comunicazione resta nella rete locale.
 - **Stato della rete** (Android): serve a riconoscere la rete Wi-Fi del mixer e a usarla anche se non ha
   accesso a internet. Non legge il contenuto del traffico né i nomi delle reti.
+- **Fotocamera** (iOS e Android, facoltativa): chiesta solo quando premi "Collegati tramite computer", per
+  inquadrare il codice QR mostrato dall'app sul computer. Le immagini vengono lette sul momento dal
+  telefono, non vengono salvate né inviate a nessuno. Se neghi il permesso puoi scrivere indirizzo e codice
+  a mano.
+- **Rete locale** (Android 17 e successivi): con le prossime versioni di Android il permesso per la rete
+  locale diventa separato da "Internet"; l'app lo dichiara già.
 - **Schermo sempre acceso**: mentre sei collegato al mixer lo schermo non si spegne da solo.
 
-L'app non usa microfono, fotocamera, posizione, contatti, foto o notifiche.
+L'app non usa microfono, posizione, contatti, foto o notifiche.
 
 ## Minori
 
@@ -66,14 +78,20 @@ the app.
 - **Network:** the app talks only to the mixer on your local network (OSC over UDP port 10024) and sends a
   discovery request to the devices on that network. It does not connect to the Internet. The data exchanged
   are mixer settings (levels, channel names and colors, effects, scenes) and stay between your device and
-  your mixer.
+  your mixer. Optionally, the desktop app can relay for phones and tablets on the same local network: it
+  only starts when you press "Share with phones", listens on UDP port 10024, accepts only devices that
+  present the code shown in the QR code, and forwards their commands only to the mixer the computer is
+  connected to.
 - **Data stored on your device:** app preferences (theme, view, layers, protected channels, last mixer IP
-  address) and the scene files you save yourself. They never leave your device; uninstalling the app or
+  address, and for the computer connection the computer's IP address and code) and the scene files you save
+  yourself. They never leave your device; uninstalling the app or
   clearing its data removes them. Android automatic backup is disabled.
 - **Permissions:** local network (iOS) and Internet (Android, required even for local-network traffic), to
   reach the mixer; network state (Android), to find the mixer's Wi-Fi network and use it even without
-  Internet access; keeping the screen awake while connected. No microphone, camera, location, contacts,
-  photos or notifications.
+  Internet access; local network (Android 17 and later, declared in advance); camera (optional, asked only
+  when you choose "Connect via computer", to scan the QR code shown by the desktop app: frames are read on
+  the phone and never stored or sent; you can type the address and code instead); keeping the screen
+  awake while connected. No microphone, location, contacts, photos or notifications.
 - **Children:** no data is collected from anyone, including children.
 - **Changes and contact:** changes will be published in this file with an updated date. Questions: open an
   issue in the project's GitHub repository, https://github.com/MarvelousSciacca/xair-mixer.
