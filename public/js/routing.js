@@ -3,7 +3,7 @@
 
 import { Scope, choice } from './controls.js';
 import { SPEC } from './params.js';
-import { ROUTING, ROUTING_SOURCES, ROUTING_POS, ROUTING_POS_VERIFIED, routingAddress, routingPosAddress, sourceIndex } from './model.js';
+import { ROUTING, ROUTING_SOURCES, ROUTING_POS, routingAddress, routingPosAddress, sourceIndex } from './model.js';
 import { applyColor } from './ui.js';
 import { ask, notify } from './dialogs.js';
 
@@ -154,8 +154,7 @@ export function createRouting({ mixer, strips, container }) {
 
   const intro = h('div', 'rt-intro');
   intro.append(
-    h('p', 'rt-sub', 'Un preset cambia solo le sorgenti; il punto di prelievo resta com\'è.'
-      + (ROUTING_POS_VERIFIED ? '' : ' La numerazione dei punti di prelievo è ancora da verificare sul mixer.')),
+    h('p', 'rt-sub', 'Un preset cambia solo le sorgenti; il punto di prelievo resta com\'è.'),
     undoBtn,
   );
   root.append(

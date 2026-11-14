@@ -7,3 +7,5 @@ keystore/
 tools/qa/out/
 .taste-skill/
 graphify-out/
+# revisioni di design (impeccable): restano sul computer
+.impeccable/

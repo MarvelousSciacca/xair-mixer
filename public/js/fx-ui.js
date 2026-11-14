@@ -2,7 +2,7 @@
 // e dalla scheda Effetti.
 
 import { Scope, knob, choice, stepper } from './controls.js';
-import { FX_TYPE_SPEC, FX_PARAM_COUNT, FX_TYPES, FX_VERIFIED, fxTypeAddress, fxParamAddress, fxParams, tapIndex } from './fx.js';
+import { FX_TYPE_SPEC, FX_PARAM_COUNT, FX_TYPES, fxTypeAddress, fxParamAddress, fxParams, tapIndex } from './fx.js';
 import { isContinuous, toNorm } from './params.js';
 import { TapTempo, bpm } from './tap.js';
 import { geqControls, GEQ_CODES } from './geq-ui.js';
@@ -51,9 +51,8 @@ export function fxControls(mixer, sc, slot) {
       grid.append(geqControls(inner, slot, params));
       return;
     }
-    note.textContent = !mapped
-      ? 'Effetto non riconosciuto: controlli generici.'
-      : FX_VERIFIED.has(FX_TYPES[type]?.code) ? '' : 'Nomi dei parametri da X-AIR-Edit; alcuni range sono ancora da verificare sul mixer.';
+    // (i range ancora da confermare sul mixer vero sono in FX_VERIFIED, fx.js: nessun avviso all'utente)
+    note.textContent = !mapped ? 'Effetto non riconosciuto: controlli generici.' : '';
     for (let i = 0; i < count; i++) {
       const address = fxParamAddress(slot, i);
       const spec = params[i] ?? GENERIC(i);

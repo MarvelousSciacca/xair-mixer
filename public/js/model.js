@@ -143,7 +143,7 @@ export const ROUTING_SOURCE_LIST = [
   ...Array.from({ length: 6 }, (_, i) => [`Bus${i + 1}`, `Bus ${i + 1}`]),
   ...Array.from({ length: 4 }, (_, i) => [`Send${i + 1}`, `FX Send ${i + 1}`]),
   ['L', 'Main L'], ['R', 'Main R'],
-  ...Array.from({ length: 18 }, (_, i) => [`U${pad2(i + 1)}`, `USB ${i + 1} (?)`]),
+  ...Array.from({ length: 18 }, (_, i) => [`U${pad2(i + 1)}`, `USB ${i + 1}`]),
 ];
 export const ROUTING_SOURCES = ROUTING_SOURCE_LIST.map(([, name]) => name);
 export const sourceIndex = code => ROUTING_SOURCE_LIST.findIndex(([c]) => c === code);

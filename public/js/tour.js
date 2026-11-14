@@ -29,17 +29,17 @@ const STEPS = [
     text: 'Ogni modifica si può annullare, anche un intero movimento del fader.',
   },
   {
-    target: '#monitor-btn',
+    target: '#monitor-btn, #more-btn',
     title: 'Monitor in-ear',
     text: 'Una schermata con un solo mix monitor: i fader regolano solo quello. Comoda da dare a un musicista.',
   },
   {
-    target: '#scenes-btn',
+    target: '#scenes-btn, #more-btn',
     title: 'Scene e snapshot',
     text: 'Salva e richiama i tuoi mix. I canali che proteggi non cambiano quando carichi una scena.',
   },
   {
-    target: '#fb-btn',
+    target: '#fb-btn, #more-btn',
     title: 'Rilevatore feedback',
     text: 'Usa “Soundcheck” per cercare il feedback a microfoni aperti e “Concerto” mentre suoni.',
   },
@@ -64,12 +64,14 @@ function h(tag, className, text) {
 }
 
 /** Il comando da illuminare, se c'è ed è visibile in questo formato dello schermo. */
+/** Il primo elemento visibile tra quelli indicati (sul telefono alcuni tasti stanno in "Altro"). */
 function visibleTarget(selector) {
   if (!selector) return null;
-  const el = document.querySelector(selector);
-  if (!el) return null;
-  const r = el.getBoundingClientRect();
-  return r.width > 0 && r.height > 0 ? el : null;
+  for (const el of document.querySelectorAll(selector)) {
+    const r = el.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) return el;
+  }
+  return null;
 }
 
 export function tourDone(storage) {

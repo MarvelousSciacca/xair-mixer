@@ -194,12 +194,37 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
 .tabs { background: var(--ol-surface-alt); border: 0; border-radius: var(--radius-pill); }
 .tab { border-radius: var(--radius-pill); color: var(--ol-ink-muted); font-weight: 500; }
 .tab[aria-selected="true"] { background: var(--ol-ink); color: var(--ol-on-ink); }
-/* la sezione del mixer in cui ti trovi è in arancione (testo nero: contrasto 7:1 in entrambi i temi) */
-.topbar .tab[aria-selected="true"] { background: var(--ol-signal); color: #000; }
+/* L'arancione pieno è riservato a ciò che è spento o richiede attenzione (mute, connessione persa):
+   la sezione in cui ti trovi è in inchiostro, come gli altri tasti accesi. */
 .tab-add { color: var(--ol-ink-muted); }
 .status[data-status="online"] .dot { background: var(--ol-ink); }
 .status[data-status="connecting"] .dot { background: var(--ol-ink-muted); }
-.status[data-status="lost"] .dot { background: var(--ol-danger); }
+.status[data-status="lost"] .dot { background: var(--ol-signal); }
+.status[data-status="lost"] { color: var(--ol-signal-text); font-weight: 700; }
+
+/* connessione persa: barra fissa in cima a tutto (mixer e monitor), arancione come il mute */
+.lost-banner {
+  position: fixed;
+  z-index: 60;
+  top: calc(var(--safe-area-inset-top, env(safe-area-inset-top)) + 8px);
+  left: calc(var(--safe-area-inset-left, env(safe-area-inset-left)) + 8px);
+  right: calc(var(--safe-area-inset-right, env(safe-area-inset-right)) + 8px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--ol-signal);
+  color: #000;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.lost-banner[hidden] { display: none; }
+.lost-banner .ico { flex: none; width: 22px; height: 22px; stroke: currentColor; }
+.lost-text { flex: 1; min-width: 0; }
+.lost-banner .btn { flex: none; background: #000; color: #fff; border-color: #000; }
+/* i fader restano usabili (i comandi ripartono appena torna il mixer) ma si vede che sono "a vuoto" */
+body.lost main.mixer { opacity: .45; transition: opacity .3s ease-out; }
 
 /* --- pulsanti: a pillola. Principale pieno in ink, secondario a contorno ---------------------- */
 .btn { border-radius: var(--radius-pill); background: var(--ol-ink); color: var(--ol-on-ink); font-weight: 600; }
@@ -214,6 +239,9 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
 .btn.ghost:hover, .icon-btn:hover, .chip-btn:hover { opacity: 1; background: var(--ol-surface-alt); }
 .btn.ghost:active, .icon-btn:active, .chip-btn:active { background: var(--ol-surface-alt); }
 .btn.danger { background: var(--ol-danger); color: #ffffff; }
+/* tema scuro: il rosso è chiaro, il testo bianco non si leggerebbe (3:1); nero = 7:1 */
+:root:not([data-theme="light"]) .btn.danger { color: #000; }
+.status[data-status] .dot { box-shadow: none; }
 .topbar-actions .btn.ghost .ico { color: var(--ol-ink); }
 .topbar-actions .btn:disabled .ico { color: var(--ol-ink-muted); }
 .history .btn:first-child { border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
@@ -272,7 +300,8 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
 .sec-send { background: var(--ol-line); }
 .sec-send > span, .sec-send.fx > span { background: var(--ol-ink-muted); }
 
-/* mute e solo: monocromi. Spenti a contorno con lettera grigia, accesi pieni in ink */
+/* mute e solo: spenti a contorno con lettera grigia. Accesi: solo pieno in ink, mute pieno in arancione
+   (testo nero, 7:1), così al buio non si confondono mai. */
 .solo, .mute {
   border-radius: var(--radius-pill);
   background: transparent;
@@ -280,7 +309,10 @@ dialog input:focus, .preset-select:focus-visible, .choice select:focus-visible {
   color: var(--ol-ink-muted);
   font-weight: 700;
 }
-.solo.active, .mute.active, .mg-btn.active { background: var(--ol-ink); border-color: var(--ol-ink); color: var(--ol-on-ink); }
+.solo.active { background: var(--ol-ink); border-color: var(--ol-ink); color: var(--ol-on-ink); }
+.mute.active, .mg-btn.active { background: var(--ol-signal); border-color: var(--ol-signal); color: #000; }
+/* canale in mute: anche il nome si accende di arancione (si vede pure nel monitor, dove il tasto M non c'è) */
+.strip.muted .scribble, .strip.muted.inverted .scribble { background: var(--ol-signal); color: #000; box-shadow: none; }
 .strip.muted .fader-cap { filter: none; }
 .strip.muted .fader-cap::before { background: var(--ol-ink-muted); }
 

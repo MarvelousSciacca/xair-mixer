@@ -30,8 +30,10 @@ import { createLayers } from './layers.js';
 import { startVoiceGuide } from './speech.js';
 import { splashDone } from './splash.js';
 import { compatNotice } from './compat.js';
+import { ask } from './dialogs.js';
+import { initMoreMenu } from './more-menu.js';
 import { initPcLink, loadPcKeys } from './pc-link.js';
-import { startHaptics } from './haptics.js';
+import { startHaptics, haptic } from './haptics.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 import { announce, applyAppearance } from './a11y.js';
 import { startTranslation, collectStrings, protectText, t } from './i18n.js';
@@ -205,6 +207,7 @@ createLock({
 // --- stato connessione --------------------------------------------------------------
 
 const statusEl = document.getElementById('status');
+const lostBanner = document.getElementById('lost-banner');
 const STATUS_TEXT = {
   disconnected: 'Non connesso',
   connecting: 'Connessione…',
@@ -233,9 +236,15 @@ mixer.onStatus((status, info) => {
     announce(virtual ? 'Lavori senza mixer' : `${STATUS_TEXT[status]}${status === 'online' && name ? `, ${name}` : ''}`, { urgent: status === 'lost' });
   }
   document.body.classList.toggle('offline', status !== 'online');
+  // connessione persa: barra arancione su tutto (anche nel monitor), fader attenuati, vibrazione forte
+  const lost = status === 'lost' && !virtual;
+  if (lost && !document.body.classList.contains('lost')) [0, 180, 360].forEach(ms => setTimeout(() => haptic(true), ms));
+  document.body.classList.toggle('lost', lost);
+  lostBanner.hidden = !lost;
   // pulsante pieno solo quando c'è da collegarsi: da connessi diventa un tasto come gli altri
   document.getElementById('connect-btn').classList.toggle('ghost', status === 'online');
 });
+document.getElementById('lost-connect').addEventListener('click', () => document.getElementById('connect-btn').click());
 let bridgeWasDown = false;
 transport.onStatus = s => {
   // senza mixer il ponte non serve: se cade o torna (rete che cambia) l'app non si muove
@@ -298,13 +307,38 @@ async function scan() {
   }
 }
 
+// Da collegati la finestra mostra prima il mixer in uso; la ricerca di altri sta dietro "Cambia mixer".
+const currentRow = document.getElementById('current-mixer');
+const changeBtn = document.getElementById('change-mixer');
+function showSearch(on) {
+  connectDialog.classList.toggle('searching', on);
+  changeBtn.hidden = on;
+  if (on) scan();
+}
 document.getElementById('connect-btn').addEventListener('click', () => {
   ipInput.value = storage.get(LAST_IP_KEY) ?? '';
+  const linked = mixer.status !== 'disconnected';
+  currentRow.hidden = !linked;
+  if (linked) {
+    const virtual = transport.isOffline;
+    currentRow.dataset.status = mixer.status;
+    document.getElementById('current-name').textContent = virtual ? t('Mixer virtuale') : mixer.info?.name ?? mixer.ip ?? '';
+    document.getElementById('current-detail').textContent = virtual ? '' : [mixer.info?.model, mixer.ip].filter(Boolean).join(' · ');
+  }
   connectDialog.showModal();
-  scan();
+  showSearch(!linked);
 });
-document.getElementById('scan-btn').addEventListener('click', scan);
-document.getElementById('disconnect-btn').addEventListener('click', () => {
+document.getElementById('scan-btn').addEventListener('click', () => showSearch(true));
+changeBtn.addEventListener('click', () => showSearch(true));
+document.getElementById('disconnect-btn').addEventListener('click', async () => {
+  // sul palco un tocco per sbaglio spegnerebbe il controllo del mixer: si chiede conferma
+  const ok = await ask({
+    title: t('Disconnettere il mixer?'),
+    message: t('L’app smette di controllare il mixer. L’audio non cambia: il mixer continua a suonare come ora.'),
+    confirmText: t('Disconnetti'),
+    danger: true,
+  });
+  if (!ok) return;
   mixer.disconnect();
   connectDialog.close();
 });
@@ -318,6 +352,7 @@ document.getElementById('ip-form').addEventListener('submit', e => {
 ipInput.addEventListener('input', () => ipInput.setCustomValidity(''));
 document.getElementById('offline-btn').addEventListener('click', () => connectTo(OFFLINE_IP));
 // telefono: collegati tramite computer; app per computer: condividi con telefoni
+initMoreMenu();
 const pcLink = initPcLink({
   native, realTransport, storage, mixer, connectTo, connectDialog,
   isOffline: () => transport.isOffline,

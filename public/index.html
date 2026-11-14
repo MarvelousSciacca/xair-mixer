@@ -59,12 +59,19 @@
       <button class="btn ghost" id="scenes-btn" type="button" title="Scene e snapshot"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg><span class="btn-text">Scene</span></button>
       <button class="btn ghost" id="settings-btn" type="button" aria-label="Impostazioni mixer" title="Impostazioni mixer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
       <button class="btn ghost fb-btn" id="fb-btn" type="button" data-state="off" title="Rilevatore feedback"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h3l3-8 4 16 3-10 2 2h5"/></svg><span class="fb-dot"></span><span class="btn-text">Feedback</span><span class="fb-count"></span></button>
+      <button class="btn ghost more-btn" id="more-btn" type="button" aria-haspopup="dialog" title="Monitor, scene, feedback, vista e impostazioni"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg><span class="btn-text">Altro</span></button>
       <button class="btn ghost" id="lock-btn" type="button" aria-label="Blocca i comandi" aria-pressed="false" title="Blocca i comandi contro i tocchi per sbaglio"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
       <button class="btn" id="connect-btn" type="button" title="Connetti al mixer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/><path d="M1.5 9a15 15 0 0 1 21 0"/></svg><span class="btn-text">Connetti</span></button>
     </div>
   </header>
 
-  <div class="bridge-banner" role="alert">Ponte non raggiungibile: avvia <code>npm start</code> sul computer.</div>
+  <div class="bridge-banner" role="alert">Collegamento interno interrotto: riprovo da solo. Se non torna, riavvia AirDesk.</div>
+
+  <div class="lost-banner" id="lost-banner" hidden>
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6"/></svg>
+    <span class="lost-text"><strong>Connessione persa</strong> · i comandi non arrivano al mixer. Riprovo da solo…</span>
+    <button class="btn" id="lost-connect" type="button">Connetti</button>
+  </div>
 
   <div class="send-banner" id="send-banner"></div>
 
@@ -86,6 +93,12 @@
       <h2>Connetti al mixer</h2>
       <button class="btn ghost" id="scan-btn" type="button">Cerca di nuovo</button>
     </div>
+    <div class="current-mixer" id="current-mixer" hidden>
+      <span class="dot" aria-hidden="true"></span>
+      <div class="current-info"><strong id="current-name"></strong><span id="current-detail" translate="no"></span></div>
+      <button class="btn ghost danger-text" id="disconnect-btn" type="button">Disconnetti</button>
+    </div>
+    <button class="btn ghost change-mixer" id="change-mixer" type="button" hidden>Cambia mixer</button>
     <ul class="found-list" id="found-list"></ul>
     <form id="ip-form" class="ip-form">
       <label for="ip-input">Oppure inserisci l’IP</label>
@@ -107,7 +120,6 @@
       <span>Telefoni e tablet si collegano al mixer passando da questo computer.</span>
     </div>
     <form method="dialog" class="dialog-actions">
-      <button class="btn ghost" id="disconnect-btn" type="button">Disconnetti</button>
       <button class="btn ghost" value="cancel">Chiudi</button>
     </form>
   </dialog>
@@ -143,6 +155,13 @@
       <button class="btn ghost" id="share-new" type="button">Nuovo codice</button>
       <button class="btn ghost" id="share-stop" type="button">Smetti di condividere</button>
       <button class="btn" id="share-close" type="button">Chiudi</button>
+    </div>
+  </dialog>
+
+  <dialog id="more-dialog" class="more-dialog" aria-label="Altro">
+    <div class="more-list"></div>
+    <div class="dialog-actions">
+      <button class="btn more-close" type="button">Chiudi</button>
     </div>
   </dialog>
 

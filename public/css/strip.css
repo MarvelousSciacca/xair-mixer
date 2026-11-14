@@ -306,6 +306,43 @@ body[data-tab="meters"] .strips { display: none; }
 .view-picks .toggle[hidden] { display: none; }
 .view-picks-actions { display: flex; gap: 6px; margin-top: 8px; }
 
+/* "Altro" (js/more-menu.js): solo sui telefoni, dove raccoglie monitor, scene, feedback, vista e impostazioni */
+.more-btn { display: none; }
+.more-btn { position: relative; }
+.more-btn.alert::after {
+  content: ""; position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ol-signal, var(--accent));
+}
+.more-dialog { width: min(360px, calc(calc(100vw / var(--vu, 1)) - 32px)); }
+.more-list { display: flex; flex-direction: column; gap: 4px; }
+.more-item {
+  display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 0 14px;
+  border: 0; border-radius: var(--radius-md, 10px); background: transparent; color: var(--text);
+  font: inherit; font-size: 16px; text-align: left; cursor: pointer;
+}
+.more-item:hover, .more-item:focus-visible { background: var(--ol-surface, var(--panel-2)); }
+.more-item .ico { width: 22px; height: 22px; flex: none; color: var(--muted); }
+.more-item.alert span::after { content: " ●"; color: var(--ol-signal-text, var(--accent)); }
+@media (max-width: 520px), (max-height: 520px) {
+  .more-btn { display: inline-flex; }
+  #view-btn, #monitor-btn, #scenes-btn, #settings-btn, #fb-btn { display: none; }
+  /* tasti della barra a misura di dito */
+  .topbar:not(.monitor-head) .topbar-actions .btn { height: 44px; min-width: 44px; justify-content: center; }
+  .topbar:not(.monitor-head) .tab { min-height: 40px; }
+  /* sezioni che scorrono: sfumatura a destra se ce ne sono altre */
+  .tabs.more-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  /* Solo e Mute: alti un dito */
+  .strip .solo, .strip .mute { min-height: 44px; }
+}
+@media (max-width: 520px) {
+  .more-btn .btn-text { display: inline; margin-left: 4px; }
+  /* monitor: una riga sola (la Vista resta nel mixer principale) */
+  .monitor-head { flex-wrap: nowrap; }
+  .monitor-head .mon-view { display: none; }
+  .monitor-head .mon-bus { flex: 1 1 0; min-width: 0; }
+}
+.monitor-head .mon-lock { color: var(--ol-ink, var(--text)); }
+
 /* stato della connessione: su schermi stretti testo breve, che non esce mai dalla barra */
 .status { min-width: 0; }
 .status-text, .status-short { overflow: hidden; text-overflow: ellipsis; }

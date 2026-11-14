@@ -81,9 +81,9 @@ export function createMeterPage({ mixer, strips, rta, container }) {
   const sources = strips.filter(s => rtaSource(s) !== null);
   for (const s of sources) {
     const o = new Option(s.label, s.id);
-    if (rtaSource(s) > 16) o.text += ' (?)'; // numerazione da confermare per ritorni, bus e main
+    // (numerazione da confermare sul mixer per ritorni, bus e main: vedi README, nessun "(?)" all'utente)
     select.add(o);
-    mixer.on(`${s.base}/config/name`, n => { o.text = (n || s.label) + (rtaSource(s) > 16 ? ' (?)' : ''); });
+    mixer.on(`${s.base}/config/name`, n => { o.text = n || s.label; });
   }
   select.value = 'lr';
   head.append(select);

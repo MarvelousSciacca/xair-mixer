@@ -83,12 +83,15 @@
 }
 [data-contrast="more"] .toggle[aria-pressed="true"], [data-contrast="more"] .segmented button[aria-pressed="true"],
 [data-contrast="more"] .tab[aria-selected="true"], [data-contrast="more"] .proc-btn.active,
-[data-contrast="more"] .mute.active, [data-contrast="more"] .solo.active, [data-contrast="more"] .mg-btn.active {
+[data-contrast="more"] .solo.active {
   /* acceso: pieno in inchiostro (stile Ottava Lab), testo nel colore opposto */
   box-shadow: none;
   background: var(--text);
   color: var(--bg);
 }
+/* mute acceso: arancione anche a contrasto alto (testo nero 7:1), con bordo pieno che lo stacca dal fondo */
+[data-contrast="more"] .mute.active, [data-contrast="more"] .mg-btn.active { background: var(--ol-signal); color: #000; box-shadow: inset 0 0 0 2px var(--text); }
+[data-contrast="more"] .strip.muted .scribble { background: var(--ol-signal); color: #000; box-shadow: inset 0 0 0 2px var(--text); }
 [data-contrast="more"] .label, [data-contrast="more"] .pan-val, [data-contrast="more"] .mark { color: var(--text); }
 [data-contrast="more"] .strip { border-right: 1px solid var(--line); }
 

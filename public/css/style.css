@@ -396,6 +396,19 @@ dialog input {
 .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
 .row { display: flex; gap: 8px; }
 
+/* finestra Connetti da collegati: prima il mixer in uso, la ricerca dietro "Cambia mixer" (app.js) */
+.current-mixer { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px 12px 12px 14px; border-radius: 12px; background: var(--ol-surface, var(--panel-2)); }
+.current-mixer[hidden] { display: none; }
+.current-mixer .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ol-ink, var(--text)); flex: none; }
+.current-mixer[data-status="lost"] .dot { background: var(--ol-signal, var(--mute)); }
+.current-mixer[data-status="connecting"] .dot { background: var(--muted); }
+.current-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.current-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.current-info span { color: var(--muted); font-size: 13px; }
+.btn.danger-text { color: var(--ol-danger, var(--mute)); }
+.change-mixer { margin-top: 10px; }
+.change-mixer[hidden] { display: none; }
+#connect-dialog:not(.searching) :is(#found-list, #ip-form, #scan-btn, #pc-row, .offline-row:has(#offline-btn)) { display: none; }
 .found-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .found-list .hint { color: var(--muted); font-size: 13px; padding: 8px 0; }
 .found {
@@ -1295,3 +1308,4 @@ dialog.tour.centered .tour-card { left: 50% !important; top: 50% !important; tra
 .sc-offline[hidden] { display: none; }
 .sc-offline h3 { margin: 0 0 4px; font-size: 14px; }
 body.no-mixer #status .status-dot, body.no-mixer #status[data-status] { --ok: var(--accent); }
+.current-mixer .btn.ghost.danger-text { color: var(--ol-danger, var(--mute)); border-color: currentColor; }
