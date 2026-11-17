@@ -1,0 +1,6 @@
+# Progetto Supabase delle licenze di AirDesk (vedi supabase/README.md)
+project_id = "airdesk"
+
+[functions.license]
+# l'app non usa gli account di Supabase: email + codice sono gestiti dalla funzione stessa
+verify_jwt = false

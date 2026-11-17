@@ -248,7 +248,7 @@ function initLink({ udp, storage, connectTo, connectDialog, openMonitor }) {
         // QR del fonico collegato direttamente al mixer: niente computer di mezzo
         stopCamera();
         dialog.close();
-        connectTo(link.ips[0]);
+        connectTo(link.ips[0], { monitor: !!link.mon });
         if (link.mon) openMonitor(link.mon);
       } else if (link) linkTo(link.ips, link.key, link.mon);
       else say(t('Questo non è un codice di AirDesk. Inquadra quello mostrato da AirDesk sul computer.'));
@@ -270,7 +270,7 @@ function initLink({ udp, storage, connectTo, connectDialog, openMonitor }) {
       udp.keys.set(ok.ip, key);
       stopCamera();
       dialog.close();
-      connectTo(ok.ip);
+      connectTo(ok.ip, { monitor: !!mon });
       if (mon) openMonitor(mon);
       return;
     }

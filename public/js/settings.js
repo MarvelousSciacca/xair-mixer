@@ -32,7 +32,7 @@ function section(title, ...children) {
   return sec;
 }
 
-export function createSettings({ mixer, addresses, onReload, onTour, pin, midi, onLanguage }) {
+export function createSettings({ account = null, mixer, addresses, onReload, onTour, pin, midi, onLanguage }) {
   const dialog = h('dialog', 'settings-dialog');
   dialog.innerHTML = `
     <div class="dialog-head">
@@ -187,6 +187,7 @@ export function createSettings({ mixer, addresses, onReload, onTour, pin, midi, 
   const a11yNote = h('p', 'fx-note', 'Con VoiceOver (iPhone, iPad, Mac) o TalkBack (Android) ogni fader, pan e manopola si regola scorrendo in su o in giù con un dito; il nome del canale viene letto insieme al comando. Feedback, connessione e blocco vengono annunciati a voce. "Automatico" segue l\'impostazione "Aumenta contrasto" del sistema.');
 
   body.append(
+    ...(account ? [section('Account e licenza', account.summary())] : []),
     section('Aspetto', ...[langBox, themeBox, sizeBox, contrastBox, hapticBox, hapticNote, voiceBox, voiceNote, a11yNote].filter(Boolean)),
     section('Mixer', info),
     section('Solo / cuffie',

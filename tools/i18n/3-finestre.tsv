@@ -313,3 +313,38 @@ Disconnettere il mixer?§Disconnect the mixer?§¿Desconectar el mixer?§Déconn
 L’app smette di controllare il mixer. L’audio non cambia: il mixer continua a suonare come ora.§The app stops controlling the mixer. The audio doesn't change: the mixer keeps sounding as it does now.§La app deja de controlar el mixer. El audio no cambia: el mixer sigue sonando como ahora.§L'app cesse de contrôler la console. Le son ne change pas : la console continue de jouer comme maintenant.§Die App steuert das Mischpult nicht mehr. Der Ton ändert sich nicht: Das Mischpult klingt weiter wie jetzt.
 Cambia mixer§Change mixer§Cambiar mixer§Changer de console§Mischpult wechseln
 Collegamento interno interrotto: riprovo da solo. Se non torna, riavvia AirDesk.§Internal connection interrupted: retrying automatically. If it doesn't come back, restart AirDesk.§Conexión interna interrumpida: reintentando solo. Si no vuelve, reinicia AirDesk.§Connexion interne interrompue : nouvelle tentative automatique. Si elle ne revient pas, redémarrez AirDesk.§Interne Verbindung unterbrochen: neuer Versuch läuft automatisch. Falls sie nicht zurückkommt, starte AirDesk neu.
+Il tuo account§Your account§Tu cuenta§Votre compte§Dein Konto
+Serve internet per questo passaggio. Il resto dell’app funziona anche senza.§This step needs internet. The rest of the app works without it.§Este paso necesita internet. El resto de la app funciona sin él.§Cette étape nécessite internet. Le reste de l'app fonctionne sans.§Dieser Schritt braucht Internet. Der Rest der App funktioniert auch ohne.
+Controlla l’email: sembra scritta male.§Check the email: it looks mistyped.§Revisa el email: parece mal escrito.§Vérifiez l'e-mail : il semble mal saisi.§Prüfe die E-Mail: Sie scheint falsch geschrieben.
+Codice sbagliato o scaduto. Chiedine uno nuovo.§Wrong or expired code. Ask for a new one.§Código incorrecto o caducado. Pide uno nuevo.§Code incorrect ou expiré. Demandez-en un nouveau.§Falscher oder abgelaufener Code. Fordere einen neuen an.
+Questa email non ha ancora una licenza.§This email doesn't have a license yet.§Este email aún no tiene licencia.§Cet e-mail n'a pas encore de licence.§Diese E-Mail hat noch keine Lizenz.
+Accedi di nuovo con la tua email.§Sign in again with your email.§Vuelve a entrar con tu email.§Reconnectez-vous avec votre e-mail.§Melde dich erneut mit deiner E-Mail an.
+Qualcosa non ha funzionato. Riprova tra poco.§Something went wrong. Try again shortly.§Algo ha fallado. Inténtalo en un momento.§Un problème est survenu. Réessayez bientôt.§Etwas hat nicht geklappt. Versuche es gleich noch einmal.
+AirDesk è attivo§AirDesk is active§AirDesk está activo§AirDesk est actif§AirDesk ist aktiv
+Collegato a {0}. Funziona anche senza internet.§Linked to {0}. Works without internet too.§Vinculado a {0}. Funciona también sin internet.§Lié à {0}. Fonctionne aussi sans internet.§Verknüpft mit {0}. Funktioniert auch ohne Internet.
+Prova gratuita: {0} giorni rimasti§Free trial: {0} days left§Prueba gratuita: quedan {0} días§Essai gratuit : {0} jours restants§Kostenlose Testversion: noch {0} Tage
+Tutte le funzioni sbloccate. Poi serve la licenza per collegarsi al mixer.§Every feature unlocked. After that, a license is needed to connect to the mixer.§Todas las funciones desbloqueadas. Después hace falta la licencia para conectarse al mixer.§Toutes les fonctions débloquées. Ensuite, une licence est nécessaire pour se connecter à la console.§Alle Funktionen freigeschaltet. Danach braucht es eine Lizenz, um sich mit dem Mischpult zu verbinden.
+{0} giorni di prova gratuita§{0}-day free trial§{0} días de prueba gratuita§{0} jours d'essai gratuit§{0} Tage kostenlos testen
+Partono al primo collegamento a un mixer.§They start the first time you connect to a mixer.§Empiezan la primera vez que te conectas a un mixer.§Ils commencent à la première connexion à une console.§Sie beginnen bei der ersten Verbindung mit einem Mischpult.
+La prova è finita§The trial has ended§La prueba ha terminado§L'essai est terminé§Die Testversion ist abgelaufen
+Per collegarti al mixer accedi con l’email con cui hai comprato AirDesk. Il mixer virtuale resta libero.§To connect to the mixer, sign in with the email you bought AirDesk with. The virtual mixer stays free.§Para conectarte al mixer, entra con el email con el que compraste AirDesk. El mixer virtual sigue siendo libre.§Pour vous connecter à la console, connectez-vous avec l'e-mail utilisé pour acheter AirDesk. La console virtuelle reste libre.§Um dich mit dem Mischpult zu verbinden, melde dich mit der E-Mail an, mit der du AirDesk gekauft hast. Das virtuelle Mischpult bleibt frei.
+Acquista AirDesk§Buy AirDesk§Comprar AirDesk§Acheter AirDesk§AirDesk kaufen
+Ti mandiamo un codice di 6 cifre. Niente password.§We'll send you a 6-digit code. No password.§Te enviamos un código de 6 cifras. Sin contraseña.§Nous vous envoyons un code à 6 chiffres. Pas de mot de passe.§Wir schicken dir einen 6-stelligen Code. Kein Passwort.
+Ricevi il codice§Get the code§Recibir el código§Recevoir le code§Code erhalten
+Non hai ancora la licenza? §Don't have a license yet? §¿Aún no tienes licencia? §Pas encore de licence ? §Noch keine Lizenz? 
+Codice inviato a {0}§Code sent to {0}§Código enviado a {0}§Code envoyé à {0}§Code gesendet an {0}
+Cambia email§Change email§Cambiar email§Changer d'e-mail§E-Mail ändern
+Accedi§Sign in§Entrar§Se connecter§Anmelden
+I tuoi dispositivi: {0} di {1}§Your devices: {0} of {1}§Tus dispositivos: {0} de {1}§Vos appareils : {0} sur {1}§Deine Geräte: {0} von {1}
+Hai già 3 dispositivi. Liberane uno per usare AirDesk qui: potrai riattivarlo quando vuoi.§You already have 3 devices. Free one up to use AirDesk here: you can reactivate it whenever you like.§Ya tienes 3 dispositivos. Libera uno para usar AirDesk aquí: podrás reactivarlo cuando quieras.§Vous avez déjà 3 appareils. Libérez-en un pour utiliser AirDesk ici : vous pourrez le réactiver quand vous voudrez.§Du hast bereits 3 Geräte. Gib eines frei, um AirDesk hier zu nutzen: Du kannst es jederzeit wieder aktivieren.
+Dispositivo§Device§Dispositivo§Appareil§Gerät
+dal {0}§since {0}§desde {0}§depuis le {0}§seit {0}
+Questo dispositivo§This device§Este dispositivo§Cet appareil§Dieses Gerät
+Libera§Free up§Liberar§Libérer§Freigeben
+Esci da questo dispositivo§Sign out of this device§Salir de este dispositivo§Se déconnecter de cet appareil§Auf diesem Gerät abmelden
+Uscendo liberi il posto: AirDesk qui torna senza licenza.§Signing out frees the slot: AirDesk here goes back to unlicensed.§Al salir liberas el puesto: AirDesk aquí vuelve a estar sin licencia.§En vous déconnectant, vous libérez la place : AirDesk ici repasse sans licence.§Beim Abmelden wird der Platz frei: AirDesk ist hier dann ohne Lizenz.
+Gestisci account§Manage account§Gestionar cuenta§Gérer le compte§Konto verwalten
+Attivo · {0}§Active · {0}§Activo · {0}§Actif · {0}§Aktiv · {0}
+Account e licenza§Account and license§Cuenta y licencia§Compte et licence§Konto und Lizenz
+Telefono Android§Android phone§Teléfono Android§Téléphone Android§Android-Telefon
+Tablet Android§Android tablet§Tablet Android§Tablette Android§Android-Tablet

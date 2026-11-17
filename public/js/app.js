@@ -30,13 +30,16 @@ import { createLayers } from './layers.js';
 import { startVoiceGuide } from './speech.js';
 import { splashDone } from './splash.js';
 import { compatNotice } from './compat.js';
-import { ask } from './dialogs.js';
 import { initMoreMenu } from './more-menu.js';
+import { createLicense } from './license.js';
+import { LICENSE_CONFIG } from './license-config.js';
+import { createAccount } from './account.js';
+import { ask, notify } from './dialogs.js';
 import { initPcLink, loadPcKeys } from './pc-link.js';
 import { startHaptics, haptic } from './haptics.js';
 import { createHistoryButtons, createLock, keepScreenAwake } from './stage.js';
 import { announce, applyAppearance } from './a11y.js';
-import { startTranslation, collectStrings, protectText, t } from './i18n.js';
+import { startTranslation, collectStrings, protectText, t, lang } from './i18n.js';
 
 const LAST_IP_KEY = 'xair.lastIp';
 const TAB_KEY = 'xair.tab';
@@ -56,6 +59,11 @@ applyTheme();
 applyAppearance();
 // Nell'app (Android) si parla al mixer in UDP nativo; nel browser tramite il ponte Node.
 const native = Capacitor.isNativePlatform();
+// Licenza: prova di 14 giorni, poi account (fino a 3 dispositivi). Verifica offline: vedi license.js.
+const platform = native ? Capacitor.getPlatform() : 'web';
+const license = createLicense({ storage, config: LICENSE_CONFIG, platform, lang });
+const licenseReady = license.init();
+const account = createAccount({ license, platform, buyUrl: LICENSE_CONFIG.buyUrl });
 document.body.classList.toggle('native-app', native);
 const udpPlugin = native ? registerPlugin('XAirUdp') : null;
 const realTransport = native ? new UdpTransport(udpPlugin) : new WebSocketTransport();
@@ -220,6 +228,15 @@ let wasOnline = false;
 let spokenStatus = 'disconnected';
 mixer.onStatus((status, info) => {
   const virtual = transport.isOffline && status !== 'disconnected';
+  if (status === 'online' && !virtual) {
+    license.startTrial(); // la prova parte al primo mixer vero
+    const s = license.state();
+    const today = new Date().toDateString();
+    if (s.kind === 'trial' && s.daysLeft <= 3 && storage.get('airdesk.trialNote') !== today) {
+      storage.set('airdesk.trialNote', today);
+      notify(t('Prova gratuita: {0} giorni rimasti', s.daysLeft));
+    }
+  }
   // l'ultimo mix visto sul mixer vero: da lì parte il lavoro senza mixer
   if (wasOnline && status !== 'online') saveLastMix();
   wasOnline = status === 'online' && !transport.isOffline;
@@ -272,7 +289,23 @@ function saveLastMix() {
 }
 setInterval(() => { if (mixer.status === 'online') saveLastMix(); }, 60_000);
 
-async function connectTo(ip) {
+// Prova finita e niente licenza: il mixer vero non si comanda (il virtuale sì). Eccezione: il monitor
+// bloccato del musicista aperto da QR, che regola solo il suo mix; uscendone ci si scollega.
+// Una prova che finisce durante il concerto non interrompe niente: si controlla solo al collegamento.
+let musicianOnly = false;
+// appena attivata la licenza ci si collega al mixer che era stato bloccato
+license.onChange(s => {
+  const ip = storage.get(LAST_IP_KEY);
+  if (s.kind === 'licensed' && ip && mixer.status === 'disconnected') { musicianOnly = false; mixer.connect(ip, allAddresses); }
+});
+const blocked = (ip, opts = {}) => ip !== OFFLINE_IP && !opts.monitor && !license.canControl();
+async function connectTo(ip, opts = {}) {
+  if (blocked(ip, opts)) {
+    connectDialog.close();
+    account.open();
+    return;
+  }
+  musicianOnly = ip !== OFFLINE_IP && !license.canControl();
   if (ip !== OFFLINE_IP) storage.set(LAST_IP_KEY, ip); // il mixer virtuale non riparte da solo
   connectDialog.close();
   await mixer.connect(ip, allAddresses);
@@ -405,7 +438,8 @@ createFeedbackUI({ mixer, monitor: feedback, editor, storage });
 // --- modalità monitor (in-ear) -------------------------------------------------------------
 
 const pin = createPin(storage);
-const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel, pin, musicianQr: pcLink.showMonitorQr });
+const monitorView = createMonitor({ mixer, strips, links, editor, storage, view, viewPanel, pin, musicianQr: pcLink.showMonitorQr,
+  onExit: () => { if (musicianOnly) { musicianOnly = false; mixer.disconnect(); account.open(); } } });
 document.getElementById('monitor-btn').addEventListener('click', () => monitorView.enter());
 
 // --- scene, snapshot e impostazioni -------------------------------------------------------------
@@ -444,7 +478,7 @@ const onLanguage = () => {
   offline.flush();
   try { if (transport.isOffline) sessionStorage.setItem(RESUME_OFFLINE, '1'); } catch { /* non disponibile */ }
 };
-const settings = createSettings({ mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin, midi, onLanguage });
+const settings = createSettings({ account: license.state().kind === 'off' ? null : account, mixer, addresses: allAddresses, onReload: () => mixer.resubscribe(), onTour: () => startTour({ storage }), pin, midi, onLanguage });
 document.getElementById('settings-btn').addEventListener('click', () => settings.open());
 
 // --- avvio ------------------------------------------------------------------------
@@ -454,7 +488,13 @@ const urlIp = new URLSearchParams(location.search).get('ip');
 let resumeOffline = false;
 try { resumeOffline = sessionStorage.getItem(RESUME_OFFLINE) === '1'; sessionStorage.removeItem(RESUME_OFFLINE); } catch { /* non disponibile */ }
 const lastIp = resumeOffline ? OFFLINE_IP : /^[\d.]+$/.test(urlIp ?? '') ? urlIp : storage.get(LAST_IP_KEY);
-if (lastIp) mixer.connect(lastIp, allAddresses);
+// all'avvio: il monitor bloccato del musicista riparte anche senza licenza (vedi connectTo)
+const lockedMonitor = (() => { try { const m = JSON.parse(storage.get('xair.monitor') ?? '{}'); return m.active && m.locked; } catch { return false; } })();
+if (lastIp) licenseReady.then(() => {
+  if (blocked(lastIp, { monitor: lockedMonitor })) return splashDone.then(() => account.open());
+  musicianOnly = lastIp !== OFFLINE_IP && !license.canControl();
+  mixer.connect(lastIp, allAddresses);
+});
 const askConnection = () => {
   if (!lastIp && mixer.status === 'disconnected') document.getElementById('connect-btn').click();
 };

@@ -40,7 +40,7 @@ function holdable(btn, needsHold, action) {
   });
 }
 
-export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null, pin = null, musicianQr = null }) {
+export function createMonitor({ mixer, strips, links, editor, storage, view = null, viewPanel = null, pin = null, musicianQr = null, onExit = null }) {
   const inputs = strips.filter(s => s.group === 'input' && s.sends);
   const buses = strips.filter(s => s.id.startsWith('bus'));
 
@@ -218,6 +218,7 @@ export function createMonitor({ mixer, strips, links, editor, storage, view = nu
     save();
     root.hidden = true;
     document.body.classList.remove('monitor-mode');
+    onExit?.();
   }
 
   if (settings.active) enter();

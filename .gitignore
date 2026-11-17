@@ -9,3 +9,14 @@ tools/qa/out/
 graphify-out/
 # revisioni di design (impeccable): restano sul computer
 .impeccable/
+# segreti: chiavi di firma, chiavi private delle licenze, variabili d'ambiente
+.env
+.env.*
+*.pem
+*.p8
+*.p12
+*.mobileprovision
+license-private*.json
+tools/test/personal.local.txt
+# file temporanei dello strumento di Supabase
+supabase/.temp/
